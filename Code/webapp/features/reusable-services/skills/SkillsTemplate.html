@@ -1,0 +1,14 @@
+<div>
+    <label>{{skillsController.label}}</label>
+    <textarea rows="4" class="form-control" placeholder="" ng-model="skills" ng-change="skillsController.populateSkills()"
+              ng-focus="skillsController.showDropdown = true" ng-blur="skillsController.hideDropdown()" required></textarea>
+    <label class="small">Type or select a comma separated list of skills</label>
+</div>
+<div ng-show="skillsController.showDropdown">
+    <div class="btn-toolbar form-group" role="toolbar">
+        <div ng-repeat="skill in (skillsController.skillsList | filter:skillsController.allowedSkills)"
+             class="btn-group" role="group">
+            <button class="btn btn-primary" type="button" ng-click="skillsController.addSkill(skill)">{{skill}}</button>
+        </div>
+    </div>
+</div>

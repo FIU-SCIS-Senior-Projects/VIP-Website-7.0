@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html ng-app="mainApp" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP</title>
+
+    <!-- FOR ANGULAR ROUTING -->
+    <base href="/">
+
+    <link rel="stylesheet" href="distrib/styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <script src="distrib/scripts.js"></script>
+    <script src='https://cdn.rawgit.com/monsterhunter445/drivejs/master/drive.js'></script>
+
+
+</head>
+
+<body>
+<div class="container">
+
+    <!-- Directive to load the header -->
+    <vip-header></vip-header>
+
+    <!-- ANGULAR VIEWS -->
+    <div ui-view></div>
+
+    <!-- Directive to load the footer -->
+    <vip-footer></vip-footer>
+
+</div>
+
+</body>
+
+
+</html>

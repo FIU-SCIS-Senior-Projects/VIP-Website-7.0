@@ -1,0 +1,7 @@
+module.exports = {
+'port':3000,
+'externalPort':3000,
+'database':'mongodb://vip-web-0.ignorelist.com:65533/admin',
+'secret':'whateveryouwant',
+'secure':false
+};

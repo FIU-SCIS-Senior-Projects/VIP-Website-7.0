@@ -1,0 +1,80 @@
+<div>
+    <div ng-if="!todo.done" >
+        <center ng-if="!todo.done">
+            <img ng-if="!todo.done" img width="30%" height="30%" src="img/loading.gif"/>
+        </center>
+    </div>
+
+    <!--No To Dos: Jumbotron-->
+	<div ng-if="todo.done && (todo.getTotalCount() <1)" class="jumbotron">
+        <h1 class="text-center">All clear here!</h1>
+        <p class="text-center">You have no more messages</p>
+    </div>
+
+    <!--To Dos are Present-->
+    <span ng-show="todo.done">
+        <div ng-repeat="cat in todo.categories">
+            <div ng-show="cat.count > 0" class="panel panel-default">
+
+                <!--Header And Buttons-->
+                <div class="panel-heading" style="padding-bottom: 5px;">
+                    <form class ="form-inline">
+
+                        <!--To Do Category Titles-->
+                        <h4 style="display: inline-block; margin-top: 5px;">
+                            <b>{{cat.headerText}}</b>
+                        </h4>
+
+                        <!--Clear Button-->
+                        <div class="btn-group pull-right">
+
+                            <button type="button" title = "Clear To-Dos" style="margin-left: 5px"
+                                ng-click="todo.clearButton(cat)"
+                                class="inline btn btn-sm btn-default">
+                                <span class="fa fa-lg fa-trash"></span>
+                                &nbsp;&nbsp;{{clearOption.option}}
+                            </button>
+
+                            <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle</span>
+                            </button>
+
+                            <ul class="dropdown-menu" style="background-color: white">
+                                <li ng-repeat="option in todo.clearOptions">
+                                    <a ng-click="clearOption.option = option">{{option}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+
+                <!--To Do Details-->
+                <ul class="list-group" ng-repeat="todoItem in todo.list
+                | filter: message.read='false' | filter: emptyOrNull
+                | orderBy: -todo.time:true">
+
+                    <!--Trash Button-->
+                    <li class="list-group-item" ng-show="todoItem.type == cat.typeName">
+                        <a ng-click="todo.markedAsRead(todoItem)">
+                            <span class="fa fa-trash"></span>
+                        </a>
+
+                        <!--Timestamp-->
+                        <strong>{{todoItem.time | date: 'short'}}</strong>
+
+                        <!--PiCopi Label-->
+                        <span ng-show="todoItem.owner_id == null" class="label label-danger">Pi/Copi</span>
+
+                        <!--To Do Message / Desciption-->
+                        <a ng-href="{{todoItem.link}}" ng-click="todo.markedAsRead(todoItem)">
+                            <strong>{{todoItem.todo}}</strong>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+	</span>
+    
+</div>

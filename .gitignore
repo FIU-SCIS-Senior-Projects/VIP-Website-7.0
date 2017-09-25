@@ -1,0 +1,9 @@
+Code/node_modules/**/*
+Code/deployment/node_modules/**/*
+Code/webapp/node_modules/**/*
+Code/webapp/distrib/*
+
+Code/.idea/**/*
+Code/.jshintrc
+
+.DS_Store

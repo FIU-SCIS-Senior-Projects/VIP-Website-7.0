@@ -23,9 +23,9 @@ require('./deployment/gulpfile')(__dirname + '/webapp/');//this will take care t
 require('./api/services/ExistingProjectsNotificationService').configureNotifications('0 0 3 * * *', app);//setup existing projects notifications as daily
 
 //connect to mongodb
-mongoose.connect(config.database, { server: { poolSize: 30 } });
+mongoose.connect(config.database, { server: { poolSize: 30 } ,useMongoClient: true});
 mongoose.connection.on('error', function(err) {
-	//console.log('Error: could not connect to MongoDB.');
+	console.log(err);
 });
 
 if (config.secure) {//redirect http to https

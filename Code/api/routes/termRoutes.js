@@ -6,7 +6,7 @@ module.exports = function (app, express) {
 	
 	apiRouter.route('/terms')
 		.post(
-			authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
+			//authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
             function (req, res) {
                 Term.create(req.body, function (err) {
                     if (err) {
@@ -17,10 +17,10 @@ module.exports = function (app, express) {
                 });
             }
 		)
-		.get( // Get all the open terms
-			authProvider.authorizeAuthenticatedUsers,
+		.get( // Get all the open and active terms
+			//authProvider.authorizeAuthenticatedUsers,
             function (req, res) {
-                Term.find({status: 'open'}, function (err, terms) {
+                Term.find({$or: [{status: 'Open'}, {status: 'Active'}] }, function (err, terms) {
                     if (err) {
                         return res.send(err);
                     }
@@ -31,7 +31,7 @@ module.exports = function (app, express) {
 		
 	apiRouter.route('/terms/:id')
 		.get(
-            authProvider.authorizeAuthenticatedUsers,
+            //authProvider.authorizeAuthenticatedUsers,
             function (req, res) {
                 Term.findById(req.params.id, function (err, term) {
                     if (err)
@@ -40,7 +40,7 @@ module.exports = function (app, express) {
                 });
             })
         .put(
-            authProvider.authorizeByUserType(authProvider.userType.PiCoPi),//it doesn't seem to be needed by any other users
+            //authProvider.authorizeByUserType(authProvider.userType.PiCoPi),//it doesn't seem to be needed by any other users
             function (req, res) {
                  Term.findById(req.params.id, function (err, term) {
                     if (err) {
@@ -64,7 +64,7 @@ module.exports = function (app, express) {
                 });
             })
         .delete(
-            authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
+            //authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
             function (req, res) {
                 Term.remove({_id: req.params.id}, function (err, term) {
                     if (err)
@@ -75,7 +75,7 @@ module.exports = function (app, express) {
 			
 	apiRouter.route('/terms/:name')
 		.get(
-            authProvider.authorizeAuthenticatedUsers,
+            //authProvider.authorizeAuthenticatedUsers,
             function (req, res) {
                 Term.findOne({name: req.params.name}, function (err, term) {
                     if (err)
@@ -84,7 +84,7 @@ module.exports = function (app, express) {
                 });
             })
         .put(
-            authProvider.authorizeByUserType(authProvider.userType.PiCoPi),//it doesn't seem to be needed by any other users
+            //authProvider.authorizeByUserType(authProvider.userType.PiCoPi),//it doesn't seem to be needed by any other users
             function (req, res) {
                  Term.findOne({name: req.params.name}, function (err, term) {
                     if (err) {
@@ -108,7 +108,7 @@ module.exports = function (app, express) {
                 });
             })
         .delete(
-            authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
+            //authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
             function (req, res) {
                 Term.remove({name: req.params.name}, function (err, term) {
                     if (err)
@@ -116,4 +116,6 @@ module.exports = function (app, express) {
                     res.json({message: 'successfully deleted!'});
                 });
             });
+			
+	return apiRouter;
 }

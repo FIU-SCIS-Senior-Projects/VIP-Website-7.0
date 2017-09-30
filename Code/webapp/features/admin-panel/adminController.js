@@ -350,7 +350,7 @@
 
         }
         //Filters users based on parameters
-        function filterUsers(usertype, userrank, unconfirmed, gmaillogin, mentor, multipleprojects, selectedusertype, selecteduserrank, SelectedProject, userproject) {
+        function filterUsers(usertype, userrank, unconfirmed, gmaillogin, mentor, multipleprojects, selectedusertype, selecteduserrank, SelectedProject, userproject, c_term, chosenterm) {
             vm.filteredusers = vm.allusers;
             // n^2
             if (SelectedProject && userproject) {
@@ -388,18 +388,6 @@
                 vm.tabledata = eval(vm.tabledata);
             }
             if (userrank && selecteduserrank) {
-                userrank = selecteduserrank;
-                var tempArray = [];
-                vm.filteredusers.forEach(function (obj) {
-                    if (obj.userRank == userrank) {
-                        tempArray.push(obj);
-                    }
-                });
-                vm.filteredusers = tempArray;
-                vm.tabledata = JSON.stringify(vm.filteredusers);
-                vm.tabledata = eval(vm.tabledata);
-            }
-			if (userrank && selecteduserrank) {
                 userrank = selecteduserrank;
                 var tempArray = [];
                 vm.filteredusers.forEach(function (obj) {

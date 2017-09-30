@@ -132,7 +132,7 @@
 
                     <tbody>
 
-                    <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter: c_term? chosenterm:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 ))">
+                    <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter: c_term? chosenterm.name:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 ))">
                         <td>
                             <button class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
                                     ng-hide="user.userType == 'Pi/CoPi'">Impersonate

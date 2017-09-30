@@ -330,7 +330,7 @@
 
         vm.uncheck = function () {
 
-            for (var i = 1; i <= 16; i++) {
+            for (var i = 1; i <= 17; i++) {
                 $scope['query' + i] = '';
             }
             $scope.usertype = '';
@@ -343,6 +343,9 @@
             $scope.google = '';
             $scope.mentor = '';
             $scope.multipleproject = '';
+			// userstory #1178
+			$scope.c_term = '';
+			$scope.chosenterm = '';
 
 
         }
@@ -385,6 +388,43 @@
                 vm.tabledata = eval(vm.tabledata);
             }
             if (userrank && selecteduserrank) {
+                userrank = selecteduserrank;
+                var tempArray = [];
+                vm.filteredusers.forEach(function (obj) {
+                    if (obj.userRank == userrank) {
+                        tempArray.push(obj);
+                    }
+                });
+                vm.filteredusers = tempArray;
+                vm.tabledata = JSON.stringify(vm.filteredusers);
+                vm.tabledata = eval(vm.tabledata);
+            }
+			if (userrank && selecteduserrank) {
+                userrank = selecteduserrank;
+                var tempArray = [];
+                vm.filteredusers.forEach(function (obj) {
+                    if (obj.userRank == userrank) {
+                        tempArray.push(obj);
+                    }
+                });
+                vm.filteredusers = tempArray;
+                vm.tabledata = JSON.stringify(vm.filteredusers);
+                vm.tabledata = eval(vm.tabledata);
+            }
+			// # userstory 1178
+			if (c_term && chosenterm) {
+                c_term = chosenterm;
+                var tempArray = [];
+                vm.filteredusers.forEach(function (obj) {
+                    if (obj.semester == c_term) {
+                        tempArray.push(obj);
+                    }
+                });
+                vm.filteredusers = tempArray;
+                vm.tabledata = JSON.stringify(vm.filteredusers);
+                vm.tabledata = eval(vm.tabledata);
+            }
+			if (userrank && selecteduserrank) {
                 userrank = selecteduserrank;
                 var tempArray = [];
                 vm.filteredusers.forEach(function (obj) {

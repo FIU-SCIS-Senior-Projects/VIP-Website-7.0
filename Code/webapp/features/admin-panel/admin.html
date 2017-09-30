@@ -49,30 +49,35 @@
                 <table class="table table-striped table-bordered">
                     <thead style="background-color:#F2F3F4;">
                     <tr>
-                        <td class="col-md-4">
+                        <td class="col-md-3">
                             <input type="checkbox" ng-model="usertype">UserType:
                             <select class="form-control" id="susertype" ng-model="selectedusertype"
                                     ng-options="typerank as typerank.name for typerank in vm.typeranks"
                                     value="{{vm.getRank(selectedusertype)}}"></select>
                         </td>
-                        <td class="col-md-4">
+                        <td class="col-md-3">
                             <input type="checkbox" ng-model="userrank">UserRank:
                             <select class="form-control" ng-model="selecteduserrank"
                                     ng-options="rank for rank in vm.filteredrank"></select></input>
                         </td>
-                        <td class="col-md-4">
+                        <td class="col-md-3">
                             <input type="checkbox" ng-model="userproject">Project:
                             <select class="form-control" ng-model="selecteduserproject"
                                     ng-options="projects as projects.title for projects in vm.projects"
                                     value="{{vm.getStudents(SelectedProject)}}"></select>
+                        </td>
+						<td class="col-md-3">
+                            <input type="checkbox" ng-model="c_term">Term:
+                            <select class="form-control" ng-model="chosenterm"
+                                    ng-options="terms as terms.name for terms in vm.terms"></select>
                         </td>
                     </tr>
                     <br/>
                     <tr>
                         <td class="col-md-3"><input type="checkbox" ng-model="piApproval">Unconfirmed Email</input></td>
                         <td class="col-md-3"><input type="checkbox" ng-model="google">Gmail Login</input></td>
-                        <td class="col-md-3"><input type="checkbox" ng-model="mentor">Mentor</input>
-                            <input type="checkbox" ng-model="multipleproject">Multiple Projects</input> </td>
+                        <td class="col-md-3"><input type="checkbox" ng-model="mentor">Mentor</input></td>
+                        <td class="col-md-3"><input type="checkbox" ng-model="multipleproject">Multiple Projects</input></td>
                     </tr>
                     </tbody>
                 </table>
@@ -100,6 +105,7 @@
                         <th>Proj App Date</th>
                         <th>User Reg Date</th>
                         <th>First Login Date</th>
+						<th>Semester</th>
                     </tr>
 
                     <tr id="headerInputs">
@@ -120,12 +126,13 @@
                         <th><input type="text" class="form-control" ng-model="query14"/></th>
                         <th><input type="text" class="form-control" ng-model="query15"/></th>
                         <th><input type="text" class="form-control" ng-model="query16"/></th>
+						<th><input type="text" class="form-control" ng-model="query17"/></th>
                     </tr>
                     </thead>
 
                     <tbody>
 
-                    <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter:query14 | filter:query15 | filter:query16 ))">
+                    <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter: c_term? chosenterm:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 ))">
                         <td>
                             <button class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
                                     ng-hide="user.userType == 'Pi/CoPi'">Impersonate
@@ -147,6 +154,7 @@
                         <td>{{user.appliedDate}}</td>
                         <td>{{user.RegDate}}</td>
                         <td>{{user.firstlogin_date}}</td>
+						<td>{{user.semester}}</td>
                     </tr>
                     </tbody>
                 </table>

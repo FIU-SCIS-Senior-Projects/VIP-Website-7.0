@@ -18,8 +18,9 @@
                 return data.data;
             });
         };
+		// Changed Term API
         profileFactory.loadTerms = function () {
-            return $http.get('/api/terms/').then(function (data) {
+            return $http.get('/api/terms/findall').then(function (data) {
                 return data.data;
             });
         };

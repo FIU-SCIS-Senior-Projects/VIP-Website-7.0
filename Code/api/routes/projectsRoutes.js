@@ -109,6 +109,20 @@ module.exports = function (app, express) {
                     return res.json(projects);
                 });
             });
+			
+	//route - get every project
+    apiRouter.route('/projects/findall')
+		.get(
+            authProvider.authorizeAll,
+            function (req, res) {
+                Project.find({}, function (err, projects) {
+                    if (err) {
+                        console.log(err);
+                        return res.send('error');
+                    }
+                    return res.json(projects);
+                });
+            });
 	
 	//route to find and change projects from terms that are not currently active
     apiRouter.route('/projects/term/:term')

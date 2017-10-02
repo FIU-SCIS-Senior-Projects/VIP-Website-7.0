@@ -9,6 +9,11 @@
 <!-- User Story #1175 -->
 <form role="form" class="project_proposal"  ng-submit="save()" >
     <div class="form-group">
+      <label>Previous Projects</label>
+      <button ng-click="populatePrevious()">test button</button>
+      <select ng-model="project.previousProj" ng-change="populatePrevious()" ng-options="project._id as project.title for project in project.previous" class="form-control" value="previousProject" required> <option></option>
+      </select>
+
     <!-- User Story #1175 -->
     <label>*Team Title</label>
     <input type="text" class="form-control" placeholder="" ng-model="project.title" required/>
@@ -17,12 +22,12 @@
 <div class="form-group">
     <!-- User Story #1175 -->
     <label>*Semester:</label>
-	
+
     <select ng-model="project.semester" ng-options="semester for semester in project.semesters" class="form-control" value="selectedTerm" required> <option></option>
     </select>
-	
+
 </div>
-    
+
 
     <div class="form-group" hidden>
     <label>Team Image:</label>
@@ -52,7 +57,7 @@
     <!-- User Story #1175 -->
     <label>*Team Description:</label>
     <!-- <div text-angular ng-model="project.description"></div> -->
-    <!--<textarea ng-model="project.description" name="" class="form-control" rows="10">    
+    <!--<textarea ng-model="project.description" name="" class="form-control" rows="10">
     </textarea>-->
     <trix-editor angular-trix  ng-model="project.description" name="" rows="10" required> </trix-editor>
     </div>
@@ -108,7 +113,7 @@
     <label>Link to Previous Semester's Project</label>
     <input type="text" ng-model="project.archive_url" class="form-control" />
     </div>
-	
+
     <div class="form-group">
     <label>Minimum number of students:</label>
     <input type="number" min="0" class="form-control" placeholder="" ng-model="project.firstSemester"/>
@@ -131,16 +136,16 @@
 
     <h4><strong>* : required fields</strong></h4>
     <br>
-     <!-- User Story #1191 -->   
+     <!-- User Story #1191 -->
     <p><h5>Hover and click to select the options</h5></p>
 <div ng-repeat = 'college in colleges' class="dropdown" >
 <div>
-<button ui-sref="" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="display: inline-block;">
+<button ui-sref="dropdown" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="display: inline-block;">
 {{college['name']}}</button>
 </div>
 <ul class="dropdown-menu" style="background-color:white;list-syle-type:none;">
 <li ng-repeat = '(key2, value2) in college["schools"]' class="dropdown-submenu" style="background-color:white;">
-&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" ng-click="toggleCheckbox(value2)">{{value2}}  
+&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" ng-click="toggleCheckbox(value2)">{{value2}}
 </li>
 </ul>
 </div>

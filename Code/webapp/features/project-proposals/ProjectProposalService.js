@@ -19,6 +19,11 @@
                     return data.data;
                 });
             };
+            projectFactory.getPreviousProjects = function (user) {
+                return $http.get('/api/previous/' + user).then(function (data) {
+                    return data.data;
+                });
+            };
             //Joe's User Story
             projectFactory.editTerm = function (termData, id) {
                 return $http.put('/api/terms/' + id, termData);

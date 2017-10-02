@@ -364,6 +364,20 @@ module.exports = function (app, express) {
                 });
             });
         });
+   apiRouter.route('/previous/:user')
+      .get(
+         authProvider.authorizeAll,
+         function (req, res) {
+            console.log(req.params.user)
+             Project.find({owner_email: req.params.user}, function (err, projects) {
+                 if (err) {
+                     console.log(err);
+                     return res.send('error');
+                 }
+                 return res.json(projects);
+             });
+         }
+      )
 
     return apiRouter;
 };

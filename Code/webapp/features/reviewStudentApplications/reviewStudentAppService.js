@@ -18,6 +18,15 @@
                 return data.data;
             });
         };
+		
+		// Get projects from every semester
+		profileFactory.loadAllProjects = function () {
+            return $http.get('/api/projects/findall').then(function (data) {
+                console.log(data.data);
+                return data.data;
+            });
+        };
+		
 		// Changed Term API
         profileFactory.loadTerms = function () {
             return $http.get('/api/terms/findall').then(function (data) {

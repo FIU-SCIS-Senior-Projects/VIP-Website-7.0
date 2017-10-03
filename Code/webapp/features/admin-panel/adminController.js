@@ -792,6 +792,7 @@
             //Change status
             //Update DB
             var project = vm.cproject;
+            var email;
 
             //console.log(project.title);
             if (project) {
@@ -805,6 +806,27 @@
                     //console.log(selectedStatus);
                 }
                 project.status = selectedStatus;
+
+                // User Story #1301
+                if (project.status == 'Disabled') {
+                    //console.log('Inside Dale Code');
+                    for (i = 0; i < project.members.length; i++) {
+                        //console.log('Inside Dale Code For loop');
+                        email = project.members[i];
+                        //console.log(email);
+                        var email_msg =
+                        {
+                            recipient: email,
+                            text: "Your current project has been disabled. For more information, please contact a PI.",
+                            subject: "Project No Longer Available",
+                            recipient2: vm.adminSettings.current_email,
+                            text2: project.name + " has been successfully removed from project '" + (formerProject ? formerProject : 'unknown') + "'.",
+                            subject2: "Project Deactivated"
+                        };
+                        User.nodeEmail(email_msg);
+                    }
+                }
+
                 ProjectService.editProject(project, project._id);
                 //console.log("In the Projects!");
             }

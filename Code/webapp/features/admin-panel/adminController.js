@@ -2,12 +2,42 @@
     'use strict';
 
     angular
-        .module('admin')
-        .controller('adminController', adminCtrl);
-
+        .module('admin',[])
+        .controller('adminController', adminCtrl)
     function adminCtrl($location, $window, $state, $scope, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService) {
         var vm = this;
-
+        $scope.showUserMaint = false
+        $scope.showSemesterMaint = false
+        $scope.showProjectMaint = false
+        $scope.showAdminPage = true
+        $scope.routeUserMaint = routeUserMaint
+        $scope.routeProjectMaintenance = routeProjectMaintenance
+        $scope.routeSemesterMaintenance = routeSemesterMaintenance
+        $scope.routeAdminMaint = routeAdminMaint
+        function routeAdminMaint(){
+           $scope.showUserMaint = false;
+           $scope.showSemesterMaint = false;
+           $scope.showProjectMaint = false;
+           $scope.showAdminPage = true;
+        }
+        function routeUserMaint(){
+           $scope.showUserMaint = true;
+           $scope.showSemesterMaint = false;
+           $scope.showProjectMaint = false;
+           $scope.showAdminPage = false;
+        }
+        function routeProjectMaintenance(){
+           $scope.showUserMaint = false;
+           $scope.showSemesterMaint = false;
+           $scope.showProjectMaint = true;
+           $scope.showAdminPage = false;
+        }
+        function routeSemesterMaintenance(){
+           $scope.showUserMaint = false;
+           $scope.showSemesterMaint = true;
+           $scope.showProjectMaint = false;
+           $scope.showAdminPage = false;
+        }
         ProfileService.loadProfile().then(function (data) {
             if (data) {
                 $scope.done = true;

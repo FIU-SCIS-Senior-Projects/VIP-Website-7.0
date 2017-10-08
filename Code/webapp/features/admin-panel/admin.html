@@ -58,34 +58,40 @@
                     <thead style="background-color:#F2F3F4;">
                     <tr>
                         <td class="col-md-3">
-                            <input type="checkbox" ng-model="usertype">UserType:
+                            UserType:
                             <select class="form-control" id="susertype" ng-model="selectedusertype"
                                     ng-options="typerank as typerank.name for typerank in vm.typeranks"
-                                    value="{{vm.getRank(selectedusertype)}}"></select>
+                                    value="{{vm.getRank(selectedusertype)}}">
+								<option value=""></option>
+							</select>
                         </td>
                         <td class="col-md-3">
-                            <input type="checkbox" ng-model="userrank">UserRank:
+                            UserRank:
                             <select class="form-control" ng-model="selecteduserrank"
-                                    ng-options="rank for rank in vm.filteredrank"></select></input>
+                                    ng-options="rank for rank in vm.filteredrank">
+								<option value=""></option>
+							</select>
                         </td>
                         <td class="col-md-3">
-                            <input type="checkbox" ng-model="userproject">Project:
+                            Project:
                             <select class="form-control" ng-model="selecteduserproject"
-                                    ng-options="projects as projects.title for projects in vm.projects"
-                                    value="{{vm.getStudents(SelectedProject)}}"></select>
+                                    ng-options="projects as projects.title for projects in vm.allprojects"
+                                    value="{{vm.getStudents(SelectedProject)}}">
+								<option value=""></option>
+							</select>
                         </td>
 						<td class="col-md-3">
-                            <input type="checkbox" ng-model="c_term">Semester:
-                            <select class="form-control" ng-model="chosenterm"
-                                    ng-options="terms as terms.name for terms in vm.terms"></select>
+                            Semester:
+                            <select class="form-control" ng-model="selectedTerm"
+                                    ng-options="terms as terms.name for terms in vm.terms">
+								<option value=""></option>
+							</select>
                         </td>
                     </tr>
                     <br/>
                     <tr>
-                        <td class="col-md-3" ng-show="simple"><input type="checkbox" ng-model="piApproval">Unconfirmed Email</input></td>
-                        <td class="col-md-3" ng-show="simple"><input type="checkbox" ng-model="google">Gmail Login</input></td>
-                        <td class="col-md-3" ng-show="simple"><input type="checkbox" ng-model="mentor">Mentor</input></td>
-                        <td class="col-md-3" ng-show="simple"><input type="checkbox" ng-model="multipleproject">Multiple Projects</input></td>
+                        <td class="col-md-3" ng-show="simple"><input type="checkbox" ng-model="selectedPiApproval">Unconfirmed Users</input></td>
+                        <td class="col-md-3" ng-show="simple"><input type="checkbox" ng-model="selectedGoogle">Gmail Login</input></td>
                     </tr>
                     </tbody>
                 </table>
@@ -152,7 +158,7 @@
                         </td>
 					</tr>
 
-                    <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter: c_term? chosenterm.name:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 ))">
+                    <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: selectedusertype? {userType: selectedusertype.name}:'' | filter: selecteduserrank? {rank: selecteduserrank}:'' | filter: selecteduserproject? {project: selecteduserproject.title}:'' | filter: selectedGoogle? {email: 'fiu.edu' || 'gmail.com'}:'' | filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 ))">
                         <td>
                             <button class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
                                     ng-hide="user.userType == 'Pi/CoPi'">Impersonate
@@ -220,7 +226,9 @@
 							<div class="col-sm-3">
 								<label>Gender</label>
 								<select class="form-control" ng-model="addUserGender" id="ddGenderA"
-									ng-options="gender.type for gender in vm.genderOptions"></select>
+										ng-options="gender.type for gender in vm.genderOptions">
+									<option value=""></option>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">
@@ -235,7 +243,9 @@
 							<div class="col-sm-4">
 								<label>College</label>
 								<select class="form-control" ng-model="addUserCollege" id="ddCollegeA"
-                                    ng-options="college as college.name for college in vm.colleges"></select>
+										ng-options="college as college.name for college in vm.colleges">
+									<option value=""></option>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">
@@ -243,17 +253,22 @@
 								<label>User Type</label>
 								<select class="form-control" ng-model="addUserType" id="ddUserTypeA"
                                     ng-options="typerank as typerank.name for typerank in vm.typeranks"
-									ng-change="vm.getAddRanks(addUserType)"></select>
+									ng-change="vm.getAddRanks(addUserType)">
+									<option value=""></option>
+								</select>
 							</div>
 							<div class="col-sm-4">
 								<label>User Rank</label>
 								<select class="form-control" ng-model="addUserRank" id="ddRankA"
-                                    ng-options="rank for rank in vm.addRanks"></select>
+                                    ng-options="rank for rank in vm.addRanks">
+									<option value=""></option>
+								</select>
 							</div>
 							<div class="col-sm-4">
 								<label>PI Approval</label>
 								<select class="form-control" ng-model="addUserPIApproval" id="ddPIApprovalA"
-                                    ng-options="approval.type for approval in vm.booleanOptions"></select>
+										ng-options="approval.type for approval in vm.booleanOptions">
+									<option value=""></option>
 								</select>
 							</div>
 						</div>
@@ -261,12 +276,16 @@
 							<div class="col-sm-8">
 								<label>Project</label>
 								<select class="form-control" ng-model="addUserProject" id="ddProjectA"
-                                    ng-options="projects as projects.title for projects in vm.projects"></select>
+										ng-options="projects as projects.title for projects in vm.allprojects">
+									<option value=""></option>
+								</select>
 							</div>
 							<div class="col-sm-4">
 								<label>Semester</label>
 								<select class="form-control" ng-model="addUserTerm" id="ddTermA"
-                                    ng-options="terms as terms.name for terms in vm.terms"></select>
+										ng-options="terms as terms.name for terms in vm.terms">
+									<option value=""></option>
+								</select>
 							</div>
 						</div>
 					</form>
@@ -317,7 +336,9 @@
 							<div class="col-sm-3">
 								<label>Gender</label>
 								<select class="form-control" ng-model="editUserGender" id="ddGender"
-									ng-options="gender.type for gender in vm.genderOptions"></select>
+										ng-options="gender.type for gender in vm.genderOptions">
+									<option value=""></option>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">
@@ -328,7 +349,9 @@
 							<div class="col-sm-6">
 								<label>College</label>
 								<select class="form-control" ng-model="editUserCollege" id="ddCollege"
-                                    ng-options="college as college.name for college in vm.colleges"></select>
+										ng-options="college as college.name for college in vm.colleges">
+									<option value=""></option>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">
@@ -336,17 +359,22 @@
 								<label>User Type</label>
 								<select class="form-control" ng-model="editUserType" id="ddUserType"
                                     ng-options="typerank as typerank.name for typerank in vm.typeranks"
-									ng-change="vm.getEditRanks(editUserType)"></select>
+									ng-change="vm.getEditRanks(editUserType)">
+									<option value=""></option>
+								</select>
 							</div>
 							<div class="col-sm-4">
 								<label>User Rank</label>
 								<select class="form-control" ng-model="editUserRank" id="ddRank"
-                                    ng-options="rank for rank in vm.editRanks"></select>
+										ng-options="rank for rank in vm.editRanks">
+									<option value=""></option>
+								</select>
 							</div>
 							<div class="col-sm-4">
 								<label>PI Approval</label>
 								<select class="form-control" ng-model="editUserPIApproval" id="ddPIApproval"
-                                    ng-options="approval.type for approval in vm.booleanOptions"></select>
+										ng-options="approval.type for approval in vm.booleanOptions">
+									<option value=""></option>
 								</select>
 							</div>
 						</div>
@@ -354,12 +382,16 @@
 							<div class="col-sm-8">
 								<label>Project</label>
 								<select class="form-control" ng-model="editUserProject" id="ddProject"
-                                    ng-options="projects as projects.title for projects in vm.projects"></select>
+										ng-options="projects as projects.title for projects in vm.allprojects">
+									<option value=""></option>
+								</select>
 							</div>
 							<div class="col-sm-4">
 								<label>Semester</label>
 								<select class="form-control" ng-model="editUserTerm" id="ddTerm"
-                                    ng-options="terms as terms.name for terms in vm.terms"></select>
+										ng-options="terms as terms.name for terms in vm.terms">
+									<option value=""></option>
+								</select>
 							</div>
 						</div>
 					</form>
@@ -445,9 +477,11 @@
                     <thead style="background-color:#F2F3F4;">
                     <tr>
                         <td class="col-md-3">
-                            <input type="checkbox" ng-model="p_term">Semester:
-                            <select class="form-control" id="pterm" ng-model="chosenpterm"
-                                    ng-options="terms as terms.name for terms in vm.terms"></select>
+                            Semester:
+                            <select class="form-control" id="pterm" ng-model="selectedPTerm"
+                                    ng-options="terms as terms.name for terms in vm.terms">
+								<option value=""></option>
+							</select>
                         </td>
                     </tr>
                     <br/>
@@ -488,7 +522,7 @@
 
                     <tbody>
 
-                    <tr ng-repeat="project in (filteredPItems = ( vm.tabledata_p | filter: p_term? {semester: chosenpterm.name}:''| filter:queryp1| filter:queryp2| filter:queryp3| filter:queryp4| filter:queryp5| filter:queryp6| filter:queryp7| filter:queryp8| filter:queryp9| filter:queryp10 ))">
+                    <tr ng-repeat="project in (filteredPItems = ( vm.tabledata_p | filter: selectedPTerm? {semester: selectedPTerm.name}:''| filter:queryp1| filter:queryp2| filter:queryp3| filter:queryp4| filter:queryp5| filter:queryp6| filter:queryp7| filter:queryp8| filter:queryp9| filter:queryp10 ))">
                         <td>{{project.title}}</td>
                         <td>{{project.owner_name}}</td>
                         <td>{{project.owner_email}}</td>

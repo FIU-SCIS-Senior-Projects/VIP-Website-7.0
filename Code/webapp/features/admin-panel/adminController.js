@@ -281,7 +281,7 @@
 			else
 				document.getElementById("ddPIApproval").selectedIndex = -1;
 			if (indexes.project != -1)
-				$scope.editUserProject = vm.projects[indexes.project];
+				$scope.editUserProject = vm.allprojects[indexes.project];
 			else
 				document.getElementById("ddProject").selectedIndex = -1;
 			if (indexes.term != -1)
@@ -334,8 +334,8 @@
 		
 		function findIndexProject(project) {
 			if (project)
-				for (var i=0; i<vm.projects.length; i++)
-                    if (vm.projects[i].title == project)
+				for (var i=0; i<vm.allprojects.length; i++)
+                    if (vm.allprojects[i].title == project)
                         return i;
 			return -1;
 		};
@@ -372,13 +372,13 @@
 					newUser["rank"] = $scope.addUserRank;
 				if ($scope.addUserPID) 
 					newUser["pantherID"] = $scope.addUserPID;
-				if ($scope.addUserGender) 
+				if ($scope.addUserGender)
 					newUser["gender"] = $scope.addUserGender.type;
 				if ($scope.addUserProject) 
 					newUser["project"] = $scope.addUserProject.title;
 				if ($scope.addUserPIApproval) 
 					newUser["piApproval"] = $scope.addUserPIApproval.type;
-				if ($scope.addUserCollege) 
+				if ($scope.addUserCollege)
 					newUser["college"] = $scope.addUserCollege.name;
 				if ($scope.addUserType) 
 					newUser["userType"] = $scope.addUserType.name;
@@ -433,7 +433,7 @@
 					vm.editingUser.pantherID = $scope.editUserPID;
 				else
 					vm.editingUser.pantherID = null;		
-				if ($scope.editUserGender) 
+				if ($scope.editUserGender)
 					vm.editingUser.gender = $scope.editUserGender.type;
 				else
 					vm.editingUser.gender = null;
@@ -827,19 +827,14 @@
             for (var i = 1; i <= 17; i++) {
                 $scope['query' + i] = '';
             }
-            $scope.usertype = '';
-            $scope.userrank = '';
-            $scope.userproject = '';
             $scope.selectedusertype = '';
             $scope.selecteduserrank = '';
+			$scope.selecteduserproject = '';
             $scope.SelectedProject = '';
-            $scope.piApproval = '';
-            $scope.google = '';
-            $scope.mentor = '';
-            $scope.multipleproject = '';
+            $scope.selectedPiApproval = '';
+            $scope.selectedGoogle = '';
 			// userstory #1176
-			$scope.c_term = '';
-			$scope.chosenterm = '';
+			$scope.selectedTerm = '';
 
         }
 		
@@ -849,16 +844,15 @@
 			for (var i = 1; i <= 10; i++) {
                 $scope['queryp' + i] = '';
             }
-			$scope.p_term = '';
-			$scope.chosenpterm = '';
+			$scope.selectedPTerm = '';
         }
 		
 		
         //Filters users based on parameters
-        function filterUsers(usertype, userrank, unconfirmed, gmaillogin, mentor, multipleprojects, selectedusertype, selecteduserrank, SelectedProject, userproject, c_term, chosenterm) {
+        function filterUsers(selectedPiApproval, selectedGoogle, selectedusertype, selecteduserrank, SelectedProject, selectedTerm) {
             vm.filteredusers = vm.allusers;
             // n^2
-            if (SelectedProject && userproject) {
+            if (SelectedProject) {
                 //alert("not null SelectedProject");
                 var studentsArray = [];
 
@@ -880,11 +874,10 @@
                 vm.tabledata = JSON.stringify(vm.filteredusers);
                 vm.tabledata = eval(vm.tabledata);
             }
-            if (usertype && selectedusertype) {
-                usertype = selectedusertype.name;
+            if (selectedusertype) {
                 var tempArray = [];
                 vm.filteredusers.forEach(function (obj) {
-                    if (obj.userType == usertype) {
+                    if (obj.userType == selectedusertype.name) {
                         tempArray.push(obj);
                     }
                 });
@@ -892,11 +885,10 @@
                 vm.tabledata = JSON.stringify(vm.filteredusers);
                 vm.tabledata = eval(vm.tabledata);
             }
-            if (userrank && selecteduserrank) {
-                userrank = selecteduserrank;
+            if (selecteduserrank) {
                 var tempArray = [];
                 vm.filteredusers.forEach(function (obj) {
-                    if (obj.userRank == userrank) {
+                    if (obj.userRank == selecteduserrank) {
                         tempArray.push(obj);
                     }
                 });
@@ -905,11 +897,10 @@
                 vm.tabledata = eval(vm.tabledata);
             }
 			// # userstory 1176
-			if (c_term && chosenterm) {
-                c_term = chosenterm;
+			if (selectedTerm) {
                 var tempArray = [];
                 vm.filteredusers.forEach(function (obj) {
-                    if (obj.semester == c_term) {
+                    if (obj.semester == selectedTerm.name) {
                         tempArray.push(obj);
                     }
                 });
@@ -917,7 +908,7 @@
                 vm.tabledata = JSON.stringify(vm.filteredusers);
                 vm.tabledata = eval(vm.tabledata);
             }
-            if (unconfirmed) {
+            if (selectedPiApproval) {
                 var tempArray = [];
                 vm.filteredusers.forEach(function (obj) {
                     if (obj.piApproval == false) {
@@ -928,7 +919,7 @@
                 vm.tabledata = JSON.stringify(vm.filteredusers);
                 vm.tabledata = eval(vm.tabledata);
             }
-            if (gmaillogin) {
+            if (selectedGoogle) {
                 var tempArray = [];
                 vm.filteredusers.forEach(function (obj) {
                     if (obj.google) {
@@ -939,6 +930,7 @@
                 vm.tabledata = JSON.stringify(vm.filteredusers);
                 vm.tabledata = eval(vm.tabledata);
             }
+			/* -- Both of these are inefficient and not in use, no users have either of these properties set
             if (mentor) // O(n^3) Very slow.
             {
                 var tempArray = [];
@@ -1004,18 +996,17 @@
                 vm.tabledata = JSON.stringify(vm.filteredusers);
                 vm.tabledata = eval(vm.tabledata);
             }
-
+			*/
         }
 		
 		//Filters projects based on parameters
-        function filterProjects(p_term, chosenpterm) {
+        function filterProjects(selectedPTerm) {
 			// # userstory 1176
 			vm.filteredprojects = vm.allprojects;
-			if (p_term && chosenpterm) {
-                p_term = chosenpterm;
+			if (selectedPTerm) {
                 var tempArray = [];
                 vm.filteredprojects.forEach(function (obj) {
-                    if (obj.semester == p_term) {
+                    if (obj.semester == selectedPTerm.name) {
                         tempArray.push(obj);
                     }
                 });

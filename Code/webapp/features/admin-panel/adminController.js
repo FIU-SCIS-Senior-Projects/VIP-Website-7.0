@@ -5,7 +5,7 @@
         .module('admin')
         .controller('adminController', adminCtrl);
 
-    function adminCtrl($location, $window, $state, $scope, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService) {
+    function adminCtrl($location, $window, $state, $scope, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService, DateTimeService) {
         var vm = this;
 
         ProfileService.loadProfile().then(function (data) {
@@ -45,6 +45,11 @@
 		vm.allprojects; //All projects
 		vm.filteredprojects;
 		vm.tabledata_p = null;
+		// User story #1300
+		vm.editingUser;
+		// Used for filtering of ranks in add and editing user modal
+		vm.addRanks = [];
+		vm.editRanks = [];
 
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
@@ -99,6 +104,444 @@
         vm.changeEmailSignature = function() {
             vm.savesetting();
         };
+		
+		vm.colleges = [
+                {
+                    name: 'Architecture & The Arts',
+                    schools: [
+                        'Architecture',
+                        'Interior Architecture',
+                        'Landscape Architecture and Environmental Urban Design',
+                        'Art and Art History',
+                        'Communication Arts',
+                        'School of Music',
+                        'Theatre']
+                },
+                {
+                    name: 'Arts and Sciences & Education',
+                    schools: [
+                        'Biological Sciences',
+                        'Chemistry and Biochemistry',
+                        'Earth and Environment',
+                        'English',
+                        'Mathematics and Statistics',
+                        'Philosophy',
+                        'Physics',
+                        'Psychology',
+                        'Teaching and Learning',
+                        'Leadership and Professional Studies',
+                        'School of Education',
+                        'School of Enviroment, Arts & Society',
+                        'School of Integrated Science & Humanity'
+                    ]
+                },
+                {
+                    name: 'Business',
+                    schools: [
+                        'Decision Sciences and Information Systems',
+                        'Alvah H. Chapman Jr. Graduate School of Business',
+                        'R. Kirk Landon Undergraduate School of Business',
+                        'Finance',
+                        'Management and International Business',
+                        'Marketing',
+                        'School of Accounting',
+                        'Real Estate'
+                    ]
+                },
+                {
+                    name: 'Chaplin School of Hospitality and Tourism Management',
+                    schools: [
+                        'Hospitality and Tourism Management'
+                    ]
+                },
+                {
+                    name: 'Engineering & Computing',
+                    schools: [
+                        'School of Computing and Information Sciences',
+                        'OHL School of Construction',
+                        'Department of Biomedical Engineering',
+                        'Department of Civil and Environment Engineering',
+                        'Department of Electrical and Computer Engineering',
+                        'Department of Mechanical and Materials Engineering'
+                    ]
+                },
+                {
+                    name: 'Herbert Wertheim College of Medicine',
+                    schools: [
+                        'Cellular Biology and Pharmacology',
+                        'Human and Molecular Genetics',
+                        'Immunology',
+                        'Medical and Population Health Sciences Research'
+                    ]
+                },
+                {
+                    name: 'Honors College',
+                    schools: []
+                },
+                {
+                    name: 'Journalism and Mass Communication',
+                    schools: [
+                        'Advertising and Public Relations',
+                        'Journalism Broadcasting and Digital Media'
+                    ]
+                },
+                {
+                    name: 'Law',
+                    schools: [
+                        'College of Law'
+                    ]
+                },
+                {
+                    name: 'Nicole Wertheim College of Nursing & Health Sciences',
+                    schools: [
+                        'Biostatistics',
+                        'Dietetics and Nutrition',
+                        'Environmental and Occupational Health',
+                        'Epidemiology',
+                        'Health Policy and Management',
+                        'Health Promotion and Disease Prevention'
+                    ]
+                },
+                {
+                    name: 'Robert Stempel College of Public Health & Social Work',
+                    schools: [
+                        'School of Social Work'
+                    ]
+                },
+                {
+                    name: 'Steven J. Green School of International and Public Affairs',
+                    schools: [
+                        'Criminal Justice',
+                        'Economics',
+                        'Global and Sociocultural Studies',
+                        'History',
+                        'Modern Languages',
+                        'Public Administration',
+                        'Religious Studies'
+                    ]
+                }
+            ];
+		
+		vm.genderOptions = [{type: 'Male'}, {type: 'Female'}];		
+		vm.booleanOptions = [{type: true}, {type: false}];
+		
+		// user story #1300
+		vm.editUser = function(user) {
+			vm.editingUser = user;
+			
+			// Set initial values of input to be current user values
+			$scope.editUserFirstName = vm.editingUser.firstName;
+			$scope.editUserLastName = vm.editingUser.lastName;
+			$scope.editUserEmail = vm.editingUser.email;
+			$scope.editUserPID = vm.editingUser.pantherID;
+			
+			// Search for indexes for references to user's values (if they exist)
+			var indexes = {
+				gender: findIndexGender(vm.editingUser.gender),
+				college: findIndexCollege(vm.editingUser.college),
+				userType: findIndexUserType(vm.editingUser.userType),
+				approval: findIndexApproval(vm.editingUser.piApproval),
+				project: findIndexProject(vm.editingUser.project),
+				term: findIndexTerm(vm.editingUser.semester)
+			};	
+			var indexRank;
+			
+			console.log(vm.editingUser.firstName, vm.editingUser.lastName, indexes);
+			
+			// Assign to drop down box if index was found (the value existed)
+			// Otherwise reset selected index of drop down box
+			
+			if (indexes.gender != -1)
+				$scope.editUserGender = vm.genderOptions[indexes.gender];
+			else
+				document.getElementById("ddGender").selectedIndex = -1;
+			if (indexes.college != -1)
+				$scope.editUserCollege = vm.colleges[indexes.college];
+			else
+				document.getElementById("ddCollege").selectedIndex = -1;
+			
+			if (indexes.userType != -1) {
+				$scope.editUserType = vm.typeranks[indexes.userType];
+				// Modify and search for rank
+				vm.getEditRanks(vm.typeranks[indexes.userType]);
+				indexRank = findIndexEditRank(vm.editingUser.rank);
+				console.log("index rank", indexRank);
+			}
+			else {
+				document.getElementById("ddUserType").selectedIndex = -1;
+				indexRank = -1;
+			}
+			
+			if (indexRank != -1) 
+				$scope.editUserRank = vm.typeranks[indexes.userType].ranks[indexRank];
+			else
+				document.getElementById("ddRank").selectedIndex = -1;
+			if (indexes.approval != -1)
+				$scope.editUserPIApproval = vm.booleanOptions[indexes.approval];
+			else
+				document.getElementById("ddPIApproval").selectedIndex = -1;
+			if (indexes.project != -1)
+				$scope.editUserProject = vm.projects[indexes.project];
+			else
+				document.getElementById("ddProject").selectedIndex = -1;
+			if (indexes.term != -1)
+				$scope.editUserTerm = vm.terms[indexes.term];
+			else
+				document.getElementById("ddTerm").selectedIndex = -1;
+        };
+		
+		// List of functions to find object references that match the user value
+		function findIndexGender(gender) {
+			if (gender)
+				for (var i=0; i<vm.genderOptions.length; i++)
+                    if (vm.genderOptions[i].type == gender)
+                        return i;
+			return -1;
+		};
+		
+		function findIndexCollege(college) {
+			if (college)
+				for (var i=0; i<vm.colleges.length; i++)
+                    if (vm.colleges[i].name == college)
+                        return i;
+			return -1;
+		};
+		
+		function findIndexUserType(userType) {
+			if (userType)
+				for (var i=0; i<vm.typeranks.length; i++)
+                    if (vm.typeranks[i].name == userType)
+                        return i;
+			return -1;
+		};
+		
+		function findIndexEditRank(rank) {
+			if (rank)
+				for (var i=0; i<vm.editRanks.length; i++)
+                    if (vm.editRanks[i] == rank)
+                        return i;
+			return -1;
+		};
+		
+		function findIndexApproval(rank) {
+			if (rank == true)
+				return 0;
+			else if (rank == false)
+				return 1;
+			else
+				return -1;
+		};
+		
+		function findIndexProject(project) {
+			if (project)
+				for (var i=0; i<vm.projects.length; i++)
+                    if (vm.projects[i].title == project)
+                        return i;
+			return -1;
+		};
+		
+		function findIndexTerm(term) {
+			if (term)
+				for (var i=0; i<vm.terms.length; i++)
+                    if (vm.terms[i].name == term)
+                        return i;
+			return -1;
+		};
+		
+		vm.newUser; // Stores new user after its created
+		
+		// Add newly created user
+		vm.addUser = function() {	
+			vm.newUser = null;
+			// First check if required information is missing
+			if ($scope.addUserFirstName && $scope.addUserLastName && $scope.addUserEmail) {
+				// Create user object
+				var newUser = {
+					firstName: $scope.addUserFirstName,
+					lastName: $scope.addUserLastName,
+					email: $scope.addUserEmail,
+					RegDate: DateTimeService.getCurrentDateTimeAsString(),
+					adminCreated: true
+				};
+				
+				if ($scope.addUserPassword) {
+					newUser["password"] = addUserPassword;
+					newUser["passwordConf"] = addUserPassword;
+				}
+				if ($scope.addUserRank) 
+					newUser["rank"] = $scope.addUserRank;
+				if ($scope.addUserPID) 
+					newUser["pantherID"] = $scope.addUserPID;
+				if ($scope.addUserGender) 
+					newUser["gender"] = $scope.addUserGender.type;
+				if ($scope.addUserProject) 
+					newUser["project"] = $scope.addUserProject.title;
+				if ($scope.addUserPIApproval) 
+					newUser["piApproval"] = $scope.addUserPIApproval.type;
+				if ($scope.addUserCollege) 
+					newUser["college"] = $scope.addUserCollege.name;
+				if ($scope.addUserType) 
+					newUser["userType"] = $scope.addUserType.name;
+				if ($scope.addUserTerm) 
+					newUser["semester"] = $scope.addUserTerm.name;
+				
+				if (newUser.project) 
+					newUser["joined_project"] = true;
+				else
+					newUser["joined_project"] = false;
+				
+				console.log("Adding User", newUser);
+				
+				// Send POST request
+				User.create(newUser).then(function(data) {
+					if (data) {
+						if (data.data.success) {
+							document.getElementById('addUserMessage').innerHTML = 'Adding user was successful';
+							vm.newUser = data.data.object;
+							console.log('Added User', data.data, data.data.object);
+						}
+						else {
+							document.getElementById('addUserMessage').innerHTML = 'Error: HTTP request failed';
+							console.log(data);	
+						}
+					} else { // http error
+						document.getElementById('addUserMessage').innerHTML = 'Error: HTTP response not received';
+						console.log('Error: Adding user failed');	
+					}
+				});
+			}
+			else {
+				document.getElementById('addUserMessage').innerHTML = 'Error: Missing required information';
+				console.log("Error: Missing required information");	
+			}
+		};
+		
+		// Save changes to editing user
+		vm.saveChangesUser = function() {
+			// First check if required information is missing
+			if ($scope.editUserFirstName && $scope.editUserLastName && $scope.editUserEmail) {
+				// Update editingUser
+				vm.editingUser.firstName = $scope.editUserFirstName;
+				vm.editingUser.lastName = $scope.editUserLastName;
+				vm.editingUser.email = $scope.editUserEmail;
+
+				if ($scope.editUserRank) 
+					vm.editingUser.rank = $scope.editUserRank;
+				else
+					vm.editingUser.rank = null;
+				if ($scope.editUserPID) 
+					vm.editingUser.pantherID = $scope.editUserPID;
+				else
+					vm.editingUser.pantherID = null;		
+				if ($scope.editUserGender) 
+					vm.editingUser.gender = $scope.editUserGender.type;
+				else
+					vm.editingUser.gender = null;
+				if ($scope.editUserProject) 
+					vm.editingUser.project = $scope.editUserProject.title;
+				else
+					vm.editingUser.project = null;
+				if ($scope.editUserPIApproval) 
+					vm.editingUser.piApproval = $scope.editUserPIApproval.type;
+				else
+					vm.editingUser.piApproval = null;
+				if ($scope.editUserCollege) 
+					vm.editingUser.college = $scope.editUserCollege.name;
+				else
+					vm.editingUser.college = null;
+				if ($scope.editUserType) 
+					vm.editingUser.userType = $scope.editUserType.name;
+				else
+					vm.editingUser.userType = null;
+				if ($scope.editUserTerm) 
+					vm.editingUser.semester = $scope.editUserTerm.name;
+				else
+					vm.editingUser.semester = null;
+				
+				
+				if (vm.editingUser.project) 
+					vm.editingUser.joined_project = true;
+				else
+					vm.editingUser.joined_project = false;
+				
+				console.log("Editing User", vm.editingUser);
+				
+				// Send PUT request
+				User.update({user: vm.editingUser}).then(function(data) {
+					if (data) {
+						if (data.data.success) {
+							document.getElementById('editUserMessage').innerHTML = 'Editing user was successful';
+							console.log('Edited User');
+						}
+						else {
+							document.getElementById('editUserMessage').innerHTML = 'Error: HTTP request failed';
+							console.log(data);	
+						}
+					} else { // http error
+						document.getElementById('editUserMessage').innerHTML = 'Error: HTTP response not received';
+						console.log('Error: Adding user failed');	
+					}
+				});
+			}
+			else {
+				document.getElementById('editUserMessage').innerHTML = 'Error: Missing required information';
+				console.log("Error: Missing required information");	
+			}
+		};
+		
+		vm.deletingUser;
+		
+		vm.selectDeleteUser = function(user) {
+			vm.deletingUser = user;
+		};
+		
+		// Delete selected user
+		vm.deleteUser = function() {
+			User.delete(vm.deletingUser._id).then(function(data) {
+				if (data) {
+					if (data.data.message == 'successfully deleted!') {
+						document.getElementById('deleteUserMessage').innerHTML = 'Deleting user was successful';
+						console.log('Deleted User');
+					}
+					else {
+						document.getElementById('deleteUserMessage').innerHTML = 'Error: HTTP request failed';
+						vm.deletingUser = null;
+						console.log(data);	
+					}
+				} else { // http error
+					document.getElementById('deleteUserMessage').innerHTML = 'Error: HTTP response not received';
+					vm.deletingUser = null;
+					console.log('Error: Adding user failed');	
+				}
+            });
+		};
+		
+		// Add/remove the user from vm.tabledata after user has been added/deleted
+		
+		vm.updateTableAdd = function() {
+			if (vm.newUser) {
+				vm.filteredusers.push(vm.newUser);
+				vm.tabledata = JSON.stringify(vm.filteredusers);
+				vm.tabledata = eval(vm.tabledata);
+			}
+		};
+		
+		vm.updateTableDelete = function() {
+			if (vm.deletingUser) {
+				var ind = -1;
+				for (var i=0; i<vm.filteredusers.length; i++)
+					if (vm.filteredusers[i]._id == vm.deletingUser._id)
+						ind = i;
+
+				if(ind != -1) {
+					vm.filteredusers.splice(ind, 1);
+				}
+				vm.tabledata = JSON.stringify(vm.filteredusers);
+				vm.tabledata = eval(vm.tabledata);
+			}
+			vm.deletingUser = null;
+		};
+		
 
         vm.impersonate = function(user) {
             adminService.impersonate(user).then(function(data) {
@@ -173,6 +616,40 @@
                 });
             }
         }
+		
+		vm.getAddRanks = function(usertype) {
+			//console.log(usertype, usertype.name);
+			var found = false;
+            if (usertype) {
+                vm.typeranks.forEach(function (obj) {
+					//console.log(obj.name, usertype.name);
+                    if (obj.name == usertype.name) {
+                        vm.addRanks = obj.ranks;
+						found = true;
+                    }
+                });
+            }
+			if(!found)
+				vm.addRanks = [];
+				
+        }
+		
+		vm.getEditRanks = function(usertype) {
+			//console.log(usertype, usertype.name);
+			var found = false;
+            if (usertype) {
+                vm.typeranks.forEach(function (obj) {
+					//console.log(obj.name, usertype.name);
+                    if (obj.name == usertype.name) {
+                        vm.editRanks = obj.ranks;
+						found = true;
+                    }
+                });
+            }
+			if(!found)
+				vm.editRanks = [];
+        }
+		
 
         //Ravi's Help
         function AddTerms() {

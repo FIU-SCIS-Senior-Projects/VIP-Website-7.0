@@ -270,16 +270,46 @@ module.exports = function (app, express) {
                 user.department = req.body.department;
                 user.RegDate = req.body.RegDate;  // sets the users college
                 user.allowNotifications = true;//new users opt in to notifications by default
-
+				
+				user.googleKey = " ";
+                user.userType = req.body.userType;
+                user.gender = req.body.gender;
+				user.semester = req.body.semester;
+				
+				// Called only when user is created by admin panel (us #1300)
+				if (req.body.adminCreated) { 
+					user.piApproval = req.body.piApproval;
+					if (typeof user.piApproval === 'boolean' && user.piApproval) {
+						user.piDenial = false;
+						user.verifiedEmail = true;
+						user.isDecisionMade = true;
+					}
+					else if (typeof user.piApproval === 'boolean' && !user.piApproval) {
+						user.piDenial = true;
+						user.verifiedEmail = false;
+						user.isDecisionMade = true;
+					}
+					else {
+						user.piDenial = false;
+						user.verifiedEmail = false;
+						user.isDecisionMade = false;
+					}	
+					
+					if (user.userType == "Pi/CoPi")
+						user.isSuperUser = true;
+					else
+						user.isSuperUser = false;
+				}
                 // mohsen says his and masouds accounts should automatically become verified as Pi
-                if (req.body.email == "mtahe006@fiu.edu" || req.body.email == "sadjadi@cs.fiu.edu") {
+                else if (req.body.email == "mtahe006@fiu.edu" || req.body.email == "sadjadi@cs.fiu.edu") {
                     // give them all perms
                     user.piApproval = true;
                     user.piDenial = false;
                     user.verifiedEmail = true;
                     user.isDecisionMade = true;
                     user.isSuperUser = true;
-                } else {
+                } 
+				else {
                     // initially has to be init to false
                     user.piApproval = false;
                     user.piDenial = false;
@@ -289,11 +319,7 @@ module.exports = function (app, express) {
                     user.isSuperUser = false;
                 }
 
-                user.googleKey = " ";
-                user.userType = req.body.userType;
-                user.gender = req.body.gender;
-
-                user.save(function (err) {
+                user.save(function (err, newUser) {
                     // an error occured while trying to insert the new user
                     if (err) {
                         // duplicate entry - user exists
@@ -302,9 +328,10 @@ module.exports = function (app, express) {
                         else
                             return res.send({success: false, error: err});//todo: error code?
                     }
-                    // return the object id for validation and message for the client
+                    // return the object and object id for validation and message for the client
                     res.json({
                         success: true,
+						object: newUser,
                         objectId: user._id,
                         message: 'User account created please verify the account via the registered email.'
                     });
@@ -320,15 +347,47 @@ module.exports = function (app, express) {
                         user.pantherID = req.body.user.pantherID;     // set the users panther ID
                         user.password = req.body.user.password;  // set the users password (comes from the request)
                         user.passwordConf = req.body.user.passwordConf;
+						user.gender = req.body.user.gender;
                         user.email = req.body.user.email;   // sets the users email
                         user.project = req.body.user.project; // sets the users project
+						user.userType = req.body.user.userType;
                         user.rank = req.body.user.rank;    // set the users Rank within the program
                         user.college = req.body.user.college;   // sets the users college
                         user.department = req.body.user.department;  // sets the users college
                         user.joined_project = req.body.user.joined_project;
+						user.semester = req.body.user.semester;
+						user.piApproval = req.body.user.piApproval;
+						
+						if (typeof user.piApproval === 'boolean' && user.piApproval) {
+							user.piDenial = false;
+							user.verifiedEmail = true;
+							user.isDecisionMade = true;
+						}
+						else if (typeof user.piApproval === 'boolean' && !user.piApproval) {
+							user.piDenial = true;
+							user.verifiedEmail = false;
+							user.isDecisionMade = true;
+						}
+						else {
+							user.piDenial = false;
+							user.verifiedEmail = false;
+							user.isDecisionMade = false;
+						}	
+					
+						if (user.userType == "Pi/CoPi")
+							user.isSuperUser = true;
+						else
+							user.isSuperUser = false;
+						
                         user.save(function (err) {
-                            if (err) {
-                            }
+                            if (err)
+								return res.send({success: false, error: err});
+							else
+								res.json({
+									success: true,
+									objectId: user._id,
+									message: 'User account updated.'
+								});
                         });
                     }
                 });

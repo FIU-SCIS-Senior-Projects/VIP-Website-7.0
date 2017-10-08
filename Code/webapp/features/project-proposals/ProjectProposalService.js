@@ -29,6 +29,12 @@
                 });
             };
 
+            projectFactory.getProjectsByTerm = function (term) {
+                return $http.get('/api/projects/term' + term).then(function (data) {
+                    return data.data;
+                });
+            };
+
             projectFactory.delete = function (id) {
                 return $http.delete('/api/projects/' + id).then(function (data) {
                 });

@@ -18,14 +18,16 @@
         vm.temProj = new Set();
         vm.filteringVariables = new Set();
         vm.showAllCheckBox = true;
-		vm.done = false;
+        vm.done = false;
+        $scope.test = 5;
         //Function Declarations
         vm.showAllDisciplinesToggle = showAllDisciplinesToggle; 
         vm.filterByDiscipline = filterByDiscipline;
         vm.viewDetails = viewDetails;
         var selectedFilter = null;
         vm.filteredprojects;
-        
+       
+
          vm.filters = [
             
             {
@@ -38,6 +40,8 @@
             
         ];
         
+        
+
         $scope.applyFilter = function()
         {
             selectedFilter = $scope.selectedFilter.name;
@@ -80,12 +84,21 @@
             //$translate.use(langKey);
           }
         
+          $scope.myFun = function() {
+            ProjectService.getProjectsByTerm('Fall 2017').then(function(data){ 
+                var theData = data;
+                console.log(data);
+            })
+            
+          }
+          
         
         init();
         function init(){
             loadData();
         }
         
+
         function checkBoxChange () {
             if(vm.filteringVariables.size > 0)
                 document.getElementById("showAll").indeterminate = true;

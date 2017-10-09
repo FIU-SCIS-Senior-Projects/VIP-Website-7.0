@@ -8,10 +8,6 @@ module.exports = function (app, express) {
     var apiRouter = express.Router();
     var currentTerm;
 
-    /*
-     *Temporal Seed for the terms Starts here
-     */
-    ////console.log("Seed file start");
     var termsSeed = [
         {
             name: "Spring 2017",
@@ -39,115 +35,26 @@ module.exports = function (app, express) {
             active: true
         }
     ];
+
     var findActiveTerm = function () {
-        Term.find({active: true}, function (err, term) {
+        Term.findOne({active: true}, function (err, term) {
             if (err) {
                 throw "Failed to find the active term."
             }
-            currentTerm = term;
+            currentTerm = term._id;
         });
     }
 
-    Term.count(function (err, count) {
-        if (err) {
-            throw "Couldn't get terms count from database to setup seeded term data."
-        } else if (count === 0) {
-            Term.create(termsSeed, function (err) {
-                if (err) {
-                    throw "Failed to insert seed data records in the terms mongo collection."
-                }
-                findActiveTerm()//note find active term has to be called here to avoid a possible race condition where we would attempt to get the active term before mongo has actually written the seed data to the collection
-            });
-        } else {
-            findActiveTerm()
-        }
-    });
+	//Find the active term and set currentTerm to it
+	findActiveTerm();
 
-    /*
-     *Temporal Seed for the terms Ends here
-     */
-    apiRouter.route('/terms')
-        .post(
-            authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
-            function (req, res) {
-                Term.create(req.body, function (err) {
-                    if (err) {
-                        //console.log("Error:");
-                        //console.log(err);
-                        return res.send('something went wrong');
-                    } else {
-                        //console.log("Term Test Message");
-                        res.send('Term added');
-                    }
-                });
-            })
-        .get(
-            authProvider.authorizeAuthenticatedUsers,
-            function (req, res) {
-                Term.find({active: true}, function (err, terms) {
-
-                    if (err) {
-                        ////console.log(err);
-                        return res.send('error');
-                    }
-                    ////console.log("Got Current Term");
-
-                    return res.json(terms);
-                });
-            });
-    apiRouter.route('/terms/:id')
-        .put(
-            authProvider.authorizeByUserType(authProvider.userType.PiCoPi),//it doesn't seem to be needed by any other users
-            function (req, res) {
-                Term.findById(req.params.id, function (err, term) {
-                    if (err) {
-                        res.status(400);
-                        res.send(err);
-                    }
-
-                    term.status = req.body.status;
-                    term.start = req.body.start;
-                    term.end = req.body.end;
-                    term.deadline = req.body.deadline;
-                    term.active = req.body.active;
-                    term.open = req.body.open;
-                    if (req.body.name !== "")
-                        term.name = req.body.name;
-
-                    term.save(function (err) {
-                        if (err) {
-                            res.status(400);
-                            return res.send(err);
-                        }
-                        res.json({message: 'Updated!'});
-                    });
-                });
-            })
-        .get(
-            authProvider.authorizeAuthenticatedUsers,
-            function (req, res) {
-                Term.findById(req.params.id, function (err, term) {
-                    if (err)
-                        return res.send(err);
-                    res.json(term);
-                });
-            })
-        .delete(
-            authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
-            function (req, res) {
-                Term.remove({_id: req.params.id}, function (err, term) {
-                    if (err)
-                        return res.send(err);
-                    res.json({message: 'successfully deleted!'});
-                });
-            });
     //route get or adding projects to a users account
     apiRouter.route('/projects')
         .post(
             authProvider.authorizeByUserType([authProvider.userType.PiCoPi, authProvider.userType.StaffFaculty]),
             function (req, res) {
                 console.log(req.body.faculty);
-                req.body.term = currentTerm[0]._id;
+                req.body.term = currentTerm; // TODO: Should not automatically set new projects to be set to currentTerm
 
                 //Validate to ensure student counts isn't negative or student count is greater than maximum.
                 var studentCount = 0;
@@ -194,10 +101,83 @@ module.exports = function (app, express) {
         .get(
             authProvider.authorizeAll,
             function (req, res) {
-                Project.find({term: currentTerm[0]._id}, function (err, projects) {
-                    console.log(currentTerm[0]._id);
+                Project.find({term: currentTerm}, function (err, projects) {
                     if (err) {
                         console.log(err);
+                        return res.send('error');
+                    }
+                    return res.json(projects);
+                });
+            });
+
+	//route - get every project
+    apiRouter.route('/projects/findall')
+		.get(
+            authProvider.authorizeAll,
+            function (req, res) {
+                Project.find({}, function (err, projects) {
+                    if (err) {
+                        console.log(err);
+                        return res.send('error');
+                    }
+                    return res.json(projects);
+                });
+            });
+
+	//route to find and change projects from terms that are not currently active
+    apiRouter.route('/projects/term/:term')
+        .post(
+            authProvider.authorizeByUserType([authProvider.userType.PiCoPi, authProvider.userType.StaffFaculty]),
+            function (req, res) {
+                console.log(req.body.faculty);
+
+                //Validate to ensure student counts isn't negative or student count is greater than maximum.
+                var studentCount = 0;
+                var maxStudentCount = 0;
+
+                // user provided a min number of students
+                if (req.body.firstSemester)
+                    studentCount = Number(req.body.firstSemester);
+
+                // user provided a max number of students
+                if (req.body.maxStudents)
+                    maxStudentCount = Number(req.body.maxStudents);
+
+                // user didnt supply a min and max number of students, make it a really big number so anyone can join
+                if (isNaN(studentCount) || isNaN(maxStudentCount)) {
+                    req.body.firstSemester = "1";
+                    req.body.maxStudents = "256";
+                }
+
+                // user didnt supply a min and max number of students, make it a really big number so anyone can join
+                if (studentCount == 0 && maxStudentCount == 0) {
+                    req.body.firstSemester = "1";
+                    req.body.maxStudents = "256";
+                }
+
+                if (studentCount < 0 || maxStudentCount < 0) {
+                    res.status(400);
+                    return res.send("firstSemester cannot be less than 0 or maxStudents cannot be less than 0.");
+                }
+
+                if (studentCount > maxStudentCount) {
+                    res.status(400);
+                    return res.send("Count cannot be greater than the maximum.");
+                }
+
+                Project.create(req.body, function (err) {
+                    if (err) {
+                        res.status(400);
+                        return res.send(err);
+                    }
+                    return res.json({success: true});
+                });
+            })
+        .get(
+            authProvider.authorizeAll,
+            function (req, res) {
+                Project.find({semester: req.params.term}, function (err, projects) {
+                    if (err) {
                         return res.send('error');
                     }
                     return res.json(projects);
@@ -320,8 +300,8 @@ module.exports = function (app, express) {
             authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
             function (req, res) {
                 Project.find({
-                    $or: [{term: currentTerm[0]._id, status: "pending"}, {
-                        term: currentTerm[0]._id, status: "modified"
+                    $or: [{term: currentTerm, status: "pending"}, {
+                        term: currentTerm, status: "modified"
                     }]
                 }, function (err, projects) {
                     if (err) {
@@ -384,6 +364,20 @@ module.exports = function (app, express) {
                 });
             });
         });
+   apiRouter.route('/previous/:user')
+      .get(
+         authProvider.authorizeAll,
+         function (req, res) {
+            console.log(req.params.user)
+             Project.find({owner_email: req.params.user}, function (err, projects) {
+                 if (err) {
+                     console.log(err);
+                     return res.send('error');
+                 }
+                 return res.json(projects);
+             });
+         }
+      )
 
     return apiRouter;
 };

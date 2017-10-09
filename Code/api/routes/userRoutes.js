@@ -234,6 +234,21 @@ module.exports = function (app, express) {
                     }
                 });
             });
+	
+
+	// Find User by Term
+	userRouter.route('/users/term/:term')
+        .get(
+            authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
+            function (req, res) {
+                User.find({semester: req.params.term}, function (err, users) {
+                    if (err) {
+						return res.send(err);
+                    } else if (users) {
+                        return res.json(users);
+                    }
+                });
+            });
 
     // User.create(vm.userData).success(function(data) from userRegistrationController.js calls this function
     // BUG: This function is returning success even if the user already exists in the database

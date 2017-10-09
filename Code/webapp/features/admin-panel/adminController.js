@@ -2,12 +2,42 @@
     'use strict';
 
     angular
-        .module('admin')
-        .controller('adminController', adminCtrl);
-
+        .module('admin',[])
+        .controller('adminController', adminCtrl)
     function adminCtrl($location, $window, $state, $scope, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService) {
         var vm = this;
-
+        $scope.showUserMaint = false
+        $scope.showSemesterMaint = false
+        $scope.showProjectMaint = false
+        $scope.showAdminPage = true
+        $scope.routeUserMaint = routeUserMaint
+        $scope.routeProjectMaintenance = routeProjectMaintenance
+        $scope.routeSemesterMaintenance = routeSemesterMaintenance
+        $scope.routeAdminMaint = routeAdminMaint
+        function routeAdminMaint(){
+           $scope.showUserMaint = false;
+           $scope.showSemesterMaint = false;
+           $scope.showProjectMaint = false;
+           $scope.showAdminPage = true;
+        }
+        function routeUserMaint(){
+           $scope.showUserMaint = true;
+           $scope.showSemesterMaint = false;
+           $scope.showProjectMaint = false;
+           $scope.showAdminPage = false;
+        }
+        function routeProjectMaintenance(){
+           $scope.showUserMaint = false;
+           $scope.showSemesterMaint = false;
+           $scope.showProjectMaint = true;
+           $scope.showAdminPage = false;
+        }
+        function routeSemesterMaintenance(){
+           $scope.showUserMaint = false;
+           $scope.showSemesterMaint = true;
+           $scope.showProjectMaint = false;
+           $scope.showAdminPage = false;
+        }
         ProfileService.loadProfile().then(function (data) {
             if (data) {
                 $scope.done = true;
@@ -28,7 +58,7 @@
         vm.allusers; //All confirmed and unconfirmed users
         vm.unconfirmedusers;//Unconfirmed users (Email is not verified)
         vm.filteredusers; //filteredusers affected by filter function
-        vm.projects;
+        vm.projects; //Projects that are active
         vm.terms;
         vm.filterUsers = filterUsers;
         vm.currentuserview;
@@ -38,9 +68,13 @@
         vm.ConfirmUser = ConfirmUser;
         vm.RejectUser = RejectUser;
         vm.seed = seed;
-        //userstory #1172
+        // userstory #1172
         vm.exportData = exportData;
         vm.tabledata = null;
+		// User story #1176
+		vm.allprojects; //All projects
+		vm.filteredprojects;
+		vm.tabledata_p = null;
 
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
@@ -264,7 +298,9 @@
         function init() {
             loadUsers();
             loadProjects();
-            //Joe's User Story
+			// User story - 1176
+			loadAllProjects();
+            // Joe's User Story
             loadTerms();
             loadSettings();
         }
@@ -323,6 +359,17 @@
                 vm.projects = data;
             });
         }
+		
+		//Loads all project information regardless of status
+        function loadAllProjects() {
+            reviewStudentAppService.loadAllProjects().then(function (data) {
+                vm.allprojects = data;
+				vm.filteredprojects = vm.allprojects;
+				// Store the project data into vm.tabledata_p
+                vm.tabledata_p = JSON.stringify(vm.allprojects);
+                vm.tabledata_p = eval(vm.tabledata_p);
+            });
+        }
 
         //Joe's User Story
         function loadTerms() {
@@ -335,7 +382,7 @@
 
         vm.uncheck = function () {
 
-            for (var i = 1; i <= 16; i++) {
+            for (var i = 1; i <= 17; i++) {
                 $scope['query' + i] = '';
             }
             $scope.usertype = '';
@@ -348,11 +395,25 @@
             $scope.google = '';
             $scope.mentor = '';
             $scope.multipleproject = '';
-
+			// userstory #1176
+			$scope.c_term = '';
+			$scope.chosenterm = '';
 
         }
+		
+		
+		vm.uncheckp = function () {	
+			// userstory #1176
+			for (var i = 1; i <= 10; i++) {
+                $scope['queryp' + i] = '';
+            }
+			$scope.p_term = '';
+			$scope.chosenpterm = '';
+        }
+		
+		
         //Filters users based on parameters
-        function filterUsers(usertype, userrank, unconfirmed, gmaillogin, mentor, multipleprojects, selectedusertype, selecteduserrank, SelectedProject, userproject) {
+        function filterUsers(usertype, userrank, unconfirmed, gmaillogin, mentor, multipleprojects, selectedusertype, selecteduserrank, SelectedProject, userproject, c_term, chosenterm) {
             vm.filteredusers = vm.allusers;
             // n^2
             if (SelectedProject && userproject) {
@@ -394,6 +455,19 @@
                 var tempArray = [];
                 vm.filteredusers.forEach(function (obj) {
                     if (obj.userRank == userrank) {
+                        tempArray.push(obj);
+                    }
+                });
+                vm.filteredusers = tempArray;
+                vm.tabledata = JSON.stringify(vm.filteredusers);
+                vm.tabledata = eval(vm.tabledata);
+            }
+			// # userstory 1176
+			if (c_term && chosenterm) {
+                c_term = chosenterm;
+                var tempArray = [];
+                vm.filteredusers.forEach(function (obj) {
+                    if (obj.semester == c_term) {
                         tempArray.push(obj);
                     }
                 });
@@ -490,6 +564,24 @@
             }
 
         }
+		
+		//Filters projects based on parameters
+        function filterProjects(p_term, chosenpterm) {
+			// # userstory 1176
+			vm.filteredprojects = vm.allprojects;
+			if (p_term && chosenpterm) {
+                p_term = chosenpterm;
+                var tempArray = [];
+                vm.filteredprojects.forEach(function (obj) {
+                    if (obj.semester == p_term) {
+                        tempArray.push(obj);
+                    }
+                });
+                vm.filteredprojects = tempArray;
+                vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+                vm.tabledata_p = eval(vm.tabledata_p);
+            }
+		}
 
         function currentview(user) {
             console.log(user);

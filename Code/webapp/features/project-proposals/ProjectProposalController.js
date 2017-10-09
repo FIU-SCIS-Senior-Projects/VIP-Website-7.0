@@ -217,6 +217,7 @@
             $scope.updateMentorNames = updateMentorNames;
             $scope.updateStudentNames = updateStudentNames;
             $scope.updateStudentEmails = updateStudentEmails;
+            $scope.populatePrevious = populatePrevious;
 
             init();
             function init() {
@@ -224,13 +225,36 @@
                     vm.id = $stateParams.id;
                     vm.editingMode = true;
                     getProjectById();
-
+                    getProjects()
                 }
+                getPreviousProjects()
                 loadTerms();
             }
 
             var old_project = null;
 
+            function populatePrevious(){
+               console.log($scope)
+               console.log($scope.project)
+               console.log($scope.previousProj)
+               console.log($scope.project.previousProj)
+               ProjectService.getProject($scope.project.previousProj).then((data)=>{
+                  console.log(data)
+                  $scope.project.title = data.title
+                  $scope.project.description = data.description
+                  $scope.project.firstSemester = data.firstSemester
+                  $scope.project.maxStudents = data.maxStudents
+                  $scope.skills = data.reqskillItem
+
+               })
+            }
+            function getPreviousProjects(){
+               console.log(vm.adminEmail)
+               ProjectService.getProjects().then((projects)=>{
+                  console.log(projects);
+                  $scope.project.previous = projects
+               });
+            }
             function getProjectById() {
                 ProjectService.getProject(vm.id).then(function (data) {
                     $scope.project = data;

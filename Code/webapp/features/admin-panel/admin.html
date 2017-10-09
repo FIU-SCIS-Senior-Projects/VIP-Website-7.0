@@ -341,11 +341,49 @@
                 </table>
             </div>
         </div>
+
+        <div class="col-md-6 panel panel-default">
+            <h3 align="center"> Open/Close Semester </h3>
+            <div class="form-group">
+                <table class="table">
+                    <tr>
+                        <th>
+                            <b>Term:</b>
+                            <select class="form-control" ng-model="selectedTerm"
+                                    ng-options="terms as terms.name for terms in vm.terms"
+                                    value="{{vm.currentTerm(selectedTerm)}}"></select>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <b>Open or close the selected semester: </b>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <select class="form-control" ng-model="selectedOpenStatus"
+                                    ng-options="terms as terms for terms in vm.open"
+                                    value="{{vm.currentTerm(selectedTerm)}}"></select>
+                        </th>
+                    </tr>
+                </table>
+                <table class="table" style="height: 1px;">
+                    <tr>
+                        <th>
+                            <button style="width: 80px;" ng-click="vm.ocs()" class="btn btn-success btn-block">Change
+                            </button>
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+        </div>
         <!--
             This button is to add new terms to the terms collection in Mongo, leave commented out unless you are planning to add a new collection
             Take Note, this button allows duplicates, so be careful, or you'll have to manually remove duplicate terms from the db
-                    <button  ng-click="vm.AddTerms()">Add Terms</button>
-                    -->
+                    <button  ng-click="vm.AddTerms()">Add Terms</button> -->
+
 
 
         <!--Dafna's code-->

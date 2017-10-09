@@ -110,6 +110,7 @@ module.exports = function (app, express) {
                     term.end = req.body.end;
                     term.deadline = req.body.deadline;
                     term.active = req.body.active;
+                    term.open = req.body.open;
                     if (req.body.name !== "")
                         term.name = req.body.name;
 

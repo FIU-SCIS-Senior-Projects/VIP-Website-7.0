@@ -71,11 +71,14 @@
         //Joe's User Story
         vm.se = ChangeProjectStatus;
         vm.nw = ChangeTermStatus;
+        vm.ocs = OpenCloseSemester;
+
 
         vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
         //Joe's User Story
         vm.status = ['Active', 'Disabled'];
         vm.active = ['Active', 'Disabled'];
+        vm.open = ['Open', 'Closed'];
         vm.getProjectTitle = function (email) {
             if (email) {
                 if (vm.projects) {
@@ -173,12 +176,13 @@
         //Ravi's Help
         function AddTerms() {
             var termsdata = {
-                name: "Fall 2016",
-                start: new Date('2016', '08'),
+                name: "Fall 2017 Test",
+                start: new Date('2017', '08'),
                 end: new Date('2017', '12'),
                 deadline: new Date('2017, 08'),
                 active: true,
-                status: "Active"
+                status: "Active",
+                open: true
             };
 
             reviewStudentAppService.addterm(termsdata).then(function (success) {
@@ -324,6 +328,7 @@
         function loadTerms() {
             reviewStudentAppService.loadTerms().then(function (data) {
                 vm.terms = data;
+                console.log("loading terms:");
                 console.log(data);
             });
         }
@@ -825,6 +830,7 @@
                 } else {
                     selectedTermStatus = 'Disabled';
                 }
+                console.log(vm.projects);
                 for (i = 0; i < vm.projects.length; i++) {
                     //console.log(vm.projects[i].title);
                     if (vm.projects[i].semester == selectedTerm) {
@@ -836,6 +842,26 @@
                 ProjectService.editTerm(term, term._id);
             }
             changestat_msg();
+        }
+
+        function OpenCloseSemester() {
+          var term = vm.cterm;
+          console.log("In OpenCloseSemester");
+          if(term){
+            console.log($scope.selectedOpenStatus);
+            if($scope.selectedOpenStatus == "Open") {
+              console.log("in open");
+              term.open = true;
+              console.log(term.open);
+            }
+            else {
+              console.log("in closed");
+              term.open = false;
+              console.log(term.open);
+            }
+
+            ProjectService.editTerm(term, term._id);
+          }
         }
 
         //Remove a user from a project

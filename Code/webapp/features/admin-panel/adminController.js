@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('admin',['ui.bootstrap'])
+        .module('admin',['ui.bootstrap','angularUtils.directives.dirPagination'])
         .controller('adminController', adminCtrl)
     function adminCtrl($location, $window, $state, $scope, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService) {
         var vm = this;

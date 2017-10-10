@@ -312,7 +312,9 @@
 
                  <tbody>
 
-                 <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter: c_term? chosenterm.name:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 ))">
+                 <tr dir-paginate="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter: c_term? chosenterm.name:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 )) | itemsPerPage: 10" pagination-id="usersPage"
+
+                 >
                      <td>
                          <button class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
                                  ng-hide="user.userType == 'Pi/CoPi'">Impersonate
@@ -338,7 +340,7 @@
                  </tr>
                  </tbody>
              </table>
-
+             <dir-pagination-controls pagination-id="usersPage"></dir-pagination-controls>
          </div>
     </div>
    </div>
@@ -558,13 +560,15 @@
 
                     <tbody>
 
-                    <tr ng-repeat="project in (filteredPItems = ( vm.tabledata_p | filter: p_term? {semester: chosenpterm.name}:''| filter:queryp1| filter:queryp2| filter:queryp3| filter:queryp4| filter:queryp5| filter:queryp6| filter:queryp7| filter:queryp8| filter:queryp9| filter:queryp10 ))">
+                    <tr dir-paginate="project in (filteredPItems = ( vm.tabledata_p | filter: p_term? {semester: chosenpterm.name}:''| filter:queryp1| filter:queryp2| filter:queryp3| filter:queryp4| filter:queryp5| filter:queryp6| filter:queryp7| filter:queryp8| filter:queryp9| filter:queryp10 ))|itemsPerPage: 10"
+                    pagination-id="projectsPage"
+                    >
                         <td>{{project.title}}</td>
                         <td>{{project.owner_name}}</td>
                         <td>{{project.owner_email}}</td>
                         <td>{{project.semester}}</td>
                         <td>{{project.status}}</td>
-						<td>{{project.mentor.name}}</td>
+                        <td>{{project.mentor.name}}</td>
                         <td>{{project.faculty.name}}</td>
                         <td>{{project.members_detailed}}</td>
                         <td>{{project.maxStudents}}</td>
@@ -572,7 +576,13 @@
                     </tr>
                     </tbody>
                 </table>
-
+                <dir-pagination-controls
+                 max-size="5"
+                 direction-links="true"
+                 boundary-links="true"
+                 pagination-id="projectsPage"
+                 >
+              </dir-pagination-controls>
             </div>
 		</div>
 	</div>

@@ -21,7 +21,8 @@ angular.module('mainApp', [
 	'admin',
    'MessengerController',
 	'angularTrix',
-	'ui.bootstrap'
+	'ui.bootstrap',
+	'angularUtils.directives.dirPagination'
 ]).filter('selectedTags', function() {
     return function(users, members)
     {

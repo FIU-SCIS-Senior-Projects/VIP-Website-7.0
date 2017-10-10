@@ -2,10 +2,11 @@
     'use strict';
 
     angular
-        .module('admin',[])
+        .module('admin',['ui.bootstrap'])
         .controller('adminController', adminCtrl)
     function adminCtrl($location, $window, $state, $scope, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService) {
         var vm = this;
+        $scope.states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
         $scope.showUserMaint = false
         $scope.showSemesterMaint = false
         $scope.showProjectMaint = false
@@ -14,6 +15,32 @@
         $scope.routeProjectMaintenance = routeProjectMaintenance
         $scope.routeSemesterMaintenance = routeSemesterMaintenance
         $scope.routeAdminMaint = routeAdminMaint
+        vm.simulateQuery = false;
+      vm.isDisabled    = false;
+
+      // list of `state` value/display objects
+      vm.querySearch   = querySearch;
+      vm.selectedItemChange = selectedItemChange;
+      vm.searchTextChange   = searchTextChange;
+      function querySearch (query) {
+      var results = query ? vm.filteredusers.filter( createFilterFor(query) ) : vm.filteredusers,
+          deferred;
+      if (self.simulateQuery) {
+        deferred = $q.defer();
+        $timeout(function () { deferred.resolve( results ); }, Math.random() * 1000, false);
+        return deferred.promise;
+      } else {
+        return results;
+      }
+    }
+
+    function searchTextChange(text) {
+  $log.info('Text changed to ' + text);
+}
+
+function selectedItemChange(item) {
+  $log.info('Item changed to ' + JSON.stringify(item));
+}
         function routeAdminMaint(){
            $scope.showUserMaint = false;
            $scope.showSemesterMaint = false;
@@ -88,7 +115,9 @@
         vm.projectinprojects;
         vm.userinunconfirmed;
         vm.AddTerms = AddTerms;
-
+        vm.searchUser = function(user){
+           console.log(user)
+        }
 
         vm.currentUser = function (user) {
             vm.cuser = user;
@@ -355,7 +384,7 @@
                 vm.projects = data;
             });
         }
-		
+
 		//Loads all project information regardless of status
         function loadAllProjects() {
             reviewStudentAppService.loadAllProjects().then(function (data) {
@@ -395,9 +424,9 @@
 			$scope.chosenterm = '';
 
         }
-		
-		
-		vm.uncheckp = function () {	
+
+
+		vm.uncheckp = function () {
 			// userstory #1176
 			for (var i = 1; i <= 10; i++) {
                 $scope['queryp' + i] = '';
@@ -405,8 +434,8 @@
 			$scope.p_term = '';
 			$scope.chosenpterm = '';
         }
-		
-		
+
+
         //Filters users based on parameters
         function filterUsers(usertype, userrank, unconfirmed, gmaillogin, mentor, multipleprojects, selectedusertype, selecteduserrank, SelectedProject, userproject, c_term, chosenterm) {
             vm.filteredusers = vm.allusers;
@@ -559,7 +588,7 @@
             }
 
         }
-		
+
 		//Filters projects based on parameters
         function filterProjects(p_term, chosenpterm) {
 			// # userstory 1176

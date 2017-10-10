@@ -7,11 +7,19 @@
           href="https://cdn.gitcdn.xyz/cdn/angular/bower-material/v1.0.1-master-a687bfc/angular-material.css">
     <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-blue.min.css">
     <link rel="stylesheet" type="text/css" href="adminpanel.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
 </head>
 
 <style>
 
 </style>
+<script type="text/ng-template" id="customTemplate.html">
+  <a>
+      <span ng-bind-html="match.label | uibTypeaheadHighlight:query"></span>
+  </a>
+</script>
 <div style="width:100%;">
 
    <nav>
@@ -49,237 +57,9 @@
    </nav>
 
     <div ng-show="showAdminPage">
-      <div>
-        <div class="panel panel-default" style="width:100%;">
-            <nav>
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" style="color:#333333;">Admin Panel - User List</a>
-                    </div>
-                    <ul class="nav navbar-nav navbar-right" style="padding-right: 1%">
-                        <li>
-                            <button style="float:right;" ng-click="vm.uncheck()" ng-model="refresh"
-                                    class="btn second-button btn-default navbar-btn">
-                      <span class="glyphicon glyphicon-filter"></span>Filters
-                  </button>
-                  </li>
-                  <li>
-                      &nbsp;<button style="float:right;" ng-click="vm.exportData()"
-                                    class="btn second-button btn-default navbar-btn">
-                      <span><img style="width:20px;height:18px;" src="img/Excel-icon.png"></span>Excel
-                  </button>
-                  </li>
-               </ul>
-            </div>
-            <section id="section1" ng-show="section1">
-                <table class="table table-striped table-bordered">
-                    <thead style="background-color:#F2F3F4;">
-                    <tr>
-                        <td class="col-md-3">
-                            <input type="checkbox" ng-model="usertype">UserType:
-                            <select class="form-control" id="susertype" ng-model="selectedusertype"
-                                    ng-options="typerank as typerank.name for typerank in vm.typeranks"
-                                    value="{{vm.getRank(selectedusertype)}}"></select>
-                        </td>
-                        <td class="col-md-3">
-                            <input type="checkbox" ng-model="userrank">UserRank:
-                            <select class="form-control" ng-model="selecteduserrank"
-                                    ng-options="rank for rank in vm.filteredrank"></select></input>
-                        </td>
-                        <td class="col-md-3">
-                            <input type="checkbox" ng-model="userproject">Project:
-                            <select class="form-control" ng-model="selecteduserproject"
-                                    ng-options="projects as projects.title for projects in vm.projects"
-                                    value="{{vm.getStudents(SelectedProject)}}"></select>
-                        </td>
-						<td class="col-md-3">
-                            <input type="checkbox" ng-model="c_term">Semester:
-                            <select class="form-control" ng-model="chosenterm"
-                                    ng-options="terms as terms.name for terms in vm.terms"></select>
-                        </td>
-                    </tr>
-                    <br/>
-                    <tr>
-                        <td class="col-md-3"><input type="checkbox" ng-model="piApproval">Unconfirmed Email</input></td>
-                        <td class="col-md-3"><input type="checkbox" ng-model="google">Gmail Login</input></td>
-                        <td class="col-md-3"><input type="checkbox" ng-model="mentor">Mentor</input></td>
-                        <td class="col-md-3"><input type="checkbox" ng-model="multipleproject">Multiple Projects</input></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </section>
 
-            <div class="table" style="overflow: scroll; overflow-y: hidden;">
-                <table id="adminTable" class="table table-striped">
-                    <thead id="header" style="background-color:#ABB2B9;">
-
-                    <tr id="headerLabels">
-                        <th></th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Panther ID</th>
-                        <th>User Type</th>
-                        <th>College</th>
-                        <th>Project</th>
-                        <th>Gender</th>
-                        <th>Joined Project</th>
-                        <th>Rank</th>
-                        <th>Mentor</th>
-                        <th>Pi Approval</th>
-                        <th>Multiple Project</th>
-                        <th>Proj App Date</th>
-                        <th>User Reg Date</th>
-                        <th>First Login Date</th>
-						<th>Semester</th>
-                    </tr>
-
-                    <tr id="headerInputs">
-                        <th></th>
-                        <th><input class="form-control" type="text" ng-model="query1"/></th>
-                        <th><input type="text" class="form-control" ng-model="query2"/></th>
-                        <th><input type="text" class="form-control" ng-model="query3"/></th>
-                        <th><input type="text" class="form-control" ng-model="query4"/></th>
-                        <th><input type="text" class="form-control" ng-model="query5"/></th>
-                        <th><input type="text" class="form-control" ng-model="query6"/></th>
-                        <th><input type="text" class="form-control" ng-model="query7"/></th>
-                        <th><input type="text" class="form-control" ng-model="query8"/></th>
-                        <th><input type="text" class="form-control" ng-model="query9"/></th>
-                        <th><input type="text" class="form-control" ng-model="query10"/></th>
-                        <th><input type="text" class="form-control" ng-model="query11"/></th>
-                        <th><input type="text" class="form-control" ng-model="query12"/></th>
-                        <th><input type="text" class="form-control" ng-model="query13"/></th>
-                        <th><input type="text" class="form-control" ng-model="query14"/></th>
-                        <th><input type="text" class="form-control" ng-model="query15"/></th>
-                        <th><input type="text" class="form-control" ng-model="query16"/></th>
-						<th><input type="text" class="form-control" ng-model="query17"/></th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-
-                    <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter: c_term? chosenterm.name:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 ))">
-                        <td>
-                            <button class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
-                                    ng-hide="user.userType == 'Pi/CoPi'">Impersonate
-                            </button>
-                        </td>
-                        <td>{{user.firstName}}</td>
-                        <td>{{user.lastName}}</td>
-                        <td>{{user.email}}</td>
-                        <td class="center">{{user.pantherID}}</td>
-                        <td>{{user.userType}}</td>
-                        <td>{{user.college}}</td>
-                        <td>{{user.project}}</td>
-                        <td class="center">{{user.gender}}</td>
-                        <td>{{user.joined_project}}</td>
-                        <td class="center">{{user.rank}}</td>
-                        <td>{{user.mentor}}</td>
-                        <td class="center">{{user.piApproval}}</td>
-                        <td>{{user.multipleproject}}</td>
-                        <td>{{user.appliedDate}}</td>
-                        <td>{{user.RegDate}}</td>
-                        <td>{{user.firstlogin_date}}</td>
-						<td>{{user.semester}}</td>
-                    </tr>
-                    </tbody>
-                </table>
-
-            </div>
-        </div>
-    </div>
 
 	<!-- .................................................... -->
-	<div>
-		<div class="panel panel-default" style="width:100%;">
-            <nav>
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" style="color:#333333;">Admin Panel - Projects List</a>
-                    </div>
-                    <ul class="nav navbar-nav navbar-right" style="padding-right: 1%">
-                        <li>
-                            <button style="float:right;" ng-click="vm.uncheckp()" ng-model="refresh"
-                                    class="btn second-button btn-default navbar-btn">
-                                <span class="glyphicon glyphicon-refresh"></span>Refresh Filters
-                            </button>
-                        </li>
-                        <li>
-                            &nbsp;<button style="float:right;" ng-click="section2=!section2"
-                                          class="btn second-button btn-default navbar-btn">
-                            <span class="glyphicon glyphicon-filter"></span>Filters
-                        </button>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-			<section id="section2" ng-show="section2">
-                <table class="table table-striped table-bordered">
-                    <thead style="background-color:#F2F3F4;">
-                    <tr>
-                        <td class="col-md-3">
-                            <input type="checkbox" ng-model="p_term">Semester:
-                            <select class="form-control" id="pterm" ng-model="chosenpterm"
-                                    ng-options="terms as terms.name for terms in vm.terms"></select>
-                        </td>
-                    </tr>
-                    <br/>
-                    </tbody>
-                </table>
-            </section>
-
-			<div class="table" style="overflow: scroll; overflow-y: hidden;">
-                <table id="adminTable" class="table table-striped">
-                    <thead id="header" style="background-color:#ABB2B9;">
-
-                    <tr id="headerPLabels">
-                        <th>Title</th>
-                        <th>Owner</th>
-                        <th>Owner Email</th>
-                        <th>Semester</th>
-                        <th>Status</th>
-						<th>Mentor</th>
-						<th>Faculty</th>
-						<th>Students</th>
-						<th>Max Students</th>
-						<th>Video URL</th>
-                    </tr>
-
-                    <tr id="headerInputs">
-                        <th><input class="form-control" type="text" ng-model="queryp1"/></th>
-                        <th><input type="text" class="form-control" ng-model="queryp2"/></th>
-                        <th><input type="text" class="form-control" ng-model="queryp3"/></th>
-                        <th><input type="text" class="form-control" ng-model="queryp4"/></th>
-                        <th><input type="text" class="form-control" ng-model="queryp5"/></th>
-                        <th><input type="text" class="form-control" ng-model="queryp6"/></th>
-						<th><input type="text" class="form-control" ng-model="queryp7"/></th>
-                        <th><input type="text" class="form-control" ng-model="queryp8"/></th>
-                        <th><input type="text" class="form-control" ng-model="queryp9"/></th>
-						<th><input type="text" class="form-control" ng-model="queryp10"/></th>
-					</tr>
-                    </thead>
-
-                    <tbody>
-
-                    <tr ng-repeat="project in (filteredPItems = ( vm.tabledata_p | filter: p_term? {semester: chosenpterm.name}:''| filter:queryp1| filter:queryp2| filter:queryp3| filter:queryp4| filter:queryp5| filter:queryp6| filter:queryp7| filter:queryp8| filter:queryp9| filter:queryp10 ))">
-                        <td>{{project.title}}</td>
-                        <td>{{project.owner_name}}</td>
-                        <td>{{project.owner_email}}</td>
-                        <td>{{project.semester}}</td>
-                        <td>{{project.status}}</td>
-						<td>{{project.mentor.name}}</td>
-                        <td>{{project.faculty.name}}</td>
-                        <td>{{project.members_detailed}}</td>
-                        <td>{{project.maxStudents}}</td>
-                        <td>{{project.video_url}}</td>
-                    </tr>
-                    </tbody>
-                </table>
-
-            </div>
-		</div>
-	</div>
 
     <!-- .................................................... -->
     <div class="row">
@@ -288,6 +68,8 @@
             <div class="form-group">
                 <table class="table">
                     <tr>
+                       <input type="text" ng-model="customSelected" placeholder="Custom template" uib-typeahead="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers | filter:{firstName:$viewValue} | limitTo:8" class="form-control">
+
                         <select class="form-control" ng-model="Selecteduserconfirm"
                                 ng-options="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers"
                                 value="{{vm.userinUnconfirmedfunc(Selecteduserconfirm)}}"></select>
@@ -421,17 +203,181 @@
 </div>
 
 <div ng-show="showUserMaint">
+   <div>
+    <div class="panel panel-default" style="width:100%;">
+         <nav>
+             <div class="container-fluid">
+                 <div class="navbar-header">
+                     <a class="navbar-brand" style="color:#333333;">Admin Panel - User List</a>
+                 </div>
+                 <ul class="nav navbar-nav navbar-right" style="padding-right: 1%">
+                     <li>
+                         <button style="float:right;" ng-click="vm.uncheck()" ng-model="refresh"
+                                 class="btn second-button btn-default navbar-btn">
+                   <span class="glyphicon glyphicon-filter"></span>Filters
+               </button>
+               </li>
+               <li>
+                   &nbsp;<button style="float:right;" ng-click="vm.exportData()"
+                                 class="btn second-button btn-default navbar-btn">
+                   <span><img style="width:20px;height:18px;" src="img/Excel-icon.png"></span>Excel
+               </button>
+               </li>
+            </ul>
+         </div>
+         <section id="section1" ng-show="section1">
+             <table class="table table-striped table-bordered">
+                 <thead style="background-color:#F2F3F4;">
+                 <tr>
+                     <td class="col-md-3">
+                         <input type="checkbox" ng-model="usertype">UserType:
+                         <select class="form-control" id="susertype" ng-model="selectedusertype"
+                                 ng-options="typerank as typerank.name for typerank in vm.typeranks"
+                                 value="{{vm.getRank(selectedusertype)}}"></select>
+                     </td>
+                     <td class="col-md-3">
+                         <input type="checkbox" ng-model="userrank">UserRank:
+                         <select class="form-control" ng-model="selecteduserrank"
+                                 ng-options="rank for rank in vm.filteredrank"></select></input>
+                     </td>
+                     <td class="col-md-3">
+                         <input type="checkbox" ng-model="userproject">Project:
+                         <select class="form-control" ng-model="selecteduserproject"
+                                 ng-options="projects as projects.title for projects in vm.projects"
+                                 value="{{vm.getStudents(SelectedProject)}}"></select>
+                     </td>
+               <td class="col-md-3">
+                         <input type="checkbox" ng-model="c_term">Semester:
+                         <select class="form-control" ng-model="chosenterm"
+                                 ng-options="terms as terms.name for terms in vm.terms"></select>
+                     </td>
+                 </tr>
+                 <br/>
+                 <tr>
+                     <td class="col-md-3"><input type="checkbox" ng-model="piApproval">Unconfirmed Email</input></td>
+                     <td class="col-md-3"><input type="checkbox" ng-model="google">Gmail Login</input></td>
+                     <td class="col-md-3"><input type="checkbox" ng-model="mentor">Mentor</input></td>
+                     <td class="col-md-3"><input type="checkbox" ng-model="multipleproject">Multiple Projects</input></td>
+                 </tr>
+                 </tbody>
+             </table>
+         </section>
 
+         <div class="table" style="overflow: scroll; overflow-y: hidden;">
+             <table id="adminTable" class="table table-striped">
+                 <thead id="header" style="background-color:#ABB2B9;">
+
+                 <tr id="headerLabels">
+                     <th></th>
+                     <th>First Name</th>
+                     <th>Last Name</th>
+                     <th>Email</th>
+                     <th>Panther ID</th>
+                     <th>User Type</th>
+                     <th>College</th>
+                     <th>Project</th>
+                     <th>Gender</th>
+                     <th>Joined Project</th>
+                     <th>Rank</th>
+                     <th>Mentor</th>
+                     <th>Pi Approval</th>
+                     <th>Multiple Project</th>
+                     <th>Proj App Date</th>
+                     <th>User Reg Date</th>
+                     <th>First Login Date</th>
+               <th>Semester</th>
+                 </tr>
+
+                 <tr id="headerInputs">
+                     <th></th>
+                     <th><input class="form-control" type="text" ng-model="query1"/></th>
+                     <th><input type="text" class="form-control" ng-model="query2"/></th>
+                     <th><input type="text" class="form-control" ng-model="query3"/></th>
+                     <th><input type="text" class="form-control" ng-model="query4"/></th>
+                     <th><input type="text" class="form-control" ng-model="query5"/></th>
+                     <th><input type="text" class="form-control" ng-model="query6"/></th>
+                     <th><input type="text" class="form-control" ng-model="query7"/></th>
+                     <th><input type="text" class="form-control" ng-model="query8"/></th>
+                     <th><input type="text" class="form-control" ng-model="query9"/></th>
+                     <th><input type="text" class="form-control" ng-model="query10"/></th>
+                     <th><input type="text" class="form-control" ng-model="query11"/></th>
+                     <th><input type="text" class="form-control" ng-model="query12"/></th>
+                     <th><input type="text" class="form-control" ng-model="query13"/></th>
+                     <th><input type="text" class="form-control" ng-model="query14"/></th>
+                     <th><input type="text" class="form-control" ng-model="query15"/></th>
+                     <th><input type="text" class="form-control" ng-model="query16"/></th>
+               <th><input type="text" class="form-control" ng-model="query17"/></th>
+                 </tr>
+                 </thead>
+
+                 <tbody>
+
+                 <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter: c_term? chosenterm.name:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 ))">
+                     <td>
+                         <button class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
+                                 ng-hide="user.userType == 'Pi/CoPi'">Impersonate
+                         </button>
+                     </td>
+                     <td>{{user.firstName}}</td>
+                     <td>{{user.lastName}}</td>
+                     <td>{{user.email}}</td>
+                     <td class="center">{{user.pantherID}}</td>
+                     <td>{{user.userType}}</td>
+                     <td>{{user.college}}</td>
+                     <td>{{user.project}}</td>
+                     <td class="center">{{user.gender}}</td>
+                     <td>{{user.joined_project}}</td>
+                     <td class="center">{{user.rank}}</td>
+                     <td>{{user.mentor}}</td>
+                     <td class="center">{{user.piApproval}}</td>
+                     <td>{{user.multipleproject}}</td>
+                     <td>{{user.appliedDate}}</td>
+                     <td>{{user.RegDate}}</td>
+                     <td>{{user.firstlogin_date}}</td>
+               <td>{{user.semester}}</td>
+                 </tr>
+                 </tbody>
+             </table>
+
+         </div>
+    </div>
+   </div>
        <div class="row">
            <div class="col-md-6 panel panel-default">
                <h3 align="center"> Change UserType </h3>
                <div class="form-group">
                    <table class="table">
+                      <!-- <tr>
+                        <th>
+                           <md-autocomplete
+                            ng-disabled="vm.isDisabled"
+                            md-no-cache="vm.noCache"
+                            md-selected-item="vm.selectedItem"
+                            md-search-text-change="vm.searchTextChange(vm.searchText)"
+                            md-search-text="vm.searchText"
+                            md-selected-item-change="vm.selectedItemChange(item)"
+                            md-items="user in vm.filteredusers"
+                            md-item-text="'['+user.userType+'] '+user.firstName + ' ' + user.lastName"
+                            md-min-length="0"
+                            placeholder="Search for user">
+                             <md-item-template>
+                                <span md-highlight-text="vm.searchText" md-highlight-flags="^i">{{user.firstName + ' ' + user.lastName}}</span>
+                              </md-item-template>
+                              <md-not-found>
+                              No states matching "{{vm.searchText}}" were found.
+                              <a ng-click="vm.newState(vm.searchText)">Create a new one!</a>
+                              </md-not-found>
+                           </md-autocomplete>
+                        </th>
+                     </tr> -->
+
                        <tr>
                            <th>
-                               <b>User:</b> <select class="form-control" ng-model="Selecteduser"
-                                                    ng-options="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers"
-                                                    value="{{vm.userChange(Selecteduser)}}"></select>
+
+                               <b>User:</b>
+                               <select class="form-control" ng-model="Selecteduser"
+                                       ng-options="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers"
+                                       value="{{vm.userChange(Selecteduser)}}"></select>
                            </th>
                        </tr>
                        <tr>
@@ -540,6 +486,97 @@
            </div>
 </div>
 <div ng-show="showProjectMaint">
+   <div>
+		<div class="panel panel-default" style="width:100%;">
+            <nav>
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" style="color:#333333;">Admin Panel - Projects List</a>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right" style="padding-right: 1%">
+                        <li>
+                            <button style="float:right;" ng-click="vm.uncheckp()" ng-model="refresh"
+                                    class="btn second-button btn-default navbar-btn">
+                                <span class="glyphicon glyphicon-refresh"></span>Refresh Filters
+                            </button>
+                        </li>
+                        <li>
+                            &nbsp;<button style="float:right;" ng-click="section2=!section2"
+                                          class="btn second-button btn-default navbar-btn">
+                            <span class="glyphicon glyphicon-filter"></span>Filters
+                        </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+			<section id="section2" ng-show="section2">
+                <table class="table table-striped table-bordered">
+                    <thead style="background-color:#F2F3F4;">
+                    <tr>
+                        <td class="col-md-3">
+                            <input type="checkbox" ng-model="p_term">Semester:
+                            <select class="form-control" id="pterm" ng-model="chosenpterm"
+                                    ng-options="terms as terms.name for terms in vm.terms"></select>
+                        </td>
+                    </tr>
+                    <br/>
+                    </tbody>
+                </table>
+            </section>
+
+			<div class="table" style="overflow: scroll; overflow-y: hidden;">
+                <table id="adminTable" class="table table-striped">
+                    <thead id="header" style="background-color:#ABB2B9;">
+
+                    <tr id="headerPLabels">
+                        <th>Title</th>
+                        <th>Owner</th>
+                        <th>Owner Email</th>
+                        <th>Semester</th>
+                        <th>Status</th>
+						<th>Mentor</th>
+						<th>Faculty</th>
+						<th>Students</th>
+						<th>Max Students</th>
+						<th>Video URL</th>
+                    </tr>
+
+                    <tr id="headerInputs">
+                        <th><input class="form-control" type="text" ng-model="queryp1"/></th>
+                        <th><input type="text" class="form-control" ng-model="queryp2"/></th>
+                        <th><input type="text" class="form-control" ng-model="queryp3"/></th>
+                        <th><input type="text" class="form-control" ng-model="queryp4"/></th>
+                        <th><input type="text" class="form-control" ng-model="queryp5"/></th>
+                        <th><input type="text" class="form-control" ng-model="queryp6"/></th>
+						<th><input type="text" class="form-control" ng-model="queryp7"/></th>
+                        <th><input type="text" class="form-control" ng-model="queryp8"/></th>
+                        <th><input type="text" class="form-control" ng-model="queryp9"/></th>
+						<th><input type="text" class="form-control" ng-model="queryp10"/></th>
+					</tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr ng-repeat="project in (filteredPItems = ( vm.tabledata_p | filter: p_term? {semester: chosenpterm.name}:''| filter:queryp1| filter:queryp2| filter:queryp3| filter:queryp4| filter:queryp5| filter:queryp6| filter:queryp7| filter:queryp8| filter:queryp9| filter:queryp10 ))">
+                        <td>{{project.title}}</td>
+                        <td>{{project.owner_name}}</td>
+                        <td>{{project.owner_email}}</td>
+                        <td>{{project.semester}}</td>
+                        <td>{{project.status}}</td>
+						<td>{{project.mentor.name}}</td>
+                        <td>{{project.faculty.name}}</td>
+                        <td>{{project.members_detailed}}</td>
+                        <td>{{project.maxStudents}}</td>
+                        <td>{{project.video_url}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+		</div>
+	</div>
+
    <div class="col-md-6 panel panel-default">
        <h3 align="center"> Lock/Unlock Projects </h3>
        <div class="form-group">
@@ -576,4 +613,5 @@
        </div>
    </div>
 </div>
+
 </html>

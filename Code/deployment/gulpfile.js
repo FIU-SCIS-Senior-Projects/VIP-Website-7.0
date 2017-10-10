@@ -16,6 +16,7 @@ module.exports = function(webapp) {
         webapp + "lib/angular-ui-router/release/angular-ui-router.min.js",
         webapp + "lib/jquery/dist/jquery.min.js",
         webapp + "lib/bootstrap/dist/js/bootstrap.min.js",
+        webapp + "lib/angular-bootstrap/ui-bootstrap-tpls.min.js",
         //User Story #1142
         webapp + "lib/trix-textarea-toolbar/trix.js",
         webapp + "lib/trix-textarea-toolbar/angular-trix.min.js",

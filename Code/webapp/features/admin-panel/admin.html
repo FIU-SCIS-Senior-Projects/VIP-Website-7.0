@@ -68,7 +68,7 @@
             <div class="form-group">
                 <table class="table">
                     <tr>
-                       <input type="text" ng-model="customSelected" placeholder="Custom template" uib-typeahead="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers | filter:{firstName:$viewValue} | limitTo:8" class="form-control">
+                       <input type="text" ng-model="selectUser" placeholder="Search for student" uib-typeahead="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers | filter:{firstName:$viewValue} | limitTo:8" class="form-control" ng-blur="vm.selectUser(selectUser)">
 
                         <select class="form-control" ng-model="Selecteduserconfirm"
                                 ng-options="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers"

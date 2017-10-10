@@ -115,8 +115,9 @@ function selectedItemChange(item) {
         vm.projectinprojects;
         vm.userinunconfirmed;
         vm.AddTerms = AddTerms;
-        vm.searchUser = function(user){
+        vm.selectUser = function(user){
            console.log(user)
+           $scope.Selecteduserconfirm = user
         }
 
         vm.currentUser = function (user) {

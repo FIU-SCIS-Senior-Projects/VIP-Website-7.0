@@ -47,9 +47,13 @@
 		vm.tabledata_p = null;
 		// User story #1300
 		vm.editingUser;
+		vm.editingUserOrig;
 		// Used for filtering of ranks in add and editing user modal
 		vm.addRanks = [];
 		vm.editRanks = [];
+		// User story #1313
+		vm.editingProject;
+		vm.editingProjOrig;
 
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
@@ -221,6 +225,10 @@
                     ]
                 }
             ];
+			
+		function validateEmail(email) {
+            return /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(email)
+		};
 		
 		vm.genderOptions = [{type: 'Male'}, {type: 'Female'}];		
 		vm.booleanOptions = [{type: true}, {type: false}];
@@ -228,6 +236,7 @@
 		// user story #1300
 		vm.editUser = function(user) {
 			vm.editingUser = user;
+			vm.editingUserOrig = {project: user.project};
 			
 			// Set initial values of input to be current user values
 			$scope.editUserFirstName = vm.editingUser.firstName;
@@ -245,8 +254,6 @@
 				term: findIndexTerm(vm.editingUser.semester)
 			};	
 			var indexRank;
-			
-			console.log(vm.editingUser.firstName, vm.editingUser.lastName, indexes);
 			
 			// Assign to drop down box if index was found (the value existed)
 			// Otherwise reset selected index of drop down box
@@ -355,60 +362,70 @@
 			vm.newUser = null;
 			// First check if required information is missing
 			if ($scope.addUserFirstName && $scope.addUserLastName && $scope.addUserEmail) {
-				// Create user object
-				var newUser = {
-					firstName: $scope.addUserFirstName,
-					lastName: $scope.addUserLastName,
-					email: $scope.addUserEmail,
-					RegDate: DateTimeService.getCurrentDateTimeAsString(),
-					adminCreated: true
-				};
-				
-				if ($scope.addUserPassword) {
-					newUser["password"] = addUserPassword;
-					newUser["passwordConf"] = addUserPassword;
-				}
-				if ($scope.addUserRank) 
-					newUser["rank"] = $scope.addUserRank;
-				if ($scope.addUserPID) 
-					newUser["pantherID"] = $scope.addUserPID;
-				if ($scope.addUserGender)
-					newUser["gender"] = $scope.addUserGender.type;
-				if ($scope.addUserProject) 
-					newUser["project"] = $scope.addUserProject.title;
-				if ($scope.addUserPIApproval) 
-					newUser["piApproval"] = $scope.addUserPIApproval.type;
-				if ($scope.addUserCollege)
-					newUser["college"] = $scope.addUserCollege.name;
-				if ($scope.addUserType) 
-					newUser["userType"] = $scope.addUserType.name;
-				if ($scope.addUserTerm) 
-					newUser["semester"] = $scope.addUserTerm.name;
-				
-				if (newUser.project) 
-					newUser["joined_project"] = true;
-				else
-					newUser["joined_project"] = false;
-				
-				console.log("Adding User", newUser);
-				
-				// Send POST request
-				User.create(newUser).then(function(data) {
-					if (data) {
-						if (data.data.success) {
-							document.getElementById('addUserMessage').innerHTML = 'Adding user was successful';
-							vm.newUser = data.data.object;
-							console.log('Added User', data.data, data.data.object);
-						}
-						else {
-							document.getElementById('addUserMessage').innerHTML = 'Error: HTTP request failed';
-							console.log(data);	
-						}
-					} else { // http error
-						document.getElementById('addUserMessage').innerHTML = 'Error: HTTP response not received';
-						console.log('Error: Adding user failed');	
+				// Then check if email is valid
+				if (validateEmail($scope.addUserEmail)) {
+					// Create user object
+					var newUser = {
+						firstName: $scope.addUserFirstName,
+						lastName: $scope.addUserLastName,
+						email: $scope.addUserEmail,
+						RegDate: DateTimeService.getCurrentDateTimeAsString(),
+						adminCreated: true
+					};
+					
+					if ($scope.addUserPassword) {
+						newUser["password"] = addUserPassword;
+						newUser["passwordConf"] = addUserPassword;
 					}
-				});
+					if ($scope.addUserRank) 
+						newUser["rank"] = $scope.addUserRank;
+					if ($scope.addUserPID) 
+						newUser["pantherID"] = $scope.addUserPID;
+					if ($scope.addUserGender)
+						newUser["gender"] = $scope.addUserGender.type;
+					if ($scope.addUserProject) 
+						newUser["project"] = $scope.addUserProject.title;
+					if ($scope.addUserPIApproval) 
+						newUser["piApproval"] = $scope.addUserPIApproval.type;
+					if ($scope.addUserCollege)
+						newUser["college"] = $scope.addUserCollege.name;
+					if ($scope.addUserType) 
+						newUser["userType"] = $scope.addUserType.name;
+					if ($scope.addUserTerm) 
+						newUser["semester"] = $scope.addUserTerm.name;
+					
+					if (newUser.project) 
+						newUser["joined_project"] = true;
+					else
+						newUser["joined_project"] = false;
+					
+					console.log("Adding User", newUser);
+					
+					// Send POST request
+					User.create(newUser).then(function(data) {
+						if (data) {
+							if (data.data.success) {
+								document.getElementById('addUserMessage').innerHTML = 'Adding user was successful';
+								vm.newUser = data.data.object;
+								console.log('Added User', data.data, data.data.object);
+								// Update the project if user is added to one
+								if (newUser.project)
+									addUserToProject(newUser);
+							}
+							else {
+								document.getElementById('addUserMessage').innerHTML = 'Error: HTTP request failed';
+								console.log(data);	
+							}
+						} else { // http error
+							document.getElementById('addUserMessage').innerHTML = 'Error: HTTP response not received';
+							console.log('Error: Adding user failed');	
+						}
+					});
+				}
+				else {
+					document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Email Address';
+					console.log("Error: Invalid Email Address");	
+				}
 			}
 			else {
 				document.getElementById('addUserMessage').innerHTML = 'Error: Missing required information';
@@ -420,74 +437,164 @@
 		vm.saveChangesUser = function() {
 			// First check if required information is missing
 			if ($scope.editUserFirstName && $scope.editUserLastName && $scope.editUserEmail) {
-				// Update editingUser
-				vm.editingUser.firstName = $scope.editUserFirstName;
-				vm.editingUser.lastName = $scope.editUserLastName;
-				vm.editingUser.email = $scope.editUserEmail;
+				// Then check if email is valid
+				if (validateEmail($scope.editUserEmail)) {
+					// Update editingUser
+					vm.editingUser.firstName = $scope.editUserFirstName;
+					vm.editingUser.lastName = $scope.editUserLastName;
+					vm.editingUser.email = $scope.editUserEmail;
 
-				if ($scope.editUserRank) 
-					vm.editingUser.rank = $scope.editUserRank;
-				else
-					vm.editingUser.rank = null;
-				if ($scope.editUserPID) 
-					vm.editingUser.pantherID = $scope.editUserPID;
-				else
-					vm.editingUser.pantherID = null;		
-				if ($scope.editUserGender)
-					vm.editingUser.gender = $scope.editUserGender.type;
-				else
-					vm.editingUser.gender = null;
-				if ($scope.editUserProject) 
-					vm.editingUser.project = $scope.editUserProject.title;
-				else
-					vm.editingUser.project = null;
-				if ($scope.editUserPIApproval) 
-					vm.editingUser.piApproval = $scope.editUserPIApproval.type;
-				else
-					vm.editingUser.piApproval = null;
-				if ($scope.editUserCollege) 
-					vm.editingUser.college = $scope.editUserCollege.name;
-				else
-					vm.editingUser.college = null;
-				if ($scope.editUserType) 
-					vm.editingUser.userType = $scope.editUserType.name;
-				else
-					vm.editingUser.userType = null;
-				if ($scope.editUserTerm) 
-					vm.editingUser.semester = $scope.editUserTerm.name;
-				else
-					vm.editingUser.semester = null;
-				
-				
-				if (vm.editingUser.project) 
-					vm.editingUser.joined_project = true;
-				else
-					vm.editingUser.joined_project = false;
-				
-				console.log("Editing User", vm.editingUser);
-				
-				// Send PUT request
-				User.update({user: vm.editingUser}).then(function(data) {
-					if (data) {
-						if (data.data.success) {
-							document.getElementById('editUserMessage').innerHTML = 'Editing user was successful';
-							console.log('Edited User');
+					if ($scope.editUserRank) 
+						vm.editingUser.rank = $scope.editUserRank;
+					else
+						vm.editingUser.rank = null;
+					if ($scope.editUserPID) 
+						vm.editingUser.pantherID = $scope.editUserPID;
+					else
+						vm.editingUser.pantherID = null;		
+					if ($scope.editUserGender)
+						vm.editingUser.gender = $scope.editUserGender.type;
+					else
+						vm.editingUser.gender = null;
+					if ($scope.editUserProject) 
+						vm.editingUser.project = $scope.editUserProject.title;
+					else
+						vm.editingUser.project = null;
+					if ($scope.editUserPIApproval) 
+						vm.editingUser.piApproval = $scope.editUserPIApproval.type;
+					else
+						vm.editingUser.piApproval = null;
+					if ($scope.editUserCollege) 
+						vm.editingUser.college = $scope.editUserCollege.name;
+					else
+						vm.editingUser.college = null;
+					if ($scope.editUserType) 
+						vm.editingUser.userType = $scope.editUserType.name;
+					else
+						vm.editingUser.userType = null;
+					if ($scope.editUserTerm) 
+						vm.editingUser.semester = $scope.editUserTerm.name;
+					else
+						vm.editingUser.semester = null;
+					
+					
+					if (vm.editingUser.project) 
+						vm.editingUser.joined_project = true;
+					else
+						vm.editingUser.joined_project = false;
+					
+					console.log("Editing User", vm.editingUser);
+					
+					// Send PUT request
+					User.update({user: vm.editingUser}).then(function(data) {
+						if (data) {
+							if (data.data.success) {
+								document.getElementById('editUserMessage').innerHTML = 'Editing user was successful';
+								console.log('Edited User');
+								
+								// Update the project if user is added to one
+								if (!vm.editingUserOrig.project && vm.editingUser.joined_project)
+									addUserToProject(vm.editingUser);
+								// Send notification and update project if user was removed from project
+								else if (vm.editingUserOrig.project && !vm.editingUser.joined_project) 
+									removeUserFromProject(vm.editingUser, vm.editingUserOrig.project, true);
+								// Update the both projects if user is moved from one to another
+								else if (vm.editingUserOrig.project != vm.editingUser.project && vm.editingUser.joined_project)
+									updateProjectsUser(vm.editingUser, vm.editingUserOrig.project);
+							}
+							else {
+								document.getElementById('editUserMessage').innerHTML = 'Error: HTTP request failed';
+								console.log(data);	
+							}
+						} else { // http error
+							document.getElementById('editUserMessage').innerHTML = 'Error: HTTP response not received';
+							console.log('Error: Adding user failed');	
 						}
-						else {
-							document.getElementById('editUserMessage').innerHTML = 'Error: HTTP request failed';
-							console.log(data);	
-						}
-					} else { // http error
-						document.getElementById('editUserMessage').innerHTML = 'Error: HTTP response not received';
-						console.log('Error: Adding user failed');	
-					}
-				});
+					});
+				}
+				else {
+					document.getElementById('editUserMessage').innerHTML = 'Error: Invalid Email Address';
+					console.log("Error: Invalid Email Address");
+				}
 			}
 			else {
 				document.getElementById('editUserMessage').innerHTML = 'Error: Missing required information';
 				console.log("Error: Missing required information");	
 			}
 		};
+		
+		// Update the project if user is added to one
+        function addUserToProject(user) {
+			var project;
+			
+			for (var i = 0; i < vm.allprojects.length; i++) {
+                if (vm.allprojects[i].title == user.project) {
+                    project = vm.allprojects[i];
+                }
+            }
+
+			// Check user isnt already part of the project (should not happen)
+			var exists = false;
+			for (var j = 0; j < project.members.length; j++) {
+                if (project.members[j] == user.email) {
+                    exists = true;
+					break;
+                }
+            }
+			if(!exists) {
+				project.members_detailed.push(user.firstName + " " + user.lastName);
+				project.members.push(user.email);
+				ProjectService.editProject(project, project._id);
+				console.log("Added User to project", project);
+			}
+        };
+		
+		// Update the project if user is removed from one
+        function removeUserFromProject(user, formerProject, sendNotification) {
+            var name = user.firstName + " " + user.lastName;
+            var email = user.email;
+
+            for (i = 0; i < vm.allprojects.length; i++) {
+                if (vm.allprojects[i].title == formerProject) {
+                    formerProject = vm.allprojects[i];
+                }
+            }
+			
+			if (formerProject) {
+				for (i = 0; i < formerProject.members.length; i++) {
+					if (formerProject.members[i] == email) {
+						formerProject.members.splice(i, 1);
+						formerProject.members_detailed.splice(i, 1);
+						break;
+					}
+				}
+				ProjectService.editProject(formerProject, formerProject._id);
+				console.log("Removed User from project");
+			}
+			if (sendNotification)
+				sendEmailRemovedProject(name, email, formerProject);
+        };
+		
+		// Send notification user has been removed from project
+		function sendEmailRemovedProject(name, email, formerProject) {
+			var email_msg =
+			{
+				recipient: email,
+				text: "Your current project has been cleared. For more information, please contact a PI.",
+				subject: "Project Cleared",
+				recipient2: vm.adminSettings.current_email,
+				text2: name + " has been successfully removed from project '" + (formerProject ? formerProject : 'unknown') + "'.",
+				subject2: "Removed user from project"
+			};
+			User.nodeEmail(email_msg);	
+		};
+		
+		// Update the both projects if user is moved from one project to another
+        function updateProjectsUser(user, formerProject) {
+			console.log("Testing moving user project");
+			addUserToProject(user);
+			removeUserFromProject(user, formerProject, false);
+        };
 		
 		vm.deletingUser;
 		
@@ -502,6 +609,9 @@
 					if (data.data.message == 'successfully deleted!') {
 						document.getElementById('deleteUserMessage').innerHTML = 'Deleting user was successful';
 						console.log('Deleted User');
+						// Remove user from project if user was in one
+						if (vm.deletingUser.project)
+							removeUserFromProject(vm.deletingUser, vm.deletingUser.project, false);
 					}
 					else {
 						document.getElementById('deleteUserMessage').innerHTML = 'Error: HTTP request failed';
@@ -542,7 +652,6 @@
 			vm.deletingUser = null;
 		};
 		
-
         vm.impersonate = function(user) {
             adminService.impersonate(user).then(function(data) {
                 if (!data.redirectUrl) {//there was an error
@@ -615,7 +724,7 @@
 
                 });
             }
-        }
+        };
 		
 		vm.getAddRanks = function(usertype) {
 			//console.log(usertype, usertype.name);
@@ -632,7 +741,7 @@
 			if(!found)
 				vm.addRanks = [];
 				
-        }
+        };
 		
 		vm.getEditRanks = function(usertype) {
 			//console.log(usertype, usertype.name);
@@ -648,9 +757,357 @@
             }
 			if(!found)
 				vm.editRanks = [];
+        };
+		
+		// User Story #1313
+		
+		vm.statusList = [{type: 'Active'}, {type: 'Disabled'}];
+		
+		// Fill in edit project form with existing values in project
+		vm.editProject = function(project) {
+			console.log("In edit project");
+			vm.editingProject = project;
+			
+			// Set initial values of input to be current projects values
+			$scope.editPTitle = vm.editingProject.title;
+			$scope.editPDescription = vm.editingProject.description;
+			$scope.editPMaxStudents = vm.editingProject.maxStudents;
+			$scope.editPUrl = vm.editingProject.video_url;
+			
+			// Search for indexes for references to projects's values (if they exist)
+			var indexes = {
+				owner: findIndexOwner(vm.editingProject.owner_name),
+				term: findIndexTerm(vm.editingProject.semester),
+				status: findIndexStatus(vm.editingProject.status)
+			};	
+			
+			// Assign to drop down box if index was found (the value existed)
+			// Otherwise reset selected index of drop down box
+			
+			if (indexes.owner != -1)
+				$scope.editPOwner = vm.users[indexes.owner];
+			else
+				document.getElementById("ddOwnerP").selectedIndex = -1;
+			if (indexes.term != -1)
+				$scope.editPTerm = vm.terms[indexes.term];
+			else
+				document.getElementById("ddTermP").selectedIndex = -1;
+			if (indexes.status != -1) 
+				$scope.editPStatus = vm.statusList[indexes.status];
+			else
+				document.getElementById("ddStatusP").selectedIndex = -1;
+		};
+		
+		function findIndexOwner(owner) {
+			var userName;
+			if (owner)
+				for (var i=0; i<vm.allusers.length; i++) {
+					userName = vm.allusers[i].firstName + ' ' + vm.allusers[i].lastName;
+                    if (userName == owner) {
+                        return i;
+					}
+				}
+			return -1;
+		};
+		
+		function findIndexStatus(status) {
+			if (status)
+				for (var i=0; i<vm.statusList.length; i++)
+                    if (vm.statusList[i].type == status)
+                        return i;
+			return -1;
+		};
+		
+		// Save changes to edited project
+		vm.saveChangesProject = function() {
+			// First check if required information is missing
+			if ($scope.editPTitle) {
+				// Then check if there are illegal values
+				if ($scope.editPMaxStudents < 0) {
+					document.getElementById('editProjectMessage').innerHTML = 'Error: Max Students must be a positive value';
+					console.log('Error: Max Students must be a positive value');	
+				}
+				else if ($scope.editPStatus.type == 'Active' && vm.terms[findIndexTerm($scope.editPTerm.name)].status != 'Active') {
+					document.getElementById('editProjectMessage').innerHTML = 'Error: Cannot set project to Active status in a non-active semester';
+					console.log('Error: Cannot set project to Active status in a non-active semester');	
+				}
+				else { // Update editingProject				
+					vm.editingProject.title = $scope.editPTitle;
+					vm.editingProject.description = $scope.editPDescription;
+					vm.editingProject.maxStudents = $scope.editPMaxStudents;
+					vm.editingProject.video_url = ProcessVideoURL($scope.editPUrl);
+					
+					if ($scope.editPOwner) {
+
+						var projectOwner = vm.allusers[findIndexOwner($scope.editPOwner.firstName + ' ' + $scope.editPOwner.lastName)];
+						
+						vm.editingProject.owner = projectOwner._id;
+						vm.editingProject.owner_name = projectOwner.firstName + ' ' + projectOwner.lastName;
+						vm.editingProject.owner_email = projectOwner.email;
+						vm.editingProject.owner_rank = projectOwner.rank;
+					}
+					else {
+						vm.editingProject.owner = null;
+						vm.editingProject.owner_name = null;
+						vm.editingProject.owner_email = null;
+						vm.editingProject.owner_rank = null;
+					}
+					if ($scope.editPTerm) 
+						vm.editingProject.semester = $scope.editPTerm.name;
+					else
+						vm.editingProject.semester = null;
+					
+					if ($scope.editPStatus) 
+						vm.editingProject.status = $scope.editPStatus.type;
+					else
+						vm.editingProject.status = null;
+					
+					console.log("Editing Project", vm.editingProject);
+					
+					// Send PUT request
+					ProjectService.editProject(vm.editingProject, vm.editingProject._id).then(function(data) {
+						if (data) {
+							if (data.data.message == 'Updated!') {
+								document.getElementById('editProjectMessage').innerHTML = 'Editing project was successful';
+								console.log('Edited Project');
+							}
+							else {
+								document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP request failed';
+								console.log(data);	
+							}
+						} else { // http error
+							document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP response not received';
+							console.log('Error: Editing project failed');	
+						}
+					});
+				}
+			}
+			else {
+				document.getElementById('editProjectMessage').innerHTML = 'Error: Missing required information';
+				console.log("Error: Missing required information");	
+			}
+		};
+		
+		function ProcessVideoURL(VideoURL) {
+			// format the youtube videos correctly
+			// input: https://www.youtube.com/watch?v=uQ_DHRI-Xp0
+			// output: https://www.youtube.com/embed/uQ_DHRI-Xp0
+			if (VideoURL) {
+				// video is already embed format, return
+				if (VideoURL.indexOf("youtube.com/embed/") > -1) {
+					return VideoURL;
+				}
+
+				// youtube.com universal filter
+				if (VideoURL.indexOf("youtube.com") > -1) {
+					videoID = VideoURL.substr(VideoURL.indexOf("?v=") + 3);
+					updatedVideoURL = "https://www.youtube.com/embed/" + videoID;
+					//console.log("Filtered url: " + updatedVideoURL);
+					return updatedVideoURL;
+				}
+
+				// youtu.be filter
+				else if (VideoURL.indexOf("youtu.be") > -1) {
+					videoID = VideoURL.substr(VideoURL.indexOf(".be/") + 4);
+					updatedVideoURL = "https://www.youtube.com/embed/" + videoID;
+					//console.log("Filtered url: " + updatedVideoURL);
+					return updatedVideoURL;
+				}
+
+				else {
+					return VideoURL;
+				}
+			}
+			else {
+				return "";
+			}
         }
 		
+		
+		vm.editProjectUsers = function(project) {
+			vm.editingProject = project;
+			vm.editingProjOrig = Array.from(vm.editingProject.members);
+		};
+		
+		vm.addStudentProject = function() {
+			if ($scope.addPUser) {
+				var addStudent = $scope.addPUser;
+				var found = false;
+				for (i = 0; i < vm.editingProject.members.length; i++)
+					if (vm.editingProject.members[i] == addStudent.email) {
+						found = true; break;
+					}
+				if (!found) { // Add student into project list if they are not already in the project
+					vm.editingProject.members_detailed.push(addStudent.firstName + ' ' + addStudent.lastName);
+					vm.editingProject.members.push(addStudent.email);
+				}
+			}
+		};
+		
+		vm.removeStudentProject = function(removingStudent) {
+			// Remove student from project roster
+			for (i = 0; i < vm.editingProject.members.length; i++) {
+				if (vm.editingProject.members_detailed[i] == removingStudent) {
+					vm.editingProject.members.splice(i, 1); 
+					vm.editingProject.members_detailed.splice(i, 1);
+				}	
+			}		
+		};
+		
+		vm.editingProjectNew;
+		
+		// Update Project's users information
+		vm.saveChangesProjectUsers = function() {	
+			console.log("Editing Projects Users", vm.editingProject);
+			// Send PUT request 
+			ProjectService.editProject(vm.editingProject, vm.editingProject._id).then(function(data) {
+				if (data) {
+					if (data.data.message == 'Updated!') {
+						document.getElementById('editProjectMessage').innerHTML = 'Editing projects users was successful';
+						console.log('Edited Projects Users');
+						
+						vm.editingProjectNew = Array.from(vm.editingProject.members);
+						updateProjectUsers(vm.editingProject.title, vm.editingProjectNew, vm.editingProjOrig);
+					}
+					else {
+						document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP request failed';
+						console.log(data);	
+					}
+				} else { // http error
+					document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP response not received';
+					console.log('Error: Editing project failed');	
+				}
+			});
+		};
+		
+		function updateProjectUsers(project, projectMembers, formerProjectMembers) {
+			var i,j;
+			// Find added users and update them
+			for (i = 0; i < projectMembers.length; i++) {
+				var found = false;
+				for (j = 0; j < formerProjectMembers.length; j++) {
+					if (formerProjectMembers[j] == projectMembers[i]) {
+						found = true;
+						break;
+					}	
+				}
+				if (!found) {
+					console.log('found added user', projectMembers[i]);
+					var pUser = vm.allusers[findIndexUser(projectMembers[i])];
+					if (pUser) {
+						pUser.project = project;
+						pUser.joined_project = true;
+						User.update({user: pUser}).then(function(data) {
+							if (data) {
+								if (data.data.success) {
+									console.log('Added user updated');
+								}
+								else {
+									console.log(data);	
+								}
+							} else { // http error
+								console.log('Error: Updating added user failed');	
+							}
+						});
+					}
+					else {
+						console.log('Error: Could not find added user');	
+					}
+				}
+			}
+			// Find removed users and delete them
+			for (j = 0; j < formerProjectMembers.length; j++) {
+				var found = false;
+				for (i = 0; i < projectMembers.length; i++) {
+					if (formerProjectMembers[j] == projectMembers[i]) {
+						found = true;
+						break;
+					}	
+				}
+				if (!found) {
+					console.log('found removed user', formerProjectMembers[j]);
+					var pUser = vm.allusers[findIndexUser(formerProjectMembers[j])];
+					if (pUser) {
+						pUser.project = null;
+						pUser.joined_project = false;
+						User.update({user: pUser}).then(function(data) {
+							if (data) {
+								if (data.data.success) {
+									console.log('Removed user updated');
+								}
+								else {
+									console.log(data);	
+								}
+							} else { // http error
+								console.log('Error: Updating removed user failed');	
+							}
+						});
+					}
+					else {
+						console.log('Error: Could not find removed user');	
+					}
+				}
+			}
+		};
+		
+		function findIndexUser(email) {
+			for (i = 0; i < vm.allusers.length; i++) {
+				if (vm.allusers[i].email == email)
+					return i;
+			}
+			return -1;
+		};
+		
+		
+		vm.deletingProject;
+		
+		vm.selectDeleteProject = function(project) {
+			vm.deletingProject = project;
+		}
+		
+		vm.deleteProject = function() {	
+			ProjectService.delete(vm.deletingProject._id).then(function(data) {
+				if (data) {
+					console.log('Delete test Data', data);
+					if (data.message == 'successfully deleted!') {
+						document.getElementById('deleteProjectMessage').innerHTML = 'Deleting project was successful';
+						console.log('Deleted Project');
+						// Remove project from all users (if any) in deleted project
+						if (typeof vm.deletingProject.members != "undefined" && vm.deletingProject.members != null && vm.deletingProject.members.length > 0)
+							updateProjectUsers(vm.deletingProject.title, [], vm.deletingProject.members);
+					}
+					else {
+						document.getElementById('deleteProjectMessage').innerHTML = 'Error: HTTP request failed';
+						vm.deletingProject = null;
+						console.log(data);	
+					}
+				} else { // http error
+					document.getElementById('deleteProjectMessage').innerHTML = 'Error: HTTP response not received';
+					vm.deletingProject = null;
+					console.log('Error: Deleting project failed');	
+				}
+            });
+		};
+		
+		vm.updatePTableDelete = function() {
+			if (vm.deletingProject) {
+				var ind = -1;
+				for (var i=0; i<vm.filteredprojects.length; i++)
+					if (vm.filteredprojects[i]._id == vm.deletingProject._id)
+						ind = i;
 
+				if(ind != -1) {
+					vm.filteredprojects.splice(ind, 1);
+				}
+				vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+				vm.tabledata_p = eval(vm.tabledata_p);
+			}
+			vm.deletingProject = null;
+		};
+		
+		// End US #1313
+
+		
         //Ravi's Help
         function AddTerms() {
             var termsdata = {
@@ -841,10 +1298,12 @@
 		
 		vm.uncheckp = function () {	
 			// userstory #1176
-			for (var i = 1; i <= 10; i++) {
+			for (var i = 1; i <= 12; i++) {
                 $scope['queryp' + i] = '';
             }
+			$scope.selectedPOwner = '';
 			$scope.selectedPTerm = '';
+			$scope.selectedPStatus = '';
         }
 		
 		

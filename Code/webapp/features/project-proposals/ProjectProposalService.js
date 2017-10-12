@@ -36,6 +36,7 @@
 
             projectFactory.delete = function (id) {
                 return $http.delete('/api/projects/' + id).then(function (data) {
+					return data.data;
                 });
             };
 

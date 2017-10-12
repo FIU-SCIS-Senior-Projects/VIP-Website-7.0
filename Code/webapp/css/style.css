@@ -890,8 +890,10 @@ background-color: #1DBFE6;
 #adminTable tbody>tr>td
 {
     border-bottom: 1px solid lightgray;
-    white-space: nowrap;
+    white-space: normal;
+	font-size: small;
 }
+
 .table #header>#headerInputs>th>input[type= "text"]
 {
     height: 30px;
@@ -900,7 +902,7 @@ background-color: #1DBFE6;
     background-color: #204d74;
     border-style: none;
     min-width: 100px;
-    max-width: 500px;
+    max-width: 400px;
 }
 
 .table #header>#headerInputs>th> input:focus
@@ -915,6 +917,7 @@ background-color: #1DBFE6;
 {
     background-color: #061F3D;
     color: white;
+	font-size: small;
 }
 .table #header>#headerLabels>th
 {
@@ -927,3 +930,10 @@ label.small {
     font-weight: normal;
     font-size: 0.8em;
 }
+
+.textContainer {
+	width: 95%;
+    margin: auto;
+}
+
+

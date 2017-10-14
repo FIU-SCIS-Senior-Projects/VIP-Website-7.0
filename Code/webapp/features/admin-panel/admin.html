@@ -236,31 +236,39 @@
                   </li>
               </ul>
           </div>
-         <section id="section1" ng-show="section1">
+         <section id="section1">
              <table class="table table-striped table-bordered">
                  <thead style="background-color:#F2F3F4;">
                  <tr>
                      <td class="col-md-3">
-                         <input type="checkbox" ng-model="usertype">UserType:
+                         UserType:
                          <select class="form-control" id="susertype" ng-model="selectedusertype"
                                  ng-options="typerank as typerank.name for typerank in vm.typeranks"
-                                 value="{{vm.getRank(selectedusertype)}}"></select>
+                                 value="{{vm.getRank(selectedusertype)}}">
+								 <option value=""></option>
+						 </select>
                      </td>
                      <td class="col-md-3">
-                         <input type="checkbox" ng-model="userrank">UserRank:
+                         UserRank:
                          <select class="form-control" ng-model="selecteduserrank"
-                                 ng-options="rank for rank in vm.filteredrank"></select></input>
+                                 ng-options="rank for rank in vm.filteredrank">
+								 <option value=""></option>
+						 </select>
                      </td>
                      <td class="col-md-3">
-                         <input type="checkbox" ng-model="userproject">Project:
+                         Project:
                          <select class="form-control" ng-model="selecteduserproject"
                                  ng-options="projects as projects.title for projects in vm.projects"
-                                 value="{{vm.getStudents(SelectedProject)}}"></select>
+                                 value="{{vm.getStudents(SelectedProject)}}">
+								 <option value=""></option>
+						 </select>
                      </td>
                <td class="col-md-3">
-                         <input type="checkbox" ng-model="c_term">Semester:
+                         Semester:
                          <select class="form-control" ng-model="chosenterm"
-                                 ng-options="terms as terms.name for terms in vm.terms"></select>
+                                 ng-options="terms as terms.name for terms in vm.terms">
+								 <option value=""></option>
+						 </select>
                      </td>
                  </tr>
                  <br/>
@@ -729,45 +737,45 @@
                    <thead id="header" style="background-color:#ABB2B9;">
 
                    <tr id="headerPLabels">
-                 <th></th>
-                 <th></th>
-                 <th></th>
-                       <th>Title</th>
-                       <th>Owner</th>
-                 <th ng-show="simpleP">Owner Rank</th>
-                       <th>Owner Email</th>
-                       <th>Semester</th>
-                       <th>Status</th>
-                 <th ng-show="simpleP">Mentor</th>
-                 <th ng-show="simpleP">Faculty</th>
-                 <th>Students</th>
-                 <th ng-show="simpleP">Description</th>
-                 <th ng-show="simpleP">Max Students</th>
-                 <th ng-show="simpleP">Video URL</th>
+					 <th></th>
+					 <th></th>
+					 <th></th>
+					 <th>Title</th>
+					 <th>Owner</th>
+					 <th ng-show="simpleP">Owner Rank</th>
+					 <th>Owner Email</th>
+					 <th>Semester</th>
+					 <th>Status</th>
+					 <th ng-show="simpleP">Mentor</th>
+					 <th ng-show="simpleP">Faculty</th>
+					 <th>Students</th>
+					 <th ng-show="simpleP">Description</th>
+					 <th ng-show="simpleP">Max Students</th>
+					 <th ng-show="simpleP">Video URL</th>
                    </tr>
 
                    <tr id="headerInputs">
-                 <th></th>
-                 <th></th>
-                 <th></th>
-                       <th><input class="form-control" type="text" ng-model="queryp1"/></th>
-                 <th><input type="text" class="form-control" ng-model="queryp2"/></th>
-                       <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp3"/></th>
-                 <th><input type="text" class="form-control" ng-model="queryp4"/></th>
-                       <th><input type="text" class="form-control" ng-model="queryp5"/></th>
-                       <th><input type="text" class="form-control" ng-model="queryp6"/></th>
-                       <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp7"/></th>
-                 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp8"/></th>
-                       <th><input type="text" class="form-control" ng-model="queryp9"/></th>
-                       <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp10"/></th>
-                 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp11"/></th>
-                 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp12"/></th>
-             </tr>
+					 <th></th>
+					 <th></th>
+					 <th></th>
+					 <th><input class="form-control" type="text" ng-model="queryp1"/></th>
+					 <th><input type="text" class="form-control" ng-model="queryp2"/></th>
+				     <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp3"/></th>
+					 <th><input type="text" class="form-control" ng-model="queryp4"/></th>
+				     <th><input type="text" class="form-control" ng-model="queryp5"/></th>
+					 <th><input type="text" class="form-control" ng-model="queryp6"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp7"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp8"/></th>
+					 <th><input type="text" class="form-control" ng-model="queryp9"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp10"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp11"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp12"/></th>
+				   </tr>
                    </thead>
 
                     <tbody>
 
-                    <tr dir-paginate="project in (filteredPItems = ( vm.tabledata_p | filter: p_term? {semester: chosenpterm.name}:''| filter:queryp1| filter:queryp2| filter:queryp3| filter:queryp4| filter:queryp5| filter:queryp6| filter:queryp7| filter:queryp8| filter:queryp9| filter:queryp10 ))|itemsPerPage: 10"
+                    <tr dir-paginate="project in (filteredPItems = ( vm.tabledata_p | filter: selectedPStatus? {status: selectedPStatus.type}:'' | filter: selectedPOwner? {owner_name: selectedPOwner.owner_name}:'' | filter: selectedPTerm? {semester: selectedPTerm.name}:''| filter:queryp1| filter:queryp2| filter:queryp3| filter:queryp4| filter:queryp5| filter:queryp6| filter:queryp7| filter:queryp8| filter:queryp9| filter:queryp10 ))|itemsPerPage: 10"
                     pagination-id="projectsPage"
                     >
                     <td>

@@ -606,6 +606,9 @@ function selectedItemChange(item) {
 				project.members.push(user.email);
 				ProjectService.editProject(project, project._id);
 				console.log("Added User to project", project);
+				// Refresh projects panel
+				vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+				vm.tabledata_p = eval(vm.tabledata_p);
 			}
         };
 
@@ -630,6 +633,9 @@ function selectedItemChange(item) {
 				}
 				ProjectService.editProject(formerProject, formerProject._id);
 				console.log("Removed User from project");
+				// Refresh projects panel
+				vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+				vm.tabledata_p = eval(vm.tabledata_p);
 			}
 			if (sendNotification)
 				sendEmailRemovedProject(name, email, formerProject);
@@ -1028,6 +1034,9 @@ function selectedItemChange(item) {
 
 						vm.editingProjectNew = Array.from(vm.editingProject.members);
 						updateProjectUsers(vm.editingProject.title, vm.editingProjectNew, vm.editingProjOrig);
+						// Refresh User Panel
+						vm.tabledata = JSON.stringify(vm.filteredusers);
+						vm.tabledata = eval(vm.tabledata);
 					}
 					else {
 						document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP request failed';
@@ -1135,6 +1144,9 @@ function selectedItemChange(item) {
 						// Remove project from all users (if any) in deleted project
 						if (typeof vm.deletingProject.members != "undefined" && vm.deletingProject.members != null && vm.deletingProject.members.length > 0)
 							updateProjectUsers(vm.deletingProject.title, [], vm.deletingProject.members);
+						// Refresh User Panel
+						vm.tabledata = JSON.stringify(vm.filteredusers);
+						vm.tabledata = eval(vm.tabledata);
 					}
 					else {
 						document.getElementById('deleteProjectMessage').innerHTML = 'Error: HTTP request failed';

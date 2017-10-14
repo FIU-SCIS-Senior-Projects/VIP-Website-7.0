@@ -12,31 +12,49 @@
         <small><i>for Faculty/Staff</i></small></button>
         </div>  
         <br><br></div>
-<button ng-click="myFun()">Click</button>
-<h1>Hello {{test}}</h1>
-<!-- Project cards here -->
+<div ng-controller="VIPProjectsCtrl" ng-init="vm.getProjects()">
+<button ng-click="vm.pastProjects()">Previous Projects</button>
+<button ng-click="vm.getProjects()">Active Projects</button>
+<button ng-click="vm.proposedProjects()">Future Projects</button>
+
+
 <div class="col-md-4 panel panel-default" style="max-height: 90px; width: 100%; border:none; box-shadow:none; margin-top: 40px;">
     <!--Updated User Story #1195 Ndand002-->
     <table class="table filters-table" style="max-width:50%; border: none;">
     <tr>
     <td>
-     <label type="hidden" ng-model="userproject">Sort order:
-    <select class="form-control" ng-model="selectedFilter" ng-options="projects as projects.name for projects in vm.filters" ng-change="applyFilter()"></select></label>
-   
+     <label for="semester_search">Semester: </label>
+    <select name="semester_search" ng-model="search.$">
+        <option ng-repeat="semester in vm.semsters">{{semester}}</option>    
+    </select>
+    <label for="semester_year">Year: </label>
+    <select name="semester_year" ng-model="search.$">
+        <option ng-repeat="years in vm.years">{{years}}</option>    
+    </select>
     </td>
     <td>
-    <label>Filter: <input class="form-control" ng-model="search"></label>
+    <label>Search: <input class="form-control" ng-model="search.$"></label>
     </td>
+    <td><i ng-click="" class="fa fa-long-arrow-up"></i> </td>
     </tr>
     </table>
 </tr>
 </div>
-
 <br><br>
-<center ng-hide="vm.done">
-<img ng-hide="vm.done" width="30%" height="30%" src="img/loading.gif"/></center>
-<div class="col-md-6 project-info" ng-if="vm.done"   ng-repeat="project in vm.filteredprojects |filter:search | filter:project.status = '!pending'  | filter:project.status = '!Disabled'">
-<!--end-->
+                    <!-- LOADING SPINNER -->
+        <center ng-hide="vm.done">
+            <img ng-hide="vm.done" width="10%" height="10%" src="img/loading.gif"/>
+        </center>
+                    <!-- END -->
+
+
+<div class="col-md-6 project-info" 
+        ng-if="vm.done"  
+        ng-repeat="project in vm.projects | orderBy: vm.title 
+                                          | filter:search
+                                          | filter:project.status = '!pending' 
+                                          | filter:project.status = '!Disabled'">
+
 <div>
 <img ng-src="{{project.image}}" alt="{{project.title}}" class="proj-image">
 <h3 class="proj-title-teams">{{project.semester}}</h3>
@@ -56,5 +74,5 @@
 <p class="proj-descrip-teams" ng-bind-html="project.old_project[0].description"></p>
     </div>
     </div>
-
+</div>
         <!-- End here -->

@@ -30,7 +30,7 @@
             };
 
             projectFactory.getProjectsByTerm = function (term) {
-                return $http.get('/api/projects/term' + term).then(function (data) {
+                return $http.get('/api/projects/term/' + term).then(function (data) {
                     return data.data;
                 });
             };

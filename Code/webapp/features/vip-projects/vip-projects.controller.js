@@ -6,223 +6,54 @@
         .controller('VIPProjectsCtrl', VIPProjectsCtrl);
 
     VIPProjectsCtrl.$inject = ['$state', '$scope', 'ProjectService'];
+
     /* @ngInject */
     function VIPProjectsCtrl($state, $scope, ProjectService) {
+
         //Variable Declarations
         var vm = this;
-        var projectsArray = [];
         vm.projects;
-        vm.disciplines;
-        vm.backupProjects;
-        vm.backupDisciplines;
-        vm.temProj = new Set();
-        vm.filteringVariables = new Set();
-        vm.showAllCheckBox = true;
         vm.done = false;
-        $scope.test = 5;
+        vm.title = "title";
+        vm.semsters = ['Fall', 'Spring', 'Summer'];
+        vm.semester_year = vm.semester_model + " " + vm.semester_year;
+
         //Function Declarations
-        vm.showAllDisciplinesToggle = showAllDisciplinesToggle; 
-        vm.filterByDiscipline = filterByDiscipline;
-        vm.viewDetails = viewDetails;
-        var selectedFilter = null;
-        vm.filteredprojects;
-       
+        vm.getYearArry = function() {
 
-         vm.filters = [
-            
-            {
-                name: '(A-Z)',
-            },
-            {
-                name: '(Z-A)',
-            },
+            let year = new Date().getFullYear();
+            var yearArr = new Array();
+            var j = 0;
 
-            
-        ];
-        
-        
-
-        $scope.applyFilter = function()
-        {
-            selectedFilter = $scope.selectedFilter.name;
-            
-            //alert("we select the filter " + selectedFilter);
-            
-            switch (selectedFilter)
-            {
-                  case '(A-Z)':
-                    var tempProj = [];
-                    tempProj = vm.projects;
-                    tempProj.sort(function(a, b)
-                    {
-                        if (b.title.toLowerCase() > a.title.toLowerCase()) return -1;
-                        if (b.title.toLowerCase() < a.title.toLowerCase()) return 1;
-                        return 0;
-                    })
-                    
-                    vm.filteredprojects = tempProj;
-                    break;
-
-
-                case '(Z-A)':
-                    var tempProj = [];
-                    tempProj = vm.projects;
-                    tempProj.sort(function(a, b)
-                    {
-                        if (a.title.toLowerCase() > b.title.toLowerCase()) return -1;
-                        if (a.title.toLowerCase() < b.title.toLowerCase()) return 1;
-                        return 0;
-                    })
-                    
-                    vm.filteredprojects = tempProj;
-                    break;
-					
-                default:
-                    alert('no filter for this option');
-                    //$location.url('/#en');
+            for(var i = year - 10; i < year + 5; i++) {
+                yearArr[j++] = i;
             }
-            //$translate.use(langKey);
-          }
-        
-          $scope.myFun = function() {
-            ProjectService.getProjectsByTerm('Fall 2017').then(function(data){ 
-                var theData = data;
+            console.log(yearArr);
+            return yearArr;
+        }
+
+        vm.pastProjects = function() {
+            ProjectService.getProjectsByTerm("Spring 2017").then(function(data){ 
+                vm.projects = data;
                 console.log(data);
             })
             
           }
-          
-        
-        init();
-        function init(){
-            loadData();
-        }
-        
 
-        function checkBoxChange () {
-            if(vm.filteringVariables.size > 0)
-                document.getElementById("showAll").indeterminate = true;
-            else
-                document.getElementById("showAll").indeterminate = false;
-        }
-        
-        function loadData(){
-            ProjectService.getProjects().then(function(data){
-                bubbleSort(data, 'title');
-                vm.disciplines = getDisciplines(data);
+          vm.getProjects = function() {
+            ProjectService.getProjects().then(function(data){ 
                 vm.projects = data;
-                vm.filteredprojects = data;
-                vm.backupProjects = vm.projects;
-                vm.backupDisciplines = vm.disciplines;
-				vm.done = true;
-            });
-        }
-        
-        function showAllDisciplinesToggle() {
-            if(vm.showAllCheckBox){
-                vm.projects = vm.backupProjects;
-                vm.disciplines = getDisciplines(vm.backupProjects);
-            }else {
-                vm.projects = [];
-                vm.disciplines = [];
-            }
-            vm.filteringVariables.clear();
-        }
-        
-        function filterByDiscipline (discipline) {
-            vm.temProj.clear();
-            if(discipline != null) {
-                /*
-                * Find if discipline already being displayed, in which case it will be discarded as a filtering option.
-                * and the remaining filters have to be reapplied to all the projects. NEEDS REVISION for IMPROVEMENT
-                */
-                if(vm.filteringVariables.has(discipline)){
-                    vm.filteringVariables.delete(discipline);
-                    filterProjects(vm.filteringVariables, vm.backupProjects);
-                }
-                else{
-                    var disciplineSet = new Set();
-                    disciplineSet.add(discipline);
-                    vm.filteringVariables.add(discipline);
-                    filterProjects(disciplineSet, vm.projects);
-                }
-                checkBoxChange();
-            }
-        } 
-        
+                vm.done = true;
+                console.log(data);
+            })
+            
+          }        
+             
         function viewDetails (data) {
             $state.go('projectsDetailed',{id: data._id});
         }
-        
-        function bubbleSort(a, par)
-        {
-            var swapped;
-            do {
-                swapped = false;
-                if(par != null && par != ''){
-                    for (var i = 0; i < a.length - 1; i++) {
-                        if (a[i][par] > a[i + 1][par]) {
-                            var temp = a[i];
-                            a[i] = a[i + 1];
-                            a[i + 1] = temp;
-                            swapped = true;
-                        }
-                    }
-                }
-                else {
-                    for (var i = 0; i < a.length - 1; i++) {
-                        if (a[i] > a[i + 1]) {
-                            var temp = a[i];
-                            a[i] = a[i + 1];
-                            a[i + 1] = temp;
-                            swapped = true;
-                        }
-                    }
-                }
-            } while (swapped);
-        }
-        
-        function getDisciplines(projects) {
-            var disciplines = new Set();
-            var tempArray = [];
-            angular.forEach(projects, function(value){
-                angular.forEach(value.disciplines, function(discipline){
-                    var obj = {title:discipline};
-                    disciplines.add(discipline);
-                })
-            })
-            disciplines.forEach(function(obj){
-                tempArray.push(obj);
-            })
-            bubbleSort(tempArray,null);
-            return tempArray;
-        }
-        
-        function filterProjects(discipline, projects){
-            var tempArray = [];
-            discipline.forEach(function (obj){
-                tempArray.push(obj);
-            })
-            angular.forEach(tempArray, function(obj) {
-                angular.forEach(projects, function(item){
-                    angular.forEach(item.disciplines, function(itemDiscipline){
-                        if(itemDiscipline === obj)
-                        {
-                            vm.temProj.add(item);
-                        }    
-                    })
-                })
-                projects = [];
-                vm.temProj.forEach(function (proj) {
-                    projects.push(proj);
-                });    
-                vm.temProj.clear();
-            });
-            
-            vm.projects = [];
-            angular.copy(projects, vm.projects);
-            bubbleSort(vm.projects, 'title');
-            vm.disciplines = getDisciplines(vm.projects);
-        }
+
+        vm.years = vm.getYearArry();
+
     }
 })();

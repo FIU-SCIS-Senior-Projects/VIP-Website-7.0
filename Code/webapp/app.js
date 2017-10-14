@@ -2,7 +2,7 @@ angular.module('mainApp', [
 	'textAngular',
 	'vipHeader',
 	'vipFooter',
-    'vip-projects',		//Features Module
+   'vip-projects',		//Features Module
 	'ProjectProposalController',
 	'reviewProfile',
 	'routes',
@@ -12,21 +12,23 @@ angular.module('mainApp', [
 	'forgotPasswordService',
 	'contactController',
 	'userService',
-    'toDoModule',
+   'toDoModule',
 	'user-profile',
 	'reviewRegistration',
 	'folder',
 	'reviewStudentApp',
 	'reviewProjectProposals',
 	'admin',
-    'MessengerController',
-	'angularTrix'
+   'MessengerController',
+	'angularTrix',
+	'ui.bootstrap',
+	'angularUtils.directives.dirPagination'
 ]).filter('selectedTags', function() {
     return function(users, members)
     {
          if (users && members)
          {
-             for(i = 0; i < users.length; i++) 
+             for(i = 0; i < users.length; i++)
              {
                  //alert("i see " + users[i].email);
                  //alert("comparing " + users[i].email);

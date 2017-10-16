@@ -649,13 +649,13 @@ vm.alldata.forEach(function (obj)
 			//console.log(project.title);
 			if(project){
 				var selectedStatus = $scope.selectedStatus;
-				//console.log(selectedStatus);
+				console.log(selectedStatus);
 				if( selectedStatus == vm.status[0]) {
 				selectedStatus = 'Active';
-				//console.log(selectedStatus);
+				console.log(selectedStatus);
 				} else {
 					selectedStatus = 'Disabled';
-					//console.log(selectedStatus);
+					console.log(selectedStatus);
 				}
 				project.status = selectedStatus;
 				ProjectService.editProject(project, project._id);

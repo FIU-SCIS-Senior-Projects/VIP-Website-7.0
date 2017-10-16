@@ -14,11 +14,12 @@
         var vm = this;
         vm.projects;
         vm.done = false;
-        vm.title = "title";
-        vm.semsters = ['Fall', 'Spring', 'Summer'];
-        vm.semester_year = vm.semester_model + " " + vm.semester_year;
+        vm.orderBy = "title";
+        vm.semesters = ['Fall', 'Spring', 'Summer'];
+        
+        /*Function Declarations*/
 
-        //Function Declarations
+        //Generates an array for 'year' dropdown; [current year-10, current year+5]
         vm.getYearArry = function() {
 
             let year = new Date().getFullYear();
@@ -26,24 +27,18 @@
             var j = 0;
 
             for(var i = year - 10; i < year + 5; i++) {
-                yearArr[j++] = i;
+                yearArr[j++] = i.toString();
             }
             console.log(yearArr);
             return yearArr;
         }
 
-        vm.pastProjects = function() {
-            ProjectService.getProjectsByTerm("Spring 2017").then(function(data){ 
-                vm.projects = data;
-                console.log(data);
-            })
-            
-          }
-
-          vm.getProjects = function() {
+        vm.getProjects = function() {
             ProjectService.getProjects().then(function(data){ 
                 vm.projects = data;
                 vm.done = true;
+                
+                
                 console.log(data);
             })
             
@@ -54,6 +49,11 @@
         }
 
         vm.years = vm.getYearArry();
+    
 
+        // vm.projects.forEach(function(element) {
+        //     vm.disciplines = element.push();
+        //     console.log(vm.disciplines);
+        // });       
     }
 })();

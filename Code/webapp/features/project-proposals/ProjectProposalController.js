@@ -53,6 +53,19 @@
                 vm.adminEmail = adminData.current_email;
             });
 
+            $scope.getYearArry = function() {
+                
+                            let year = new Date().getFullYear();
+                            var yearArr = new Array();
+                            var j = 0;
+                
+                            for(var i = year; i < year + 5; i++) {
+                                yearArr[j++] = i;
+                            }
+                            //console.log(yearArr);
+                            return yearArr;
+                        }
+
             // check permissions and get data
             ProfileService.loadProfile().then(function (data) {
                 if (data) {
@@ -69,8 +82,9 @@
             });
 
             //Joe Use Story
-            vm.semesters = ['Spring 2017', 'Summer 2017', 'Fall 2017'];
-            6
+            vm.semesters = ['Spring', 'Summer', 'Fall'];
+            $scope.years =  $scope.getYearArry();
+            console.log($scope.years);
             $scope.colleges = [
                 {
                     name: 'Architecture & The Arts',
@@ -242,7 +256,10 @@
                     $scope.SelectedMentorEmails = "";
                     $scope.SelectedStudentEmails = "";
                     //updating semester snaku001
-                    $scope.project.semesters = ['Spring 2017', 'Summer 2017', 'Fall 2017'];
+                    $scope.project.semesters = ['Spring', 'Summer', 'Fall'];
+                    $scope.years = $scope.getYearArry();
+                    //console.log(vm.years);
+
                     for (i = 0; i < $scope.project.faculty.length; i++) {
                         if (i != $scope.project.faculty.length - 1) {
                             $scope.SelectedFacultyNames += $scope.project.faculty[i].name + ", ";
@@ -303,7 +320,7 @@
                 var SelectedStatus;
                 //console.log(SelectedTerm);
                 for (i = 0; i < vm.terms.length; i++) {
-                    if (SelectedTerm == vm.terms[i].name) {
+                    if (SelectedTerm.name == vm.terms[i].name && SelectedTerm.year == vm.terms[i].year) {
                         //console.log(SelectedTerm);
                         //console.log(vm.terms[i].name);
                         console.log(vm.terms[i].status);
@@ -406,7 +423,8 @@
                             });
                     }
                     else {
-                        vm.semesters = ['Spring 2017', 'Summer 2017', 'Fall 2017'];
+                        vm.semesters = ['Spring', 'Summer', 'Fall'];
+                        $scope.years = $scope.getYearArry();
                         if (old_project) {
                             $scope.project.old_project = old_project;
                         }
@@ -740,5 +758,6 @@
                     return "";
                 }
             }
+            
         });
 }());

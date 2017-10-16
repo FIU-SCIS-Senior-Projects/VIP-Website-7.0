@@ -11,35 +11,58 @@
         <strong>PROPOSE A PROJECT </strong>
         <small><i>for Faculty/Staff</i></small></button>
         </div>  
-        <br><br></div>
+        <br>
+        <br>
+    </div>
+
+
 <div ng-controller="VIPProjectsCtrl" ng-init="vm.getProjects()">
-<button ng-click="vm.pastProjects()">Previous Projects</button>
-<button ng-click="vm.getProjects()">Active Projects</button>
-<button ng-click="vm.proposedProjects()">Future Projects</button>
 
 
 <div class="col-md-4 panel panel-default" style="max-height: 90px; width: 100%; border:none; box-shadow:none; margin-top: 40px;">
     <!--Updated User Story #1195 Ndand002-->
-    <table class="table filters-table" style="max-width:50%; border: none;">
+    <!-- <table class="table filters-table" style="max-width:50%; border: none;">
     <tr>
     <td>
-     <label for="semester_search">Semester: </label>
-    <select name="semester_search" ng-model="search.$">
-        <option ng-repeat="semester in vm.semsters">{{semester}}</option>    
-    </select>
-    <label for="semester_year">Year: </label>
-    <select name="semester_year" ng-model="search.$">
-        <option ng-repeat="years in vm.years">{{years}}</option>    
-    </select>
+     <label >Semester: </label>
+    <select value="Fall" ng-options="semester as semester for semester in vm.semesters" ng-model="sem.semester"></select>
     </td>
     <td>
-    <label>Search: <input class="form-control" ng-model="search.$"></label>
+    <label for="semester_year">Year: </label>
+    
     </td>
-    <td><i ng-click="" class="fa fa-long-arrow-up"></i> </td>
+   
+    <td>
+    <label>Search: <input class="form-control" ng-model="search"></label>
+    </td>
+    
     </tr>
     </table>
-</tr>
+</tr> -->
+
+
+<form class="navbar-form navbar-left" role="search" style="width:100%">
+        <div class="form-group">
+                <select ng-options="semester as semester for semester in vm.semesters" ng-model="sem.semester"><option value="Fall" selected></option></select>
+                <select ng-options="years as years for years in vm.years" ng-model="yr.semester"><option value="2017" selected></option></select>
+        </div>
+        <div class="form-group">
+                <input class="form-control" ng-model="search" placeholder="search">
+        </div>
+        <div class="form-group">
+            <button>Projects <span class="badge">{{vm.projects.length}}</span></button>
+        </div>
+        <!-- <div class="form-group">
+                <select multiple ng-options="d as d.disciplines for d in vm.projects" ng-model="disc.disciplines"></select>
+        </div> -->
+        <div class="form-group">
+                <i ng-if="vm.orderBy==='title'" ng-click="vm.orderBy='-title'" class="fa fa-sort-alpha-desc fa-2x"></i>
+                <i ng-if="vm.orderBy==='-title'" ng-click="vm.orderBy='title'" class="fa fa-sort-alpha-asc fa-2x"></i>
+        </div>
+        
+</form>
 </div>
+
 <br><br>
                     <!-- LOADING SPINNER -->
         <center ng-hide="vm.done">
@@ -50,12 +73,14 @@
 
 <div class="col-md-6 project-info" 
         ng-if="vm.done"  
-        ng-repeat="project in vm.projects | orderBy: vm.title 
+        ng-repeat="project in vm.projects | orderBy:vm.orderBy 
                                           | filter:search
-                                          | filter:project.status = '!pending' 
-                                          | filter:project.status = '!Disabled'">
-
+                                          | filter:sem
+                                          | filter:yr
+                                          | filter:project.status = 'Active' 
+                                          | filter:project.status = '!Pending'">
 <div>
+        <h1 ng-if="projects.length==0">Sorry, no matches. Try narrowing your search...</h1>
 <img ng-src="{{project.image}}" alt="{{project.title}}" class="proj-image">
 <h3 class="proj-title-teams">{{project.semester}}</h3>
 <h3 class="proj-title-teams"><a ng-href="/#/vip-projects-detailed/{{project._id}}">{{project.title}}</a></h3></h3>
@@ -75,4 +100,5 @@
     </div>
     </div>
 </div>
+
         <!-- End here -->

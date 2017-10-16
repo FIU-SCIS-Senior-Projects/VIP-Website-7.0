@@ -289,6 +289,33 @@ function selectedItemChange(item) {
 		function validateEmail(email) {
             return /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(email)
 		};
+		
+		function validatePassword(pwd) {
+			var array = [];
+			array[0] = /[A-Z]/g.test(pwd);
+			array[1] = /[a-z]/g.test(pwd);
+			array[2] = /\d/g.test(pwd);
+			array[3] = hasSpecialChars(pwd)
+
+			var sum = 0;
+			for (var i = 0; i < array.length; i++) {
+				sum += array[i] ? 1 : 0;
+			}
+
+			return pwd.length >= 8 && sum == 4;
+		};
+		
+		function hasSpecialChars(string) {
+			return (string.indexOf('!') != -1 ||
+				string.indexOf('@') != -1 ||
+				string.indexOf('#') != -1 ||
+				string.indexOf('$') != -1 ||
+				string.indexOf('%') != -1 ||
+				string.indexOf('&') != -1 ||
+				string.indexOf('*') != -1 ||
+				string.indexOf('(') != -1 ||
+				string.indexOf(')') != -1);
+		};
 
 		vm.genderOptions = [{type: 'Male'}, {type: 'Female'}];
 		vm.booleanOptions = [{type: true}, {type: false}];
@@ -422,8 +449,8 @@ function selectedItemChange(item) {
 			vm.newUser = null;
 			// First check if required information is missing
 			if ($scope.addUserFirstName && $scope.addUserLastName && $scope.addUserEmail) {
-				// Then check if email is valid
-				if (validateEmail($scope.addUserEmail)) {
+				// Then check if email and password is valid
+				if (validateEmail($scope.addUserEmail) && validatePassword($scope.addUserPassword)) {
 					// Create user object
 					var newUser = {
 						firstName: $scope.addUserFirstName,
@@ -434,8 +461,8 @@ function selectedItemChange(item) {
 					};
 
 					if ($scope.addUserPassword) {
-						newUser["password"] = addUserPassword;
-						newUser["passwordConf"] = addUserPassword;
+						newUser["password"] = $scope.addUserPassword;
+						newUser["passwordConf"] = $scope.addUserPassword;
 					}
 					if ($scope.addUserRank)
 						newUser["rank"] = $scope.addUserRank;
@@ -483,8 +510,8 @@ function selectedItemChange(item) {
 					});
 				}
 				else {
-					document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Email Address';
-					console.log("Error: Invalid Email Address");
+					document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Email Address or Password';
+					console.log("Error: Invalid Email Address or Password");
 				}
 			}
 			else {

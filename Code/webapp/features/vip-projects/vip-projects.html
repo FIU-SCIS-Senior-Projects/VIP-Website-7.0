@@ -41,8 +41,9 @@
 </tr> -->
 
 
-<form class="navbar-form navbar-left" role="search" style="width:100%">
-        <div class="form-group">
+<form class="navbar-form navbar-default" role="search" style="width:100%; text-align:center; padding:7px;">
+        <h3>Start by browsing current projects or browse previous projects with the filters below.</h3>
+        <div class="form-group" style="padding:2px;">
                 <select ng-options="semester as semester for semester in vm.semesters" ng-model="sem.semester"><option value="Fall" selected></option></select>
                 <select ng-options="years as years for years in vm.years" ng-model="yr.semester"><option value="2017" selected></option></select>
         </div>
@@ -82,7 +83,7 @@
 <div>
         <h1 ng-if="projects.length==0">Sorry, no matches. Try narrowing your search...</h1>
 <img ng-src="{{project.image}}" alt="{{project.title}}" class="proj-image">
-<h3 class="proj-title-teams">{{project.semester}}</h3>
+<h3 class="proj-title-teams">{{project.semester.name}} {{project.semester.year}}</h3>
 <h3 class="proj-title-teams"><a ng-href="/#/vip-projects-detailed/{{project._id}}">{{project.title}}</a></h3></h3>
 <h5 class="proj-title-owner">Owner: {{project.owner_name}}</h5>
 <!-- User Story #1142-->

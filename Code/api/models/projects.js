@@ -28,7 +28,7 @@ var ProjectSchema = new Schema({
 	edited: Boolean,
 	old_project: [Schema.Types.Mixed],
     image: String,
-    video_url: String,
+    video_url: [String],
 	mingle_url: String,
     youtube_url: String,
     github_url: String,

@@ -1,9 +1,9 @@
 
 <div class="row team-project">
 
-        <div class="video-container" ng-show="vm.data.video_url">
-			
-            <iframe width="600" height="350" ng-src="{{vm.setVideo(vm.data.video_url)}}"  frameborder="0" allowfullscreen style="margin: 0 auto;"></iframe>
+        <div class="video-container" ng-repeat="video in vm.data.video_url">
+            
+            <iframe width="600" height="350" ng-src="{{vm.setVideo(video)}}"  frameborder="0" allowfullscreen style="margin: 0 auto;"></iframe>
         </div>
 
         <div class="col-sm-9 project-second-section-middle">

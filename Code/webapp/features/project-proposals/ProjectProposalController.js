@@ -369,7 +369,18 @@
                     }
 
 
-                    $scope.project.video_url = ProcessVideoURL($scope.project.video_url);
+                    console.log("Videos added" + $scope.project.video_url[0]);
+                    var tempVidArray = [];
+                    for (var i = 0; i < $scope.project.video_url.length; i++) {
+                        console.log("VIDEO LENGTH");
+                        console.log($scope.project.video_url.length);
+                        if ($scope.project.video_url[i] != "") {
+                            tempVidArray.push(ProcessVideoURL($scope.project.video_url[i]));
+                        }
+                        console.log($scope.project.video_url[i]);
+                    }
+                    $scope.project.video_url = tempVidArray;
+                    console.log($scope.project.video_url);
 
                     if (image)
                         $scope.project.image = image;

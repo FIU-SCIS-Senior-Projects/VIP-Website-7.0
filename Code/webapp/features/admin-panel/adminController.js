@@ -1946,7 +1946,7 @@ function selectedItemChange(item) {
                         };
                         User.nodeEmail(email_msg);
                     }
-                
+                }
                 
                 ProjectService.editProject(project, project._id);
                 //console.log("In the Projects!");

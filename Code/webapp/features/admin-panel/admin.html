@@ -422,19 +422,16 @@
                     <input id="addUserEmail" class="form-control" type="text" ng-model="addUserEmail"/>
                  </div>
                  <div class="col-sm-4">
-                    <label>Password</label>
-                    <input id="addUserPassword" class="form-control" type="text" ng-model="addUserPassword"/>
+                    <label>Password (required)</label>
+                    <input id="addUserPassword" class="form-control" autocomplete="off" type="password" ng-model="addUserPassword"/>
                  </div>
                  <div class="col-sm-4">
-                    <label>College</label>
-                    <select class="form-control" ng-model="addUserCollege" id="ddCollegeA"
-                          ng-options="college as college.name for college in vm.colleges">
-                       <option value=""></option>
-                    </select>
+                    <label>Password Confirmation (required)</label>
+                    <input id="addUserPasswordConf" class="form-control" autocomplete="off" type="password" ng-model="addUserPasswordConf"/>
                  </div>
              </div>
              <div class="form-group">
-                 <div class="col-sm-4">
+                 <div class="col-sm-3">
                     <label>User Type</label>
                     <select class="form-control" ng-model="addUserType" id="ddUserTypeA"
                                 ng-options="typerank as typerank.name for typerank in vm.typeranks"
@@ -442,17 +439,24 @@
                        <option value=""></option>
                     </select>
                  </div>
-                 <div class="col-sm-4">
+                 <div class="col-sm-3">
                     <label>User Rank</label>
                     <select class="form-control" ng-model="addUserRank" id="ddRankA"
                                 ng-options="rank for rank in vm.addRanks">
                        <option value=""></option>
                     </select>
                  </div>
-                 <div class="col-sm-4">
+                 <div class="col-sm-3">
                     <label>PI Approval</label>
                     <select class="form-control" ng-model="addUserPIApproval" id="ddPIApprovalA"
                           ng-options="approval.type for approval in vm.booleanOptions">
+                       <option value=""></option>
+                    </select>
+                 </div>
+				 <div class="col-sm-3">
+                    <label>Semester</label>
+                    <select class="form-control" ng-model="addUserTerm" id="ddTermA"
+                          ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
@@ -466,9 +470,9 @@
                     </select>
                  </div>
                  <div class="col-sm-4">
-                    <label>Semester</label>
-                    <select class="form-control" ng-model="addUserTerm" id="ddTermA"
-                          ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' ">
+                    <label>College</label>
+                    <select class="form-control" ng-model="addUserCollege" id="ddCollegeA"
+                          ng-options="college as college.name for college in vm.colleges">
                        <option value=""></option>
                     </select>
                  </div>

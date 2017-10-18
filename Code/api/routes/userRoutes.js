@@ -317,7 +317,7 @@ module.exports = function (app, express) {
                     user.isDecisionMade = false;
                     // always set to false, until the user is approved as a PI
                     user.isSuperUser = false;
-                }
+                }			
 
                 user.save(function (err, newUser) {
                     // an error occured while trying to insert the new user
@@ -340,7 +340,7 @@ module.exports = function (app, express) {
         .put(
             authProvider.authorizeAuthenticatedUsers,//this can't be restricted any more because faculty/staff will use this from the review Project Page
             function (req, res) {
-                User.findOne({'email': req.body.user.email}, function (err, user) {
+                User.findById(req.body.user._id, function (err, user) {
                     if (user) {
                         user.firstName = req.body.user.firstName;  // set the users name (comes from the request)
                         user.lastName = req.body.user.lastName;  // set the users last name

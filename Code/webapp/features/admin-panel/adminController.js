@@ -291,18 +291,22 @@ function selectedItemChange(item) {
 		};
 		
 		function validatePassword(pwd) {
-			var array = [];
-			array[0] = /[A-Z]/g.test(pwd);
-			array[1] = /[a-z]/g.test(pwd);
-			array[2] = /\d/g.test(pwd);
-			array[3] = hasSpecialChars(pwd)
+			if (pwd) {
+				var array = [];
+				array[0] = /[A-Z]/g.test(pwd);
+				array[1] = /[a-z]/g.test(pwd);
+				array[2] = /\d/g.test(pwd);
+				array[3] = hasSpecialChars(pwd)
 
-			var sum = 0;
-			for (var i = 0; i < array.length; i++) {
-				sum += array[i] ? 1 : 0;
+				var sum = 0;
+				for (var i = 0; i < array.length; i++) {
+					sum += array[i] ? 1 : 0;
+				}
+
+				return pwd.length >= 8 && sum == 4;
 			}
-
-			return pwd.length >= 8 && sum == 4;
+			else
+				return false;
 		};
 		
 		function hasSpecialChars(string) {
@@ -450,7 +454,7 @@ function selectedItemChange(item) {
 			// First check if required information is missing
 			if ($scope.addUserFirstName && $scope.addUserLastName && $scope.addUserEmail) {
 				// Then check if email and password is valid
-				if (validateEmail($scope.addUserEmail) && validatePassword($scope.addUserPassword)) {
+				if (validateEmail($scope.addUserEmail) && validatePassword($scope.addUserPassword) && validatePassword($scope.addUserPasswordConf) && $scope.addUserPassword == $scope.addUserPasswordConf) {
 					// Create user object
 					var newUser = {
 						firstName: $scope.addUserFirstName,
@@ -460,10 +464,10 @@ function selectedItemChange(item) {
 						adminCreated: true
 					};
 
-					if ($scope.addUserPassword) {
+					if ($scope.addUserPassword)
 						newUser["password"] = $scope.addUserPassword;
-						newUser["passwordConf"] = $scope.addUserPassword;
-					}
+					if ($scope.addUserPasswordConf)
+						newUser["passwordConf"] = $scope.addUserPasswordConf;
 					if ($scope.addUserRank)
 						newUser["rank"] = $scope.addUserRank;
 					if ($scope.addUserPID)
@@ -471,7 +475,6 @@ function selectedItemChange(item) {
 					if ($scope.addUserGender)
 						newUser["gender"] = $scope.addUserGender.type;
 					if ($scope.addUserProject)
-						newUser["project"] = $scope.addUserProject.title;
 					if ($scope.addUserPIApproval)
 						newUser["piApproval"] = $scope.addUserPIApproval.type;
 					if ($scope.addUserCollege)
@@ -510,8 +513,18 @@ function selectedItemChange(item) {
 					});
 				}
 				else {
-					document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Email Address or Password';
-					console.log("Error: Invalid Email Address or Password");
+					if (!validateEmail($scope.addUserEmail)) {
+						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Email Address';
+						console.log("Error: Invalid Email Address");
+					}
+					else if (!validatePassword($scope.addUserPassword) || !validatePassword($scope.addUserPasswordConf)) {
+						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Password';
+						console.log("Error: Invalid Password");
+					}
+					else {
+						document.getElementById('addUserMessage').innerHTML = 'Error: Mismatched Passwords';
+						console.log("Error: Mismatched Passwords");
+					}
 				}
 			}
 			else {
@@ -592,10 +605,16 @@ function selectedItemChange(item) {
 							else {
 								document.getElementById('editUserMessage').innerHTML = 'Error: HTTP request failed';
 								console.log(data);
+								// Refresh user panel
+								vm.tabledata = JSON.stringify(vm.filteredusers);
+								vm.tabledata = eval(vm.tabledata);
 							}
 						} else { // http error
 							document.getElementById('editUserMessage').innerHTML = 'Error: HTTP response not received';
 							console.log('Error: Adding user failed');
+							// Refresh user panel
+							vm.tabledata = JSON.stringify(vm.filteredusers);
+							vm.tabledata = eval(vm.tabledata);
 						}
 					});
 				}
@@ -851,7 +870,7 @@ function selectedItemChange(item) {
 			if(!found)
 				vm.editRanks = [];
         };
-
+		
 		// User Story #1313
 
 		vm.statusList = [{type: 'Active'}, {type: 'Disabled'}];
@@ -967,10 +986,16 @@ function selectedItemChange(item) {
 							else {
 								document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP request failed';
 								console.log(data);
+								// Refresh projects panel
+								vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+								vm.tabledata_p = eval(vm.tabledata_p);
 							}
 						} else { // http error
 							document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP response not received';
 							console.log('Error: Editing project failed');
+							// Refresh projects panel
+							vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+							vm.tabledata_p = eval(vm.tabledata_p);
 						}
 					});
 				}
@@ -1068,10 +1093,16 @@ function selectedItemChange(item) {
 					else {
 						document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP request failed';
 						console.log(data);
+						// Refresh projects panel
+						vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+						vm.tabledata_p = eval(vm.tabledata_p);
 					}
 				} else { // http error
 					document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP response not received';
 					console.log('Error: Editing project failed');
+					// Refresh projects panel
+					vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+					vm.tabledata_p = eval(vm.tabledata_p);
 				}
 			});
 		};

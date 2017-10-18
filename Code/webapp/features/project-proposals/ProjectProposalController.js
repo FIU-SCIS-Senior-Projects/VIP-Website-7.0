@@ -370,6 +370,8 @@
 
 
                     console.log("Videos added" + $scope.project.video_url[0]);
+                    console.log("VIDEO LENGTH OUTSIDE LOOP");
+                    console.log($scope.project);
                     var tempVidArray = [];
                     for (var i = 0; i < $scope.project.video_url.length; i++) {
                         console.log("VIDEO LENGTH");

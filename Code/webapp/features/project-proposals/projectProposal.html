@@ -7,11 +7,11 @@
 <hr>
 <p style="color:orange;"><strong>{{result}}</strong></p>
 <!-- User Story #1175 -->
+<label>Previous Projects</label>
+<select ng-model="project.previousProj" ng-change="populatePrevious()" ng-options="project._id as project.title for project in project.previous" class="form-control" value="previousProject" required> <option></option>
+</select>
 <form role="form" class="project_proposal"  ng-submit="save()" >
     <div class="form-group">
-      <label>Previous Projects</label>
-      <select ng-model="project.previousProj" ng-change="populatePrevious()" ng-options="project._id as project.title for project in project.previous" class="form-control" value="previousProject" required> <option></option>
-      </select>
 
     <!-- User Story #1175 -->
     <label>*Team Title</label>

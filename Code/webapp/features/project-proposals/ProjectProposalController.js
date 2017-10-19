@@ -51,6 +51,7 @@
                 console.log(adminData);
                 console.log(adminData.current_email);
                 vm.adminEmail = adminData.current_email;
+                getPreviousProjects()
             });
 
             // check permissions and get data
@@ -227,7 +228,7 @@
                     getProjectById();
                     getProjects()
                 }
-                getPreviousProjects()
+
                 loadTerms();
             }
 

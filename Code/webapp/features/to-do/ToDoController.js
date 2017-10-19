@@ -1,5 +1,8 @@
 (function() {
     angular.module('toDoModule')
+    .filter('picker',function($filter){
+
+   })
     .controller('toDoController', toDoController);
 
     toDoController.$inject = ['$rootScope','$scope','ToDoService','ProfileService', 'DateTimeService'];
@@ -9,6 +12,7 @@
         var vm = this;
         vm.done = false;
         vm.list = [];
+        vm.keywordFilter = {keyword:''}
 
         // Combo-box options for clearing to-do messages
         vm.clearOptions = ["...", "Older than a week", "Older than a month", "All"];
@@ -121,6 +125,5 @@
                     }
             }
         };
-
     }
 }());

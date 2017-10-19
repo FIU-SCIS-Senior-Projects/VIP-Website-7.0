@@ -13,6 +13,7 @@
 
     <!--To Dos are Present-->
     <span ng-show="todo.done">
+      <input type="text" ng-model="searchText" placeholder="Search Keywords" class="form-control">
         <div ng-repeat="cat in todo.categories">
             <div ng-show="cat.count > 0" class="panel panel-default">
 
@@ -51,7 +52,7 @@
 
                 <!--To Do Details-->
                 <ul class="list-group" ng-repeat="todoItem in todo.list
-                | filter: message.read='false' | filter: emptyOrNull
+                | filter: message.read='false' | filter: emptyOrNull | filter:searchText
                 | orderBy: -todo.time:true">
 
                     <!--Trash Button-->
@@ -76,5 +77,5 @@
             </div>
         </div>
 	</span>
-    
+
 </div>

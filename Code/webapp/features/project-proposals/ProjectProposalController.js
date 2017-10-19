@@ -250,7 +250,7 @@
             }
             function getPreviousProjects(){
                console.log(vm.adminEmail)
-               ProjectService.getProjects().then((projects)=>{
+               ProjectService.getPreviousProjects(vm.adminEmail).then((projects)=>{
                   console.log(projects);
                   $scope.project.previous = projects
                });

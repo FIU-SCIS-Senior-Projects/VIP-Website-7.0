@@ -89,6 +89,10 @@ function selectedItemChange(item) {
         vm.terms;
         vm.currentSem;
         vm.currentSemesterName;
+        vm.cStatus;
+        vm.vStatus;
+        vm.pStatus;
+        vm.aStatus;
         // vm.currentSemesterName = [];// TODO Remove if not needed
         vm.filterUsers = filterUsers;
         vm.currentuserview;
@@ -140,6 +144,12 @@ function selectedItemChange(item) {
         }
         vm.currentTerm = function (term) {
             vm.cterm = term;
+            if(term) {
+              vm.cStatus = term.status.currentSemester;
+              vm.vStatus = term.status.viewable;
+              vm.pStatus = term.status.openForProposal;
+              vm.aStatus = term.status.openForApply;
+            }
         }
         vm.sw = ChangeUserProject;
         vm.sc = ClearProject;
@@ -299,7 +309,7 @@ function selectedItemChange(item) {
 		function validateEmail(email) {
             return /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(email)
 		};
-		
+
 		function validatePassword(pwd) {
 			if (pwd) {
 				var array = [];
@@ -318,7 +328,7 @@ function selectedItemChange(item) {
 			else
 				return false;
 		};
-		
+
 		function hasSpecialChars(string) {
 			return (string.indexOf('!') != -1 ||
 				string.indexOf('@') != -1 ||
@@ -880,7 +890,7 @@ function selectedItemChange(item) {
 			if(!found)
 				vm.editRanks = [];
         };
-		
+
 		// User Story #1313
 
 		vm.statusList = [{type: 'Active'}, {type: 'Disabled'}];
@@ -980,7 +990,7 @@ function selectedItemChange(item) {
 						vm.editingProject.semester = null;
 
 					if ($scope.editPStatus)
-                        vm.editingProject.status = $scope.editPStatus.type; 
+                        vm.editingProject.status = $scope.editPStatus.type;
 					else
 						vm.editingProject.status = null;
 
@@ -1016,7 +1026,7 @@ function selectedItemChange(item) {
 				console.log("Error: Missing required information");
 			}
         };
-        
+
         function sendDeactivationEmail() {
             var email;
             if (vm.editingProject.status == 'Disabled') {

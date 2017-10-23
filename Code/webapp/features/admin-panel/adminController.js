@@ -897,7 +897,7 @@ function selectedItemChange(item) {
 			// Otherwise reset selected index of drop down box
 
 			if (indexes.owner != -1)
-				$scope.editPOwner = vm.users[indexes.owner];
+				$scope.editPOwner = vm.allusers[indexes.owner];
 			else
 				document.getElementById("ddOwnerP").selectedIndex = -1;
 			if (indexes.term != -1)

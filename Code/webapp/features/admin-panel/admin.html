@@ -633,7 +633,61 @@
 </div>
 <div ng-show="showSemesterMaint">
 
-           <div class="col-md-6 panel panel-default">
+
+            <div class="col-md-9 panel panel-default">
+              <h3 align="left">Semester Options</h3>
+              <h4 ng-controller="adminController">Current Semester: <span ng-bind="vm.currentSemesterName"></span></h4>
+              <div class="form-group">
+                <table class="table">
+                  <tr>
+                      <th>
+                          <b>Semester:</b> <select class="form-control" ng-model="selectedTerm"
+                                               ng-options="terms as terms.name for terms in vm.terms"
+                                               value="{{vm.currentTerm(selectedTerm)}}"></select>
+                      </th>
+                  </tr>
+                </table>
+                <table class="table" style="height: 1px;">
+                    <tr>
+                        <th>
+                          Set to Current Semester
+                        </th>
+                        <th>
+                            <button style="width: 80px;" ng-click="vm.scs()" class="btn btn-success btn-block">Confirm
+                            </button>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                          Toggle Semester to be Proposable by Faculty
+                        </th>
+                        <th>
+                            <button style="width: 80px;" ng-click="vm.ssp()" class="btn btn-success btn-block">Confirm
+                            </button>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                          Toggle Semester to be Viewable by Students
+                        </th>
+                        <th>
+                            <button style="width: 80px;" ng-click="vm.ssv()" class="btn btn-success btn-block">Confirm
+                            </button>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                          Toggle Semester to be Applicable by Students
+                        </th>
+                        <th>
+                            <button style="width: 80px;" ng-click="vm.ssa()" class="btn btn-success btn-block">Confirm
+                            </button>
+                        </th>
+                    </tr>
+                </table>
+              </div>
+            </div>
+           <!-- <div class="col-md-6 panel panel-default">
                <h3 align="center"> Lock/Unlock Semester </h3>
                <div class="form-group">
                    <table class="table">
@@ -706,7 +760,7 @@
                        </tr>
                    </table>
                </div>
-           </div>
+           </div> -->
 </div>
 <div ng-show="showProjectMaint">
    <div>

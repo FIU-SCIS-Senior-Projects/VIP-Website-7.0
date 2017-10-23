@@ -60,13 +60,18 @@ module.exports = function (app, express) {
                     res.status(400);
                     res.send(err);
                 }
-
+                // console.log("body");
+                // console.log(req.body);
+                // console.log("preUpdate:");
+                // console.log(term);
+                // console.log("in api /term/:id put");
                 term.name = req.body.name;
-                term.status = req.body.status;
+                term.status.currentSemester = req.body.status.currentSemester;
 			          term.start = req.body.start;
                 term.end = req.body.end;
                 term.active = req.body.active;
-                term.open = req.body.open;
+                // console.log("postUpdate:");
+                // console.log(term);
 
                 term.save(function (err) {
                     if (err) {
@@ -74,6 +79,7 @@ module.exports = function (app, express) {
                         return res.send(err);
                     }
                     res.json({message: 'Updated!'});
+                    // console.log("put successful");
                 });
             });
         })

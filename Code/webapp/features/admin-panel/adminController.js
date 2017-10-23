@@ -16,7 +16,7 @@
         $scope.routeSemesterMaintenance = routeSemesterMaintenance
         $scope.routeAdminMaint = routeAdminMaint
         vm.simulateQuery = false;
-      vm.isDisabled    = false;
+        vm.isDisabled    = false;
 
       // list of `state` value/display objects
       vm.querySearch   = querySearch;
@@ -87,6 +87,8 @@ function selectedItemChange(item) {
         vm.filteredusers; //filteredusers affected by filter function
         vm.projects; //Projects that are active
         vm.terms;
+        vm.currentSem;
+        vm.currentSemesterName;
         vm.filterUsers = filterUsers;
         vm.currentuserview;
         vm.currentview = currentview;
@@ -144,7 +146,11 @@ function selectedItemChange(item) {
         //Joe's User Story
         vm.se = ChangeProjectStatus;
         vm.nw = ChangeTermStatus;
-        vm.ocs = OpenCloseSemester;
+
+        vm.scs = SetCurrentSemester;
+        vm.ssv = SetSemesterViewable;
+        vm.ssa = SetSemesterApplicable;
+        vm.ssp = SetSemesterProposable;
 
 
         vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
@@ -1353,25 +1359,38 @@ function selectedItemChange(item) {
         //Joe's User Story
         function loadTerms() {
             reviewStudentAppService.loadTerms().then(function (data) {
+              console.log("loading terms:");
                 vm.terms = data;
-                console.log("loading terms:");
+                data.forEach(function(term) {
+                  if(term.status.currentSemester == true){
+                    // Logging for Testing
+                    // console.log("in if statement");
+                    // console.log("current term?");
+                    // console.log(term);
+                    vm.currentSem = term;
+                    vm.currentSemesterName = term.name;
+                  }
+                })
+                // Logging for Testing
+                // console.log("currentSem");
+                // console.log(vm.currentSem);
                 console.log(data);
             });
         }
 
         vm.uncheck = function () {
 
-            for (var i = 1; i <= 17; i++) {
-                $scope['query' + i] = '';
-            }
-            $scope.selectedusertype = '';
-            $scope.selecteduserrank = '';
-			$scope.selecteduserproject = '';
-            $scope.SelectedProject = '';
-            $scope.selectedPiApproval = '';
-            $scope.selectedGoogle = '';
-			// userstory #1176
-			$scope.selectedTerm = '';
+          for (var i = 1; i <= 17; i++) {
+            $scope['query' + i] = '';
+          }
+          $scope.selectedusertype = '';
+          $scope.selecteduserrank = '';
+          $scope.selecteduserproject = '';
+          $scope.SelectedProject = '';
+          $scope.selectedPiApproval = '';
+          $scope.selectedGoogle = '';
+          // userstory #1176
+          $scope.selectedTerm = '';
 
         }
 
@@ -1797,7 +1816,13 @@ function selectedItemChange(item) {
                 function () {}
             );
         };
-
+        function test_msg(test) {
+          swal({
+            title: "This is a test, anddd: " + test,
+          },
+          function() {}
+          );
+        };
         function cannotadd_msg()
         {
             swal({
@@ -1908,24 +1933,91 @@ function selectedItemChange(item) {
             changestat_msg();
         }
 
-        function OpenCloseSemester() {
+        function SetCurrentSemester() {
           var term = vm.cterm;
-          console.log("In OpenCloseSemester");
-          if(term){
-            console.log($scope.selectedOpenStatus);
-            if($scope.selectedOpenStatus == "Open") {
-              console.log("in open");
-              term.open = true;
-              console.log(term.open);
-            }
-            else {
-              console.log("in closed");
-              term.open = false;
-              console.log(term.open);
-            }
 
-            ProjectService.editTerm(term, term._id);
+          // Logging for Testing
+          // console.log("term:");
+          // console.log(term);
+          // console.log("vm.currentSem:");
+          // console.log(vm.currentSem);
+
+
+          console.log("In SetCurrentSemester()");
+          if(term) {
+            var selectedSemester = $scope.selectedTerm;
+            // console.log("Pre selectedSemester");
+            // console.log(selectedSemester);
+            selectedSemester.status.currentSemester = true;
+            // console.log("Post selectedSemester");
+            // console.log(selectedSemester);
+
+            // console.log("Pre currentSem");
+            // console.log(vm.currentSem);
+            vm.currentSem.status.currentSemester = false;
+            // console.log("Post currentSem");
+            // console.log(vm.currentSem);
+            ProjectService.editTerm(vm.currentSem, vm.currentSem._id);
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+            vm.currentSem = selectedSemester;
+            vm.currentSemesterName = vm.currentSem.name;
           }
+          changestat_msg();
+        }
+
+        function SetSemesterViewable() {
+          var term = vm.cterm;
+          console.log("In SetSemesterViewable()");
+          if(term) {
+            console.log("In if() statment");
+
+            var selectedSemester = $scope.selectedTerm;
+
+            console.log("Pre selectedSemester");
+            console.log(selectedSemester);
+            selectedSemester.status.viewable = true;
+            console.log("Post selectedSemester");
+            console.log(selectedSemester);
+
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+          }
+          changestat_msg();
+        }
+
+        function SetSemesterApplicable() {
+          var term = vm.cterm;
+          console.log("In SetSemesterApplicable()");
+          if(term) {
+            console.log("In if() statment");
+            var selectedSemester = $scope.selectedTerm;
+
+            console.log("Pre selectedSemester");
+            console.log(selectedSemester);
+            selectedSemester.status.openForApply = true;
+            console.log("Post selectedSemester");
+            console.log(selectedSemester);
+
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+          }
+          changestat_msg();
+        }
+
+        function SetSemesterProposable() {
+          var term = vm.cterm;
+          console.log("In SetSemesterProposable()");
+          if(term) {
+            console.log("In if() statment");
+            var selectedSemester = $scope.selectedTerm;
+
+            console.log("Pre selectedSemester");
+            console.log(selectedSemester);
+            selectedSemester.status.openForProposal = true;
+            console.log("Post selectedSemester");
+            console.log(selectedSemester);
+
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+          }
+          changestat_msg();
         }
 
         //Remove a user from a project

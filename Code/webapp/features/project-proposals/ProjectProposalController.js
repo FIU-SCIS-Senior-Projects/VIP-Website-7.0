@@ -69,7 +69,8 @@
             });
 
             //Joe Use Story
-            vm.semesters = ['Spring 2017', 'Summer 2017', 'Fall 2017'];
+            // Semester Dropdown
+            // vm.semesters = ['Spring 2017', 'Summer 2017', 'Fall 2017'];
             6
             $scope.colleges = [
                 {
@@ -312,6 +313,7 @@
             //Joe's User Story
             function loadTerms() {
                 reviewStudentAppService.loadTerms().then(function (data) {
+                    console.log("in loadTerms()");
                     vm.terms = data;
                     console.log(vm.terms);
                 });

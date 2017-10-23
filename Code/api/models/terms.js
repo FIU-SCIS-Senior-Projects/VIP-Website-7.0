@@ -7,8 +7,12 @@ var TermSchema = new Schema({
   start: Date,
   end: Date,
   active: Boolean,
-  status: String,
-  open: Boolean
+  status: {
+    currentSemester: Boolean,
+    viewable: Boolean,
+    openForProposal: Boolean,
+    openForApply: Boolean
+  }
 });
 
 module.exports = mongoose.model('Terms', TermSchema);

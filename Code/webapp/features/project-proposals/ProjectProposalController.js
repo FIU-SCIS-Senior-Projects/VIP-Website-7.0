@@ -226,7 +226,7 @@
                     vm.id = $stateParams.id;
                     vm.editingMode = true;
                     getProjectById();
-                    getProjects()
+                  //   getProjects()
                 }
 
                 loadTerms();

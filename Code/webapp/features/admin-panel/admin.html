@@ -265,7 +265,7 @@
                      </td>
                <td class="col-md-3">
                          Semester:
-                         <select class="form-control" ng-model="chosenterm"
+                         <select class="form-control" ng-model="selectedTerm"
                                  ng-options="terms as terms.name for terms in vm.terms">
 								 <option value=""></option>
 						 </select>
@@ -281,7 +281,7 @@
          </section>
 
          <div class="table" style="overflow: scroll; overflow-y: hidden;">
-             <table id="adminTable" class="table table-striped">
+             <table id="adminTableU" class="table table-striped">
                 <thead id="header" style="background-color:#ABB2B9;">
 
                 <tr id="headerLabels">
@@ -335,7 +335,7 @@
 
           <tr>
              <td>
-                        <button class="btn btn-info btn-block" ng-hide="user.userType == 'Pi/CoPi'"
+                        <button id="addNewUserStart" class="btn btn-info btn-block" ng-hide="user.userType == 'Pi/CoPi'"
                        data-toggle="modal" data-target="#addUserModal">
                        <i class="fa fa-user-plus" aria-hidden="true"></i>
                         </button>
@@ -345,19 +345,19 @@
           <tr dir-paginate="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: selectedusertype? {userType: selectedusertype.name}:'' | filter: selecteduserrank? {rank: selecteduserrank}:'' | filter: selecteduserproject? {project: selecteduserproject.title}:'' | filter: selectedGoogle? {email: 'fiu.edu' || 'gmail.com'}:'' | filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 )) | itemsPerPage: 10" pagination-id="usersPage">
 
                     <td>
-                        <button class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
+                        <button id="impersonateUser" class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
                                 ng-hide="user.userType == 'Pi/CoPi'">
                        <i class="fa fa-eye" aria-hidden="true"></i>
                         </button>
                     </td>
                     <td>
-                        <button class="btn btn-primary" ng-hide="user.userType == 'Pi/CoPi'" ng-click="vm.editUser(user)"
+                        <button id="editUserStart" class="btn btn-primary" ng-hide="user.userType == 'Pi/CoPi'" ng-click="vm.editUser(user)"
                        data-toggle="modal" data-target="#editUserModal">
                        <i class="fa fa-pencil" aria-hidden="true"></i>
                         </button>
                     </td>
                     <td>
-                        <button class="btn btn-danger" ng-hide="user.userType == 'Pi/CoPi'" ng-click="vm.selectDeleteUser(user)"
+                        <button id="deleteUserStart" class="btn btn-danger" ng-hide="user.userType == 'Pi/CoPi'" ng-click="vm.selectDeleteUser(user)"
                                 data-toggle="modal" data-target="#deleteModal">
                        <i class="fa fa-user-times" aria-hidden="true"></i>
                         </button>
@@ -398,15 +398,15 @@
              <div class="form-group">
                  <div class="col-sm-3">
                     <label>First Name (required)</label>
-                    <input class="form-control" type="text" ng-model="addUserFirstName"/>
+                    <input id="addUserFirstName" class="form-control" type="text" ng-model="addUserFirstName"/>
                  </div>
                  <div class="col-sm-3">
                     <label>Last Name (required)</label>
-                    <input class="form-control" type="text" ng-model="addUserLastName"/>
+                    <input id="addUserLastName" class="form-control" type="text" ng-model="addUserLastName"/>
                  </div>
                  <div class="col-sm-3">
                     <label>Panther ID</label>
-                    <input class="form-control" type="text" ng-model="addUserPID"/>
+                    <input id="addUserPID" class="form-control" type="text" ng-model="addUserPID"/>
                  </div>
                  <div class="col-sm-3">
                     <label>Gender</label>
@@ -419,22 +419,19 @@
              <div class="form-group">
                  <div class="col-sm-4">
                     <label>Email (required)</label>
-                    <input class="form-control" type="text" ng-model="addUserEmail"/>
+                    <input id="addUserEmail" class="form-control" type="text" ng-model="addUserEmail"/>
                  </div>
                  <div class="col-sm-4">
-                    <label>Password</label>
-                    <input class="form-control" type="text" ng-model="addUserPassword"/>
+                    <label>Password (required)</label>
+                    <input id="addUserPassword" class="form-control" autocomplete="off" type="password" ng-model="addUserPassword"/>
                  </div>
                  <div class="col-sm-4">
-                    <label>College</label>
-                    <select class="form-control" ng-model="addUserCollege" id="ddCollegeA"
-                          ng-options="college as college.name for college in vm.colleges">
-                       <option value=""></option>
-                    </select>
+                    <label>Password Confirmation (required)</label>
+                    <input id="addUserPasswordConf" class="form-control" autocomplete="off" type="password" ng-model="addUserPasswordConf"/>
                  </div>
              </div>
              <div class="form-group">
-                 <div class="col-sm-4">
+                 <div class="col-sm-3">
                     <label>User Type</label>
                     <select class="form-control" ng-model="addUserType" id="ddUserTypeA"
                                 ng-options="typerank as typerank.name for typerank in vm.typeranks"
@@ -442,17 +439,24 @@
                        <option value=""></option>
                     </select>
                  </div>
-                 <div class="col-sm-4">
+                 <div class="col-sm-3">
                     <label>User Rank</label>
                     <select class="form-control" ng-model="addUserRank" id="ddRankA"
                                 ng-options="rank for rank in vm.addRanks">
                        <option value=""></option>
                     </select>
                  </div>
-                 <div class="col-sm-4">
+                 <div class="col-sm-3">
                     <label>PI Approval</label>
                     <select class="form-control" ng-model="addUserPIApproval" id="ddPIApprovalA"
                           ng-options="approval.type for approval in vm.booleanOptions">
+                       <option value=""></option>
+                    </select>
+                 </div>
+				 <div class="col-sm-3">
+                    <label>Semester</label>
+                    <select class="form-control" ng-model="addUserTerm" id="ddTermA"
+                          ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
@@ -466,9 +470,9 @@
                     </select>
                  </div>
                  <div class="col-sm-4">
-                    <label>Semester</label>
-                    <select class="form-control" ng-model="addUserTerm" id="ddTermA"
-                          ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' ">
+                    <label>College</label>
+                    <select class="form-control" ng-model="addUserCollege" id="ddCollegeA"
+                          ng-options="college as college.name for college in vm.colleges">
                        <option value=""></option>
                     </select>
                  </div>
@@ -477,7 +481,7 @@
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#addedUserModal"
+           <button type="button" class="btn btn-primary" id="addNewUser" data-dismiss="modal" data-toggle="modal" data-target="#addedUserModal"
                  ng-click="vm.addUser()">Add User</button>
         </div>
      </div>
@@ -491,7 +495,7 @@
            <label id="addUserMessage"></label>
         </div>
         <div class="modal-body">
-           <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="vm.updateTableAdd()">OK</button>
+           <button type="button" class="btn btn-primary" id="addUserConfirm" data-dismiss="modal" ng-click="vm.updateTableAdd()">OK</button>
         </div>
      </div>
  </div>
@@ -508,15 +512,15 @@
              <div class="form-group">
                  <div class="col-sm-3">
                     <label>First Name (required)</label>
-                    <input class="form-control" type="text" ng-model="editUserFirstName"/>
+                    <input id="editUserFirstName" class="form-control" type="text" ng-model="editUserFirstName"/>
                  </div>
                  <div class="col-sm-3">
                     <label>Last Name (required)</label>
-                    <input class="form-control" type="text" ng-model="editUserLastName"/>
+                    <input id="editUserLastName" class="form-control" type="text" ng-model="editUserLastName"/>
                  </div>
                  <div class="col-sm-3">
                     <label>Panther ID</label>
-                    <input class="form-control" type="text" ng-model="editUserPID"/>
+                    <input id="editUserPID" class="form-control" type="text" ng-model="editUserPID"/>
                  </div>
                  <div class="col-sm-3">
                     <label>Gender</label>
@@ -529,7 +533,7 @@
              <div class="form-group">
                  <div class="col-sm-6">
                     <label>Email (required)</label>
-                    <input class="form-control" type="text" ng-model="editUserEmail"/>
+                    <input id="editUserEmail" class="form-control" type="text" ng-model="editUserEmail"/>
                  </div>
                  <div class="col-sm-6">
                     <label>College</label>
@@ -583,7 +587,7 @@
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesModal"
+           <button type="button" class="btn btn-primary" id="editUser" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesModal"
                  ng-click="vm.saveChangesUser()">Save changes</button>
         </div>
      </div>
@@ -597,7 +601,7 @@
            <label id="editUserMessage">Editing user was successful</label>
         </div>
         <div class="modal-body">
-           <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+           <button type="button" class="btn btn-primary" id="editUserConfirm" data-dismiss="modal">OK</button>
         </div>
      </div>
  </div>
@@ -610,7 +614,7 @@
            <h3>Are you sure you wish to delete this user?</h3>
         </div>
         <div class="modal-body">
-           <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="vm.deleteUser()"
+           <button type="button" class="btn btn-primary" id="deleteUser" data-dismiss="modal" ng-click="vm.deleteUser()"
                  data-toggle="modal" data-target="#deletedModal">Yes</button>
            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
         </div>
@@ -625,12 +629,13 @@
            <label id="deleteUserMessage"></label>
         </div>
         <div class="modal-body">
-           <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="vm.updateTableDelete()">OK</button>
+           <button type="button" class="btn btn-primary" id="deleteUserConfirm" data-dismiss="modal" ng-click="vm.updateTableDelete()">OK</button>
         </div>
      </div>
  </div>
 </div>
 </div>
+
 <div ng-show="showSemesterMaint">
 
 
@@ -764,6 +769,8 @@
                </div>
            </div> -->
 </div>
+
+
 <div ng-show="showProjectMaint">
    <div>
 		<div class="panel panel-default" style="width:100%;">
@@ -827,7 +834,7 @@
 </section>
 
 			<div class="table" style="overflow: scroll; overflow-y: hidden;">
-                <table id="adminTable" class="table table-striped">
+                <table id="adminTableP" class="table table-striped">
                    <thead id="header" style="background-color:#ABB2B9;">
 
                    <tr id="headerPLabels">
@@ -873,19 +880,19 @@
                     pagination-id="projectsPage"
                     >
                     <td>
-                            <button class="btn btn-info" ng-click="vm.editProject(project)"
+                            <button id="editProjectStart" class="btn btn-info" ng-click="vm.editProject(project)"
 									data-toggle="modal" data-target="#editProjectModal">
 									<i class="fa fa-pencil" aria-hidden="true"></i>
                             </button>
                         </td>
 						<td>
-                            <button class="btn btn-primary" ng-click="vm.editProjectUsers(project)"
+                            <button id="editProjectUsersStart" class="btn btn-primary" ng-click="vm.editProjectUsers(project)"
 									data-toggle="modal" data-target="#editProjectUsersModal">
 									<i class="fa fa-user" aria-hidden="true"></i>
                             </button>
 						</td>
 						<td>
-							<button class="btn btn-danger" ng-click="vm.selectDeleteProject(project)"
+							<button id="deleteProjectStart" class="btn btn-danger" ng-click="vm.selectDeleteProject(project)"
                                     data-toggle="modal" data-target="#deletePModal">
 									<i class="fa fa-times" aria-hidden="true"></i>
                             </button>
@@ -929,7 +936,7 @@
    						<div class="form-group">
    							<div class="col-sm-8">
    								<label>Project Title (required)</label>
-   								<input class="form-control" type="text" ng-model="editPTitle"/>
+   								<input id="editPTitle" class="form-control" type="text" ng-model="editPTitle"/>
    							</div>
    							<div class="col-sm-4">
    								<label>Semester</label>
@@ -942,17 +949,17 @@
    						<div class="form-group">
    							<div class = "textContainer">
    								<label>Project Description</label>
-   								<trix-editor angular-trix class="trix" ng-model="editPDescription" name="" rows="4" required></trix-editor>
+   								<trix-editor angular-trix class="trix" id="editPDescription" ng-model="editPDescription" name="" rows="4" required></trix-editor>
    							</div>
    						</div>
    						<div class="form-group">
    							<div class="col-sm-8">
    								<label>(Filter Owner)</label>
-   								<input class="form-control" type="text" ng-model="editPFilterOwner"/>
+   								<input id="editPFilterOwner" class="form-control" type="text" ng-model="editPFilterOwner"/>
    							</div>
    							<div class="col-sm-4">
    								<label>Max Students</label>
-   								<input class="form-control" type="text" ng-model="editPMaxStudents"/>
+   								<input id="editPMaxStudents" class="form-control" type="text" ng-model="editPMaxStudents"/>
    							</div>
    						</div>
    						<div class="form-group">
@@ -973,14 +980,14 @@
    						<div class="form-group">
    							<div class = "textContainer">
    								<label>Video URL</label>
-   								<input class="form-control" type="text" ng-model="editPUrl"/>
+   								<input id="editPUrl" class="form-control" type="text" ng-model="editPUrl"/>
    							</div>
    						</div>
    					</form>
    				</div>
    				<div class="modal-footer">
    					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-   					<button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesPModal"
+   					<button type="button" class="btn btn-primary" id="editProject" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesPModal"
    							ng-click="vm.saveChangesProject()">Save changes</button>
    				</div>
    			</div>
@@ -1001,17 +1008,17 @@
    									<td>
    									</td>
    									<td>
-   										<input type="text" class="form-control" ng-model="studentQuery"/>
+   										<input id="studentQuery" type="text" class="form-control" ng-model="studentQuery"/>
    									</td>
    								</tr>
    								<tr>
    									<td>
-   										<button type="button" class="btn btn-primary" ng-click="vm.addStudentProject()">
+   										<button id="addPUserButton" type="button" class="btn btn-primary" ng-click="vm.addStudentProject()">
    											<i class="fa fa-user-plus" aria-hidden="true"></i>
    										</button>
    									</td>
    									<td>
-   										<select class="form-control" ng-model="addPUser"
+   										<select id="addPUser" class="form-control" ng-model="addPUser"
    												ng-options="user as user.firstName + ' ' + user.lastName for user in vm.allusers | filter: {userType: 'Student'} | filter: studentQuery? studentQuery:'' ">
    											<option value=""></option>
    										</select>
@@ -1019,7 +1026,7 @@
    								</tr>
    								<tr ng-repeat="student in vm.editingProject.members_detailed">
    									<td>
-   										<button class="btn btn-danger" ng-click="vm.removeStudentProject(student)">
+   										<button id="removePUserButton" class="btn btn-danger" ng-click="vm.removeStudentProject(student)">
    											<i class="fa fa-user-times" aria-hidden="true"></i>
    										</button>
    									</td>
@@ -1031,7 +1038,7 @@
    				</div>
    				<div class="modal-footer">
    					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-   					<button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesPModal"
+   					<button type="button" class="btn btn-primary" id="editProjectUsers" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesPModal"
    							ng-click="vm.saveChangesProjectUsers()">Save changes</button>
    				</div>
    			</div>
@@ -1045,7 +1052,7 @@
    					<label id="editProjectMessage">Editing project was successful</label>
    				</div>
    				<div class="modal-body">
-   					<button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+   					<button type="button" class="btn btn-primary" id="editProjectConfirm" data-dismiss="modal">OK</button>
    				</div>
    			</div>
    		</div>
@@ -1058,7 +1065,7 @@
    					<h3>Are you sure you wish to delete this project?</h3>
    				</div>
    				<div class="modal-body">
-   					<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="vm.deleteProject()"
+   					<button type="button" class="btn btn-primary" id="deleteProject" data-dismiss="modal" ng-click="vm.deleteProject()"
    							data-toggle="modal" data-target="#deletedPModal">Yes</button>
    					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
    				</div>
@@ -1073,7 +1080,7 @@
    					<label id="deleteProjectMessage"></label>
    				</div>
    				<div class="modal-body">
-   					<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="vm.updatePTableDelete()">OK</button>
+   					<button type="button" class="btn btn-primary" id="deleteProjectConfirm" data-dismiss="modal" ng-click="vm.updatePTableDelete()">OK</button>
    				</div>
    			</div>
    		</div>

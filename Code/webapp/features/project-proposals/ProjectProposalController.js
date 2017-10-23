@@ -51,6 +51,7 @@
                 console.log(adminData);
                 console.log(adminData.current_email);
                 vm.adminEmail = adminData.current_email;
+                getPreviousProjects()
             });
 
             // check permissions and get data
@@ -228,7 +229,7 @@
                     getProjectById();
                     getProjects()
                 }
-                getPreviousProjects()
+
                 loadTerms();
             }
 
@@ -251,7 +252,7 @@
             }
             function getPreviousProjects(){
                console.log(vm.adminEmail)
-               ProjectService.getProjects().then((projects)=>{
+               ProjectService.getPreviousProjects(vm.adminEmail).then((projects)=>{
                   console.log(projects);
                   $scope.project.previous = projects
                });

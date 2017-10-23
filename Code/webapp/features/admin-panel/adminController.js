@@ -110,7 +110,10 @@ function selectedItemChange(item) {
 		vm.editRanks = [];
 		// User story #1313
 		vm.editingProject;
-		vm.editingProjOrig;
+		vm.editingProjOrigMembers;
+		// User story #1328
+		vm.editingProjOrigTitle;
+		vm.editingProjNewTitle;
 
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
@@ -327,7 +330,12 @@ function selectedItemChange(item) {
 		// user story #1300
 		vm.editUser = function(user) {
 			vm.editingUser = user;
-			vm.editingUserOrig = {project: user.project};
+			vm.editingUserOrig = {
+				firstName: user.firstName,
+				lastName: user.lastName,
+				email: user.email,
+				project: user.project
+			};
 
 			// Set initial values of input to be current user values
 			$scope.editUserFirstName = vm.editingUser.firstName;
@@ -591,14 +599,18 @@ function selectedItemChange(item) {
 							if (data.data.success) {
 								document.getElementById('editUserMessage').innerHTML = 'Editing user was successful';
 								console.log('Edited User');
+								
+								// Update the projects that are associated with the given user (name and email)
+								if (vm.editingUserOrig.firstName != vm.editingUser.firstName || vm.editingUserOrig.lastName != vm.editingUser.lastName || vm.editingUserOrig.email != vm.editingUser.email)
+									updateProjects();
 
-								// Update the project if user is added to one
+								// Update the project users if user is added to one
 								if (!vm.editingUserOrig.project && vm.editingUser.joined_project)
 									addUserToProject(vm.editingUser);
 								// Send notification and update project if user was removed from project
 								else if (vm.editingUserOrig.project && !vm.editingUser.joined_project)
 									removeUserFromProject(vm.editingUser, vm.editingUserOrig.project, true);
-								// Update the both projects if user is moved from one to another
+								// Update both projects users if user is moved from one project to another
 								else if (vm.editingUserOrig.project != vm.editingUser.project && vm.editingUser.joined_project)
 									updateProjectsUser(vm.editingUser, vm.editingUserOrig.project);
 							}
@@ -628,6 +640,69 @@ function selectedItemChange(item) {
 				console.log("Error: Missing required information");
 			}
 		};
+		
+		// US 1328 - Update the projects that are currently associated with the given user
+		function updateProjects() {
+			var profileName = vm.editingUser.firstName + ' ' + vm.editingUser.lastName;
+		
+			// Find projects that contain the user
+			vm.allprojects.forEach(function (project) {
+				var found = false;
+				
+				if (project.owner_email == vm.editingUserOrig.email) {
+					found = true;
+					console.log("Found owner:", project.owner_email, vm.editingUserOrig.email);
+					project.owner_name = profileName;
+					project.owner_email = vm.editingUser.email;
+				}
+				
+				project.members.forEach(function (memberEmail, index) {
+					if (memberEmail == vm.editingUserOrig.email) {
+						found = true;
+						console.log("Found member:", project.owner_email, vm.editingUserOrig.email);
+						project.members_detailed[index] = profileName;
+						project.members[index] = vm.editingUser.email;
+					}
+				});
+				
+				project.faculty.forEach(function (faculty, index) {
+					if (faculty.email == vm.editingUserOrig.email) {
+						found = true;
+						console.log("Found faculty:", faculty.email, vm.editingUserOrig.email);
+						project.faculty[index].name = profileName;
+						project.faculty[index].email = vm.editingUser.email;
+					}
+				});
+				
+				project.mentor.forEach(function (mentor, index) {
+					if (mentor.email == vm.editingUserOrig.email) {
+						found = true;
+						console.log("Found mentor:", mentor.email, vm.editingUserOrig.email);
+						project.mentor[index].name = profileName;
+						project.mentor[index].email = vm.editingUser.email;
+					}
+				});
+				
+				// Update project if associated with user
+				if(found) {
+					ProjectService.editProject(project, project._id).then(function (data) {
+						if (data) {
+							if (data.data.message == 'Updated!') {
+								console.log('Updated Project (username/email)', data);
+							}
+							else {
+								console.log('Project Update (username/email) failed', data);
+							}
+						} else { // http error
+							console.log('Error: Updating project (username/email) failed');
+						}
+					});						
+				}
+			});
+			// Refresh projects panel
+			vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+			vm.tabledata_p = eval(vm.tabledata_p);
+		}
 
 		// Update the project if user is added to one
         function addUserToProject(user) {
@@ -872,13 +947,14 @@ function selectedItemChange(item) {
         };
 		
 		// User Story #1313
-
+	
 		vm.statusList = [{type: 'Active'}, {type: 'Disabled'}];
 
 		// Fill in edit project form with existing values in project
 		vm.editProject = function(project) {
 			console.log("In edit project");
 			vm.editingProject = project;
+			vm.editingProjOrigTitle = project.title;
 
 			// Set initial values of input to be current projects values
 			$scope.editPTitle = vm.editingProject.title;
@@ -897,7 +973,7 @@ function selectedItemChange(item) {
 			// Otherwise reset selected index of drop down box
 
 			if (indexes.owner != -1)
-				$scope.editPOwner = vm.users[indexes.owner];
+				$scope.editPOwner = vm.allusers[indexes.owner];
 			else
 				document.getElementById("ddOwnerP").selectedIndex = -1;
 			if (indexes.term != -1)
@@ -939,12 +1015,17 @@ function selectedItemChange(item) {
 					document.getElementById('editProjectMessage').innerHTML = 'Error: Max Students must be a positive value';
 					console.log('Error: Max Students must be a positive value');
 				}
+				else if ($scope.editPMaxStudents < vm.editingProject.members.length) {
+					document.getElementById('editProjectMessage').innerHTML = 'Error: Max Students should not be less than currently enlisted member count';
+					console.log('Error: Max Students should not be less than currently enlisted member count');
+				}
 				else if ($scope.editPStatus.type == 'Active' && vm.terms[findIndexTerm($scope.editPTerm.name)].status != 'Active') {
 					document.getElementById('editProjectMessage').innerHTML = 'Error: Cannot set project to Active status in a non-active semester';
 					console.log('Error: Cannot set project to Active status in a non-active semester');
 				}
 				else { // Update editingProject
 					vm.editingProject.title = $scope.editPTitle;
+					vm.editingProjNewTitle = $scope.editPTitle;
 					vm.editingProject.description = $scope.editPDescription;
 					vm.editingProject.maxStudents = $scope.editPMaxStudents;
 					vm.editingProject.video_url = ProcessVideoURL($scope.editPUrl);
@@ -982,6 +1063,9 @@ function selectedItemChange(item) {
 							if (data.data.message == 'Updated!') {
 								document.getElementById('editProjectMessage').innerHTML = 'Editing project was successful';
 								console.log('Edited Project');
+								// Update users associated with this project if project title has changed
+								if (vm.editingProjOrigTitle != vm.editingProjNewTitle)
+									updateUsers();
 							}
 							else {
 								document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP request failed';
@@ -1004,6 +1088,33 @@ function selectedItemChange(item) {
 				document.getElementById('editProjectMessage').innerHTML = 'Error: Missing required information';
 				console.log("Error: Missing required information");
 			}
+		};
+		
+		// User story #1238 - Update users associated with this project if project title has changed
+		function updateUsers() {
+			vm.allusers.forEach(function (user) {
+				if (user.project == vm.editingProjOrigTitle) {
+					console.log("Found project in user:", user.firstName, user.project, vm.editingProjOrigTitle);
+					user.project = vm.editingProjNewTitle;
+		
+					// Update the user with new project title
+					User.update({user: user}).then(function(data) {
+						if (data) {
+							if (data.data.success) {
+								console.log('Updating user (project title) was successful');
+							}
+							else {
+								console.log('Error: HTTP request failed', data);
+							}
+						} else { // http error
+							console.log('Error: HTTP response not received');
+						}
+					});
+				}
+			});
+			// Refresh user panel
+			vm.tabledata = JSON.stringify(vm.filteredusers);
+			vm.tabledata = eval(vm.tabledata);
 		};
 
 		function ProcessVideoURL(VideoURL) {
@@ -1039,12 +1150,12 @@ function selectedItemChange(item) {
 			else {
 				return "";
 			}
-        }
+        };
 
 
 		vm.editProjectUsers = function(project) {
 			vm.editingProject = project;
-			vm.editingProjOrig = Array.from(vm.editingProject.members);
+			vm.editingProjOrigMembers = Array.from(vm.editingProject.members);
 		};
 
 		vm.addStudentProject = function() {
@@ -1085,7 +1196,7 @@ function selectedItemChange(item) {
 						console.log('Edited Projects Users');
 
 						vm.editingProjectNew = Array.from(vm.editingProject.members);
-						updateProjectUsers(vm.editingProject.title, vm.editingProjectNew, vm.editingProjOrig);
+						updateProjectUsers(vm.editingProject.title, vm.editingProjectNew, vm.editingProjOrigMembers);
 						// Refresh User Panel
 						vm.tabledata = JSON.stringify(vm.filteredusers);
 						vm.tabledata = eval(vm.tabledata);

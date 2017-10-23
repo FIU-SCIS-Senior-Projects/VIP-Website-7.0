@@ -637,6 +637,8 @@
             <div class="col-md-9 panel panel-default">
               <h3 align="left">Semester Options</h3>
               <h4 ng-controller="adminController">Current Semester: <span ng-bind="vm.currentSemesterName"></span></h4>
+
+              <!-- <span ng-repeat="sem in vm.currentSemesterName">{{sem}}<span ng-if="!$last">, </span></span> TODO Remove if not needed-->
               <div class="form-group">
                 <table class="table">
                   <tr>

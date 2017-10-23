@@ -67,6 +67,9 @@ module.exports = function (app, express) {
                 // console.log("in api /term/:id put");
                 term.name = req.body.name;
                 term.status.currentSemester = req.body.status.currentSemester;
+                term.status.viewable = req.body.status.viewable;
+                term.status.openForProposal = req.body.status.openForProposal;
+                term.status.openForApply = req.body.status.openForApply;
 			          term.start = req.body.start;
                 term.end = req.body.end;
                 term.active = req.body.active;

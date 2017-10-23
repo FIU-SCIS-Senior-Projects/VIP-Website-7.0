@@ -89,6 +89,7 @@ function selectedItemChange(item) {
         vm.terms;
         vm.currentSem;
         vm.currentSemesterName;
+        // vm.currentSemesterName = [];// TODO Remove if not needed
         vm.filterUsers = filterUsers;
         vm.currentuserview;
         vm.currentview = currentview;
@@ -1368,6 +1369,7 @@ function selectedItemChange(item) {
                     // console.log("current term?");
                     // console.log(term);
                     vm.currentSem = term;
+                    // vm.currentSemesterName.push(term.name); // TODO Remove if not needed
                     vm.currentSemesterName = term.name;
                   }
                 })
@@ -1960,7 +1962,16 @@ function selectedItemChange(item) {
             ProjectService.editTerm(vm.currentSem, vm.currentSem._id);
             ProjectService.editTerm(selectedSemester, selectedSemester._id);
             vm.currentSem = selectedSemester;
-            vm.currentSemesterName = vm.currentSem.name;
+            vm.currentSemesterName = vm.currentSem.Name;
+
+            // TODO Remove if not needed
+            // var currentSemesterIndex = vm.currentSemesterName.indexOf(vm.currentSem.Name);
+            // if(currentSemesterIndex < 0) {
+            //   vm.currentSemesterName.push(vm.currentSem.name);
+            // } else {
+            //   vm.currentSemesterName.splice(currentSemesterIndex, 1);
+            // }
+
           }
           changestat_msg();
         }
@@ -1975,7 +1986,7 @@ function selectedItemChange(item) {
 
             console.log("Pre selectedSemester");
             console.log(selectedSemester);
-            selectedSemester.status.viewable = true;
+            selectedSemester.status.viewable = !selectedSemester.status.viewable;
             console.log("Post selectedSemester");
             console.log(selectedSemester);
 
@@ -1993,7 +2004,7 @@ function selectedItemChange(item) {
 
             console.log("Pre selectedSemester");
             console.log(selectedSemester);
-            selectedSemester.status.openForApply = true;
+            selectedSemester.status.openForApply = !selectedSemester.status.openForApply;
             console.log("Post selectedSemester");
             console.log(selectedSemester);
 
@@ -2011,7 +2022,7 @@ function selectedItemChange(item) {
 
             console.log("Pre selectedSemester");
             console.log(selectedSemester);
-            selectedSemester.status.openForProposal = true;
+            selectedSemester.status.openForProposal = !selectedSemester.status.openForProposal;
             console.log("Post selectedSemester");
             console.log(selectedSemester);
 

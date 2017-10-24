@@ -55,7 +55,7 @@
             </td>
         </tr>
         <tr ng-repeat="video in project.video_url">
-            <td>{{video.vidurl}}</td>
+            <td><img src="{{video.vimgurl}}" height="50px" width="50px">  {{video.vidurl}}</td>
             <td>
                 <button id="rmVideoButton" class="btn btn-danger" ng-click="removeVideoFromProject(video)">Remove Video</button>
             </td>

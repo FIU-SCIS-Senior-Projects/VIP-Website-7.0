@@ -27,9 +27,10 @@
         //vm.findProfile = findProfile;
         vm.already_joined = null;
         vm.not_signed_in = false;
-        vm.setVideo = function (src) {
+        $scope.iFrameURL = null;
+        vm.setVideo = function (url) {
 
-            return $sce.trustAsResourceUrl(src);
+            $scope.iFrameURL = $sce.trustAsResourceUrl(url);
         }
 
         vm.getEmail = function (index) {
@@ -87,6 +88,8 @@
                 }
                 else {
                     vm.data = data;
+                    //console.log("" + vm.data.video_url[0].vidurl);
+                    $scope.iFrameURL = $sce.trustAsResourceUrl(vm.data.video_url[0].vidurl);
                     console.log(vm.data.owner_name);
 
                     vm.own = vm.data.owner_name.split(', ');

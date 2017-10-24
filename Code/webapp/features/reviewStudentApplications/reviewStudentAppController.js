@@ -2,8 +2,25 @@
     'use strict';
 
     angular
-        .module('reviewStudentApp', ['reviewProjectProposals', 'ProjectProposalService'])
-        .controller('reviewStudentAppController',
+      .module('reviewStudentApp', ['reviewProjectProposals', 'ProjectProposalService'])
+      .filter('custom', function() {
+        return function(input, search) {
+           console.log(search)
+           console.log(input)
+          if (!input) return input;
+          if (!search) return input;
+          var expected = ('' + search).toLowerCase();
+          var result = {};
+          angular.forEach(input, function(value, key) {
+            var actual = ('' + value).toLowerCase();
+            if (actual.indexOf(expected) !== -1) {
+              result[key] = value;
+            }
+          });
+          return result;
+        }
+      })
+      .controller('reviewStudentAppController',
     function ($window,$state, $scope, reviewStudentAppService, ToDoService,User, reviewPPS, ProjectService, ProfileService, adminService, DateTimeService) {
         var vm = this;
 
@@ -11,7 +28,7 @@
         vm.profile;
 		vm.projects;
 		vm.toDoData;
-		vm.members = []; //Used to get members email and their respective projects 
+		vm.members = []; //Used to get members email and their respective projects
 		vm.membs = []; //Used to get Full information for members (including their application to a project)
 		vm.ApproveData = ApproveData;
 		vm.RejectData = RejectData;
@@ -19,8 +36,10 @@
 		vm.DeleteLog = deletelog;
 		vm.FindToDoMatch = findToDoMatch;
 		vm.logs;
-		
+      vm.sortType     = 'name'; // set the default sort type
+      vm.sortReverse  = false;
 		vm.adminEmail;
+
         adminService.getAdminSettings().then(function (data)
         {
             var adminData;
@@ -81,6 +100,7 @@
                 });
 
                 vm.membs = tempFilter;
+                console.log(vm.membs)
             });
         }
 

@@ -1,9 +1,15 @@
 
 <div class="row team-project">
 
-        <div class="video-container" ng-show="vm.data.video_url">
+        <div class="video-container" ng-show="vm.data.video_url[0].vidurl">
 			
-            <iframe width="600" height="350" ng-src="{{vm.setVideo(vm.data.video_url)}}"  frameborder="0" allowfullscreen style="margin: 0 auto;"></iframe>
+            <iframe width="600" height="350" ng-src="{{iFrameURL}}" id="vidframe" frameborder="0" allowfullscreen style="margin: 0 auto;"></iframe>
+
+            <div class="container" style="padding-top:15px;">
+                <div class="video-thumb" ng-repeat="videothumb in vm.data.video_url">
+                        <img ng-click="vm.setVideo(videothumb.vidurl)" src="{{videothumb.vimgurl}}" height="100px" width="100px">
+                </div>
+            </div>
         </div>
 
         <div class="col-sm-9 project-second-section-middle">

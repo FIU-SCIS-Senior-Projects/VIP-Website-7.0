@@ -7,11 +7,11 @@
 <hr>
 <p style="color:orange;"><strong>{{result}}</strong></p>
 <!-- User Story #1175 -->
+<label>Previous Projects</label>
+<select ng-model="project.previousProj" ng-change="populatePrevious()" ng-options="project._id as project.title for project in project.previous" class="form-control" value="previousProject" required> <option></option>
+</select>
 <form role="form" class="project_proposal"  ng-submit="save()" >
     <div class="form-group">
-      <label>Previous Projects</label>
-      <select ng-model="project.previousProj" ng-change="populatePrevious()" ng-options="project._id as project.title for project in project.previous" class="form-control" value="previousProject" required> <option></option>
-      </select>
 
     <!-- User Story #1175 -->
     <label>*Team Title</label>
@@ -42,8 +42,25 @@
 
     <div class="form-group">
     <label>Video Link</label>
-    <input type="text" ng-model="project.video_url" class="form-control"/>
-    <small><i>It is recommended you put an intro video as the first video of a Youtube playlist for easier viewing</i></small>
+    <!-- <input type="text" ng-model="project.video_url" class="form-control"/>
+    <small><i>It is recommended you put an intro video as the first video of a Youtube playlist for easier viewing</i></small> -->
+    <table class="table table-striped">
+        <tr>
+            <td>
+                <input id="project.videoAdd" type="text" class="form-control" ng-model="project.videoAdd"/>
+                <small><i>It is recommended you put an intro video as the first video of a Youtube playlist for easier viewing</i></small>
+            </td>
+            <td>
+                <button id="addVideoButton" type="button" class="btn btn-primary" ng-click="addVideoToProject()">Add Video</button>
+            </td>
+        </tr>
+        <tr ng-repeat="video in project.video_url">
+            <td><img src="{{video.vimgurl}}" height="50px" width="50px">  {{video.vidurl}}</td>
+            <td>
+                <button id="rmVideoButton" class="btn btn-danger" ng-click="removeVideoFromProject(video)">Remove Video</button>
+            </td>
+        </tr>
+    </table>
     </div>
 
     <!-- <button type="button" data-toggle="collapse" data-target="#vids" class="btn btn-primary">Add a secondary video</button> -->

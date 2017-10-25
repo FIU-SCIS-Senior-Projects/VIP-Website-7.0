@@ -2,7 +2,7 @@
     angular.module('vipHeader', ['toDoModule'])
     .directive('vipHeader', function (ToDoService,ProfileService)
     {
-		
+
 
         return {
             templateUrl: 'features/header/headerTemplate.html',
@@ -13,12 +13,12 @@
             controllerAs: 'header',
             controller: function ($rootScope) {
                 var vm = this;
-				
+
 				$rootScope.$on('$viewContentLoaded', function() {
 					console.log("Page refreshed");
 					$rootScope.$broadcast('refresh');
 				});
-				
+
 				ProfileService.loadProfile().then(function(data){
 					if (data) {
 
@@ -28,8 +28,8 @@
 						var id = data._id;
 						vm.logged_in = true;
 
-						
-						
+
+
 						vm.count = 0;
 						ToDoService.loadMyToDo(vm.data)
 							.then(function (data) {
@@ -37,7 +37,7 @@
 									if(data.data[i].read) {
 										continue;
 									} else {
-
+                              console.log("HERE")
 										vm.count++;
 
 										// if (data.data[i].owner == vm.user_type) { //Only count the todo tasks related to the account type.
@@ -53,18 +53,19 @@
 										// 	}
 										// //}
 										//
-										
+
 									}
 								}
-								
+
 						});
-						
-						
+
+
 						$rootScope.$on('refresh', function () {
 							console.log("View refreshed");
 							vm.count = 0;
 							ToDoService.loadMyToDo(vm.data)
 								.then(function (data) {
+                           vm.count = 0
 									for(i = 0; i < data.data.length; i++) {
 										if(data.data[i].read) {
 											continue;
@@ -84,10 +85,10 @@
 											// }
 
 											vm.count++;
-											
+
 										}
 									}
-									
+
 							});
 							if (!$rootScope.$$phase) {
 								$rootScope.$apply();
@@ -97,7 +98,7 @@
 					}
 				});
 
-                
+
 
             }
         };

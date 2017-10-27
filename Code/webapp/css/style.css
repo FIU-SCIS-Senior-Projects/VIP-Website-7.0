@@ -369,6 +369,21 @@ a {
     overflow: hidden;
 }
 
+.project-metadata {
+    margin: 10px 10px 20px 10px;
+    height: 60px;
+    width: 48%;
+    padding: 10px;
+    border: 1px solid #C2C2C2;
+    border-radius: 3px;
+    box-shadow: 0px 2px 4px #C2C2C2;
+    overflow: hidden;
+}
+
+.metadata-icon {
+    font-size: 10px; 
+}
+
 .detailed-project-info {
 
 }
@@ -478,6 +493,14 @@ a {
     text-align: center;
     width: 100%;
     max-height: 600px;
+}
+
+.video-thumb {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    background: #ccc;
+    margin: 5px;
 }
 
 .team-info {
@@ -936,4 +959,13 @@ label.small {
     margin: auto;
 }
 
+.csv {
+	list-style: none;
+	margin: 0; 
+	padding: 0;
+}
+
+.csv li { display: inline; }
+.csv li:after { content: ", "; }
+.csv li:last-child:after { content: ""; }
 

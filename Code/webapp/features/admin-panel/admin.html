@@ -907,7 +907,11 @@
 						</td>
 						<td ng-show="simpleP">{{project.description.toString()}}</td>
                         <td ng-show="simpleP">{{project.maxStudents}}</td>
-                        <td ng-show="simpleP">{{project.video_url}}</td>
+                        <td ng-show="simpleP">
+							<ul class="csv">
+								<li ng-repeat="video in project.video_url">{{video.vidurl}}</li>
+							</ul>
+						</td>
                     </tr>
                     </tbody>
                 </table>
@@ -977,31 +981,35 @@
    							</div>
    						</div>
    						<div class="form-group">
-							<table class="table table-striped">
-								<tr>
-									<label>Video URL</label>
-								</tr>
-								<tr ng-repeat="video in vm.editingProject.video_url">
-   									<td>
-   										<button id="removePVidButton" class="btn btn-danger" ng-click="vm.removeProjectVideo(video)">
-   											<i class="fa fa-times" aria-hidden="true"></i>
-   										</button>
-   									</td>
-									<td><img src="{{video.vimgurl}}" height="50px" width="50px"></td>
-   									<td>{{video.vidurl}}</td>
-   								</tr>
-   								<tr>
-   									<td>
-   										<button id="addPVidButton" type="button" class="btn btn-primary" ng-click="vm.addProjectVideo()">
-   											<i class="fa fa-plus" aria-hidden="true"></i>
-   										</button>
-   									</td>
-   									<td>
-   										<input id="addPVidUrl" class="form-control" type="text" ng-model="addPVidUrl"/>
-   									</td>
-   								</tr>
-   							</table>
-   						</div>
+							<div class = "textContainer">
+								<table class="table table-striped">
+									<tr>
+										<label>Video URL</label>
+									</tr>
+									<tr ng-repeat="video in vm.editingProject.video_url">
+										<td class="col-md-1">
+											<button id="removePVidButton" class="btn btn-danger" ng-click="vm.removeProjectVideo(video)">
+												<i class="fa fa-times" aria-hidden="true"></i>
+											</button>
+										</td>
+										<td class="col-md-2"><img src="{{video.vimgurl}}" height="50px" width="50px"></td>
+										<td>{{video.vidurl}}</td>
+									</tr>
+								</table>
+								<table class="table table-striped">
+									<tr>
+										<td class="col-md-1">
+											<button id="addPVidButton" type="button" class="btn btn-primary" ng-click="vm.addProjectVideo()">
+												<i class="fa fa-plus" aria-hidden="true"></i>
+											</button>
+										</td>
+										<td>
+											<input id="addPVidUrl" class="form-control" type="text" ng-model="addPVidUrl"/>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
    					</form>
    				</div>
    				<div class="modal-footer">

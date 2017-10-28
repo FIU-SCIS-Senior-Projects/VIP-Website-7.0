@@ -1228,6 +1228,8 @@ function selectedItemChange(item) {
 			// input: https://www.youtube.com/watch?v=uQ_DHRI-Xp0
 			// output: https://www.youtube.com/embed/uQ_DHRI-Xp0
 			if (VideoURL) {
+				var videoID = "";
+				var updatedVideoURL = "";
 				// video is already embed format, return
 				if (VideoURL.indexOf("youtube.com/embed/") > -1) {
 					return VideoURL;
@@ -1235,10 +1237,7 @@ function selectedItemChange(item) {
 
 				// youtube.com universal filter
 				if (VideoURL.indexOf("youtube.com") > -1) {
-					console.log("Test", VideoURL, typeof(VideoURL));
-					console.log("vidIndex", VideoURL.indexOf("?v="), VideoURL.length);
 					videoID = VideoURL.substr(VideoURL.indexOf("?v=") + 3);
-					console.log("videoID", videoID);
 					updatedVideoURL = "https://www.youtube.com/embed/" + videoID;
 					//console.log("Filtered url: " + updatedVideoURL);
 					return updatedVideoURL;
@@ -1262,6 +1261,8 @@ function selectedItemChange(item) {
         };
 		
 		function createThumbURL(VideoURL) {
+			var videoID = "";
+			var createdThumbURL = "";
 			videoID = VideoURL.substr(VideoURL.indexOf("embed/") + 6);
 			createdThumbURL = "http://img.youtube.com/vi/" + videoID + "/0.jpg";
 			return createdThumbURL;

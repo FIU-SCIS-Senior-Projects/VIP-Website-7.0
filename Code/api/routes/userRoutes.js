@@ -275,6 +275,7 @@ module.exports = function (app, express) {
                 user.userType = req.body.userType;
                 user.gender = req.body.gender;
 				user.semester = req.body.semester;
+				user.course = req.body.course;
 				
 				// Called only when user is created by admin panel (us #1300)
 				if (req.body.adminCreated) { 
@@ -357,6 +358,7 @@ module.exports = function (app, express) {
                         user.joined_project = req.body.user.joined_project;
 						user.semester = req.body.user.semester;
 						user.piApproval = req.body.user.piApproval;
+						user.course = req.body.user.course;
 						
 						if (typeof user.piApproval === 'boolean' && user.piApproval) {
 							user.piDenial = false;

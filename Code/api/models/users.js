@@ -46,7 +46,9 @@ var UsersSchema = new Schema({
      // User Story #1209
     RegDate: String,
     firstlogin_date: String,
-    allowNotifications: Boolean
+    allowNotifications: Boolean,
+	// User Story #1345
+	course: String
 });
 
 //Hash the password before the sure is saved

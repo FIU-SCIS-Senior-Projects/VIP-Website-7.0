@@ -43,7 +43,13 @@
 <h5 class="proj-title-owner">Owner: {{project.owner_name}}</h5>
 <!-- User Story #1142-->
 <!-- <p class="proj-descrip-teams">{{project.description}}</p>  -->
-<p class="proj-descrip-teams" ng-click="vm.viewDetails(project)" style="cursor:pointer;" ng-bind-html="project.description"></p>
+<div class="proj-descrip-teams-vid"  ng-show="project.video_url[0]"ng-click="vm.viewDetails(project)" style="cursor:pointer;" ng-bind-html="project.description"></div>
+<div class="proj-descrip-teams"  ng-hide="project.video_url[0]"ng-click="vm.viewDetails(project)" style="cursor:pointer;" ng-bind-html="project.description"></div>
+    <div class="thumb-card-container" ng-show="project.video_url[0]">
+        <div class="video-thumb-card" ng-if="project.video_url[0]" ng-repeat="videothumb in project.video_url">
+            <img src="{{videothumb.vimgurl}}" ng-click="vm.setVideoModal(videothumb.vidurl, project._id)" height="80px" width="80px" data-dismiss="modal" data-toggle="modal" data-target="#videoCardModal">
+        </div>
+    </div>
 </div>
 </div>
 <div class="col-md-6 project-info" ng-if="vm.done" ng-repeat="project in vm.filteredprojects | filter: { status: 'modified' }" ng-click="vm.viewDetails(project.old_project[0])">
@@ -55,5 +61,17 @@
 <p class="proj-descrip-teams" ng-bind-html="project.old_project[0].description"></p>
     </div>
     </div>
+
+    <div class="modal fade" id="videoCardModal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="btn btn-danger" style="float: right; margin-bottom: 6px;" id="videoCardModalClose" data-dismiss="modal">Close</button>
+                        <iframe width="514" height="300" ng-src="{{iFrameURLModal}}" id="vidframe" frameborder="0" allowfullscreen style="display:block; margin:auto;"></iframe>
+                        <button type="button" class="btn btn-link" ng-click="vm.modalLink(projectidModal)" style="display:block; margin:auto;" data-dismiss="modal">Enjoy this video? View the entire project here!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- End here -->

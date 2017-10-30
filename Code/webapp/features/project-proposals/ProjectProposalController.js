@@ -211,6 +211,9 @@
             //Joe Use Story
             vm.semester = null;
             //$scope.project.submit = submit;
+			// Us 1328
+			vm.projectTitleOrig;
+			vm.projectTitleNew;
 
             var faculty;
             $scope.updateFacultyEmails = updateFacultyEmails;
@@ -220,14 +223,17 @@
             $scope.updateStudentNames = updateStudentNames;
             $scope.updateStudentEmails = updateStudentEmails;
             $scope.populatePrevious = populatePrevious;
+            $scope.addVideoToProject = addVideoToProject;
+            $scope.removeVideoFromProject = removeVideoFromProject;
 
             init();
             function init() {
                 if ($stateParams.id != null) {
                     vm.id = $stateParams.id;
                     vm.editingMode = true;
+                    //console.log("Project Editing is " + vm.editingMode);
                     getProjectById();
-                    getProjects()
+                    //getProjects()
                 }
 
                 loadTerms();
@@ -260,6 +266,7 @@
             function getProjectById() {
                 ProjectService.getProject(vm.id).then(function (data) {
                     $scope.project = data;
+					vm.projectTitleOrig = $scope.project.title;
                     old_project = JSON.parse(JSON.stringify(data)); // Make a new reference to avoid a circular reference.
                     $scope.SelectedFacultyNames = "";
                     $scope.SelectedMentorNames = "";
@@ -367,6 +374,7 @@
                     updateFaculty();
                     updateMentor();
                     updateStudent();
+                    updateVideo();
 
 
                     if (!$scope.project.owner_name && !$scope.project.owner_email) {
@@ -379,13 +387,17 @@
                     }
 
 
-                    $scope.project.video_url = ProcessVideoURL($scope.project.video_url);
+                    // $scope.project.video_url = ProcessVideoURL($scope.project.video_url);
+                    
+                    // var videoThumbnailURL = createThumbURL($scope.project.video_url);
 
                     if (image)
                         $scope.project.image = image;
 
                     else
                         $scope.project.image = "https://www.woojr.com/wp-content/uploads/2009/04/" + $scope.project.title.toLowerCase()[0] + ".gif";
+					
+					vm.projectTitleNew = $scope.project.title;
 
                     if (!vm.editingMode) {
 
@@ -489,6 +501,18 @@
                                     };
 
                                 User.nodeEmail(email_msg);
+								
+								// US 1328 - Update users who are currently associated with proposed project
+								var allusers; 
+								User.loadAllUsers().then(function (data) {
+									allusers = data;
+									allusers.forEach(function (user, index) {
+										if (user.project == vm.projectTitleOrig) {
+											user.project = vm.projectTitleNew;
+											User.update({user: user});
+										}
+									});
+								});
 
                             }, function (error) {
                                 $scope.result = "An Error Occured Whilst Submitting Project Proposal!";
@@ -722,6 +746,73 @@
                 }
             }
 
+            var projectVideos;
+            
+            function addVideoToProject() {
+                //console.log("Add Video button pressed. Inside Function...");
+                if ($scope.project.videoAdd) {
+                    //console.log("Video Field not empty!");
+                    var addVideo = $scope.project.videoAdd;
+                    //console.log("Original URL in field is: " + addVideo);
+                    var processedVidUrl = ProcessVideoURL(addVideo);
+                    //console.log("New URL is: " + processedVidUrl);
+                    var processedVidThumb = createThumbURL(processedVidUrl);
+                    //console.log("Thumbnail URL is: " + processedVidThumb);
+                    var found = false;
+                    if(projectVideos == null && vm.editingMode == false) {
+                        //console.log("Video array is undefined. It must be a new project.");
+                        projectVideos = []
+                        $scope.project.video_url = [];
+                    }
+                    else {
+                        //console.log("Existing Project is being modified");
+                        projectVideos = $scope.project.video_url;
+                    }
+                    for (i = 0; i < $scope.project.video_url.length; i++) {
+                        //console.log("Inside For loop");
+                        if ($scope.project.video_url[i].vidurl == processedVidUrl) {
+                            //console.log("Video already in project");
+                            found = true; 
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        //console.log("Video will be added to project and saved when submit is pressed.");
+                        projectVideos.push({vidurl: processedVidUrl, vimgurl: processedVidThumb});
+                        if (vm.editingMode == false) {
+                            $scope.project.video_url.push({vidurl: processedVidUrl, vimgurl: processedVidThumb});
+                        }
+                    }
+                }
+                $scope.project.videoAdd = null;
+            }
+
+            function removeVideoFromProject(removeVid) {
+                for (i = 0; i < $scope.project.video_url.length; i++) {
+                    //console.log("Inside Remove For loop");
+                    if ($scope.project.video_url[i] == removeVid) {
+                        if (projectVideos){
+                            projectVideos.splice(i, 1);
+                        }
+                        $scope.project.video_url.splice(i, 1);
+                    }
+                }
+            }
+
+            function updateVideo() {
+                //console.log("Saving Videos. Inside Function...");
+                if (projectVideos) {
+                    //console.log("Videos to save not empty!");
+                    $scope.project.video_url = [];
+                    for (var i = 0; i < projectVideos.length; i++) {
+                        var insertedURL = projectVideos[i].vidurl;
+                        var insertedThumbnail = projectVideos[i].vimgurl;
+                        //console.log("Video saving! URL: " + insertedURL + " Image URL: " + insertedThumbnail);
+                        $scope.project.video_url.push({vidurl: insertedURL, vimgurl: insertedThumbnail});
+                    }
+                }
+            }
+
             //function updateProjectMembers()
             //{
             //	if($scope.project.owner_name && $scope.project.owner_email)
@@ -741,6 +832,14 @@
                     // video is already embed format, return
                     if (VideoURL.indexOf("youtube.com/embed/") > -1) {
                         return VideoURL;
+                    }
+
+                    else if (VideoURL.indexOf("&list=") > -1) {
+                        //console.log("PLAYLIST!!!!!");
+                        videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
+                        updatedVideoURL = "https://www.youtube.com/embed/?listType=playlist&list=" + videoID;
+                        //console.log("Filtered url: " + updatedVideoURL);
+                        return updatedVideoURL;
                     }
 
                     // youtube.com universal filter
@@ -765,6 +864,21 @@
                 }
                 else {
                     return "";
+                }
+            }
+
+            function createThumbURL(VideoURL) {
+                if (VideoURL.indexOf("&list=") > -1) {
+                    //console.log("Playlist Thumbnail")
+                    videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
+                    createdThumbURL = "img/playlist.png";
+                    //console.log("Filtered url: " + updatedVideoURL);
+                    return createdThumbURL;
+                }
+                else {
+                    videoID = VideoURL.substr(VideoURL.indexOf("embed/") + 6);
+                    createdThumbURL = "http://img.youtube.com/vi/" + videoID + "/0.jpg";
+                    return createdThumbURL;
                 }
             }
         });

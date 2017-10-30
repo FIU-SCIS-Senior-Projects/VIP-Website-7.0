@@ -173,6 +173,7 @@ module.exports = function (app, express) {
                     // populate nonsensitive values
                     profile.firstName = req.body.firstName;
                     profile.lastName = req.body.lastName;
+					profile.email = req.body.email;
                     profile.college = req.body.college;
                     profile.department = req.body.department;
                     profile.gender = req.body.gender;

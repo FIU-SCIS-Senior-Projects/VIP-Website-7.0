@@ -149,6 +149,19 @@
                         subject2: subject
                     };
                 User.nodeEmail(email_msg);
+				
+				// US 1328 - Remove users currently associated with this project
+				var allusers; 
+				User.loadAllUsers().then(function (data) {
+					allusers = data;
+					allusers.forEach(function (user, index) {
+						if (user.project == title) {
+							user.project = null;
+							user.joined_project = false;
+							User.update({user: user});
+						}
+					});
+				});
 
                 console.log(owner_name);
                 var log = {

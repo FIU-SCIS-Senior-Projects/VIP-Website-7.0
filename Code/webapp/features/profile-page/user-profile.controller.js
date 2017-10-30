@@ -63,15 +63,19 @@ var userProfile = {
         .module('user-profile', ['userService'])
         .controller('profileController', profileController);
 
-    profileController.$inject = ['$location', '$state', '$scope', 'ProfileService', 'User'];
+    profileController.$inject = ['$location', '$state', '$scope', 'ProfileService', 'User', 'ProjectService'];
     /* @ngInject */
-    function profileController($location, $state, $scope, ProfileService, User) {
+    function profileController($location, $state, $scope, ProfileService, User, ProjectService) {
         var vm = this;
         vm.profile;
         vm.image = "";
         vm.updateProfile = updateProfile;
         vm.destroyAccount = destroyAccount;
-
+		
+		// US 1328 - Keeps track of original data for user's name and email
+		vm.firstNameOrig;
+		vm.lastNameOrig;
+		vm.emailOrig;
 
         var currRank;
 
@@ -84,6 +88,10 @@ var userProfile = {
             ProfileService.loadProfile().then(function (data) {
                 vm.profile = data;
                 currRank = vm.profile.userType;
+				
+				vm.firstNameOrig = vm.profile.firstName;
+				vm.lastNameOrig = vm.profile.lastName;
+				vm.emailOrig = vm.profile.email;
 
                 // get the right index for the school/dept of the current college user is in
                 for (var i = 0; i < vm.Colleges.length; i++) {
@@ -104,6 +112,11 @@ var userProfile = {
                 vm.profile.resume = userProfile.resume;
 
             ProfileService.saveProfile(vm.profile).then(function (data) {
+				// Update the projects that are associated with the given user
+				if (vm.firstNameOrig != vm.profile.firstName || vm.lastNameOrig != vm.profile.lastName || vm.emailOrig != vm.profile.email) {
+					updateProjects(false);
+				}
+				
                 // user is trying to change the userType, which may need approval
                 if (vm.profile.userType != currRank) {
                     // however, Pi/CoPi/Coordinators can update the profile without approval
@@ -114,9 +127,94 @@ var userProfile = {
                     }
                 } else {// changing anything else doesnt need approval
                     success_msg();
-                }
+                }	
             });
         }
+		
+		vm.projects;
+		
+		// US 1328 - Update the projects that are associated with the given user
+		function updateProjects(isDeletingUser) {
+			ProjectService.getAllProjects().then(function (data) {
+				console.log("ProjectData:", data);
+                vm.projects = data;
+				
+				var profileName = vm.profile.firstName + ' ' + vm.profile.lastName;
+			
+				// Find projects that contain the user
+				vm.projects.forEach(function (project) {
+					var found = false;
+					
+					if (project.owner_email == vm.emailOrig) {
+						found = true;
+						console.log("Found owner:", project.owner_email, vm.emailOrig);
+						if (isDeletingUser) {
+							project.owner_name = null;
+							project.owner_email = null;
+						} else {
+							project.owner_name = profileName;
+							project.owner_email = vm.profile.email;
+						}
+					}
+					
+					project.members.forEach(function (memberEmail, index) {
+						if (memberEmail == vm.emailOrig) {
+							found = true;
+							console.log("Found member:", project.owner_email, vm.emailOrig);
+							if (isDeletingUser) {
+								project.members_detailed.splice(index, 1);
+								project.members.splice(index, 1);
+							} else {
+								project.members_detailed[index] = profileName;
+								project.members[index] = vm.profile.email;
+							}
+						}
+					});
+					
+					project.faculty.forEach(function (faculty, index) {
+						if (faculty.email == vm.emailOrig) {
+							found = true;
+							console.log("Found faculty:", faculty.email, vm.emailOrig);
+							if (isDeletingUser) {
+								project.faculty.splice(index, 1);
+							} else {
+								project.faculty[index].name = profileName;
+								project.faculty[index].email = vm.profile.email;
+							}
+						}
+					});
+					
+					project.mentor.forEach(function (mentor, index) {
+						if (mentor.email == vm.emailOrig) {
+							found = true;
+							console.log("Found mentor:", mentor.email, vm.emailOrig);
+							if (isDeletingUser) {
+								project.mentor.splice(index, 1);
+							} else {
+								project.mentor[index].name = profileName;
+								project.mentor[index].email = vm.profile.email;
+							}
+						}
+					});
+					
+					// Update project if associated with user
+					if(found) {
+						ProjectService.editProject(project, project._id).then(function (data) {
+							if (data) {
+								if (data.data.message == 'Updated!') {
+									console.log('Updated Project', data);
+								}
+								else {
+									console.log(data);
+								}
+							} else { // http error
+								console.log('Error: Editing project failed');
+							}
+						});						
+					}
+				});
+            });	
+		}
 
         function destroyAccount() {
             swal({
@@ -145,6 +243,9 @@ var userProfile = {
                 showCancelButton: true
             }, function () {
                 User.delete(vm.profile._id).then(function () {
+					// US 1328 
+					updateProjects(true);
+					
                     $location.path('home').then(function () {
                         setTimeout(function () {
                             swal({

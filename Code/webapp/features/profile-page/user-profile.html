@@ -9,17 +9,20 @@
             <table class="table">
                 <tr>
                     <td>
+						<label>First Name:</label>
                         <input type="text" placeholder="First Name" ng-model="vm.profile.firstName"
-                               class="form-control">
+                               class="form-control" id="firstNameUser">
 
                     </td>
                     <td>
-                        <input type="text" placeholder="Last Name" ng-model="vm.profile.lastName" class="form-control">
+						<label>Last Name:</label>
+                        <input type="text" placeholder="Last Name" ng-model="vm.profile.lastName" class="form-control" id="lastNameUser">
                     </td>
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <input type="text" placeholder="Email" ng-model="vm.profile.email" class="form-control">
+						<label>Email:</label>
+                        <input type="text" placeholder="Email" ng-model="vm.profile.email" class="form-control" id="emailUser">
                     </td>
                 </tr>
                 <tr>
@@ -65,7 +68,7 @@
                         <select ng-model="vm.profile.college" class="form-control"
                                 ng-options="college.name as college.name for college in vm.Colleges">
                         </select>
-                        </select>
+                        
                     </td>
                 </tr>
                 <tr>
@@ -74,10 +77,7 @@
                         <label>School/Department:</label>
                         <select ng-model="vm.profile.department"
                                 ng-options="school for school in vm.selectedCollege.schools" class="form-control"/>
-
-
-                            </input>
-
+						</select>
                     </td>
                 </tr>
                 <tr>
@@ -162,7 +162,7 @@
             <div align="center">
                 <button style="letter-spacing: 3px; max-width: 300px; background-color: #081E3F; border: none; font-weight: bold;"
                         type="submit" class="btn btn-primary btn-block" ng-disabled="vm.profile.$invalid"
-                        ng-click="vm.updateProfile()">
+                        ng-click="vm.updateProfile()" id="profileUpdateButton">
                     UPDATE
                 </button>
             </div>

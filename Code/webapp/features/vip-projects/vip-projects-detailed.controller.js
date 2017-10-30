@@ -89,12 +89,12 @@
                 else {
                     vm.data = data;
                     //console.log("" + vm.data.video_url[0].vidurl);
-					if (vm.data.video_url.length > 0) {
-						if (vm.data.video_url[0])
-							$scope.iFrameURL = $sce.trustAsResourceUrl(vm.data.video_url[0].vidurl);
-						else
-							$scope.iFrameURL = null;
-					}
+                    if (vm.data.video_url.length > 0) {
+                      if (vm.data.video_url[0])
+                        $scope.iFrameURL = $sce.trustAsResourceUrl(vm.data.video_url[0].vidurl);
+                      else
+                        $scope.iFrameURL = null;
+                    }
                     console.log(vm.data.owner_name);
 
                     vm.own = vm.data.owner_name.split(', ');

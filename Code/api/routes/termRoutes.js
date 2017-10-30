@@ -33,7 +33,7 @@ module.exports = function (app, express) {
 		.get( // Get all the terms in the DB
 			authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
             function (req, res) {
-                Term.find({}, function (err, terms) {
+                Term.find({active:true}, function (err, terms) {
                     if (err) {
                         return res.send(err);
                     }

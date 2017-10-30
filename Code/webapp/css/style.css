@@ -360,7 +360,7 @@ a {
 
 .project-info {
     margin: 10px 10px 20px 10px;
-    height: 260px;
+    height: 400px;
     width: 48%;
     padding: 10px;
     border: 1px solid #C2C2C2;
@@ -503,6 +503,22 @@ a {
     margin: 5px;
 }
 
+.video-thumb-card {
+    display: inline-block;
+    max-width: 80px;
+    max-height: 80px;
+    background: #ccc;
+    margin: 5px;
+}
+
+
+.thumb-card-container {
+    height: 85px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    white-space:nowrap;
+}
+
 .team-info {
     padding-left: 0px;
     font-size: 0.8em;
@@ -524,6 +540,13 @@ a {
 .proj-description {
     font-size: 1.2em;
     line-height: 1.5em;
+    font-family: calibri, sans-serif;
+}
+
+.proj-descrip-teams-vid {
+    display: inline-block;
+    height: 120px;
+    overflow-y: scroll;
     font-family: calibri, sans-serif;
 }
 

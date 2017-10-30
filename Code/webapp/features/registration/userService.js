@@ -24,10 +24,17 @@
                 return $http.get('/vip/users/email/' + email);
             };
 
-            // get all users
+            // get all users (Do not use this one)
             userFactory.all = function () {
                 return $http.get('/vip/users/');
             };
+			
+			// get all users
+			userFactory.loadAllUsers = function () {
+				return $http.get('/api/getallusers/').then(function (data) {
+					return data.data;
+				});
+			};
 
             // update a user
             userFactory.update = function (userData) {

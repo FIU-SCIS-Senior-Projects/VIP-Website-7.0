@@ -982,4 +982,13 @@ label.small {
     margin: auto;
 }
 
+.csv {
+	list-style: none;
+	margin: 0; 
+	padding: 0;
+}
+
+.csv li { display: inline; }
+.csv li:after { content: ", "; }
+.csv li:last-child:after { content: ""; }
 

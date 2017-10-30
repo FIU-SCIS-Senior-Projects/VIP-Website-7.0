@@ -433,6 +433,8 @@
                             }
 
                             profile.joined_project = false;
+
+							vm.profile.project = project.title;
                             User.update({user: profile});
 
                             ProjectService.editProject(project, project._id).then(
@@ -472,6 +474,8 @@
                             }
                             profile.joined_project = false;
                             profile.modifying = 2;
+							
+							vm.profile.project = project.title;
                             User.update({user: profile});
 
                             project.members[project.members.length] = vm.email;

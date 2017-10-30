@@ -68,7 +68,7 @@
         ProfileService.loadProfile().then(function (data) {
             vm.profile = data;
 
-            reviewStudentAppService.loadProjects().then(function (data) {
+            reviewStudentAppService.loadAllProjects().then(function (data) {
                 vm.projects = data;
             });
 
@@ -88,8 +88,13 @@
                 }
                 else {
                     vm.data = data;
-                    console.log("" + vm.data.video_url[0].vidurl);
-                    $scope.iFrameURL = $sce.trustAsResourceUrl(vm.data.video_url[0].vidurl);
+                    //console.log("" + vm.data.video_url[0].vidurl);
+                    if (vm.data.video_url.length > 0) {
+                      if (vm.data.video_url[0])
+                        $scope.iFrameURL = $sce.trustAsResourceUrl(vm.data.video_url[0].vidurl);
+                      else
+                        $scope.iFrameURL = null;
+                    }
                     console.log(vm.data.owner_name);
 
                     vm.own = vm.data.owner_name.split(', ');
@@ -105,8 +110,9 @@
                 ProfileService.loadProfile().then(function (data) {
                     profile = data;
                     if (profile) {
-                        if (vm.data.members)
+                        if (vm.data.members) {
                             vm.already_joined = vm.data.members.includes(profile.email);
+						}
                         else {
                             vm.already_joined = false;
                         }
@@ -162,7 +168,9 @@
                 confirmButtonText: "I'm sure",
                 showCancelButton: true,
             }, function () {
+				// US 1328 - Update Users in project being removed
                 profile.joined_project = false;
+				profile.project = null;
                 User.update({user: profile});
                 reviewStudentAppService.RemoveFromProject(vm.id, profile.email, profile.firstName + " " + profile.lastName);
                 $window.location.reload();
@@ -179,6 +187,18 @@
                     showCancelButton: true,
                 }, function () {
                     if (vm.profile._id == vm.data.owner || vm.profile.userType == "Pi/CoPi") {
+						var allusers;
+						// US 1328 - Update Users in project being removed
+						User.loadAllUsers().then(function (data) {
+							allusers = data;
+							allusers.forEach(function (user, index) {
+								if (user.project == vm.data.title) {
+									user.joined_project = false;
+									user.project = null;
+									User.update({user: user});
+								}
+							});
+						});
                         ProjectService.delete(vm.id).then(function (data) {
                             //console.log("Returned from the BackEnd");
                             $location.path('vip-projects');

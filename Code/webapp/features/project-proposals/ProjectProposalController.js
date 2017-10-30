@@ -210,6 +210,9 @@
             //Joe Use Story
             vm.semester = null;
             //$scope.project.submit = submit;
+			// Us 1328
+			vm.projectTitleOrig;
+			vm.projectTitleNew;
 
             var faculty;
             $scope.updateFacultyEmails = updateFacultyEmails;
@@ -262,6 +265,7 @@
             function getProjectById() {
                 ProjectService.getProject(vm.id).then(function (data) {
                     $scope.project = data;
+					vm.projectTitleOrig = $scope.project.title;
                     old_project = JSON.parse(JSON.stringify(data)); // Make a new reference to avoid a circular reference.
                     $scope.SelectedFacultyNames = "";
                     $scope.SelectedMentorNames = "";
@@ -390,6 +394,8 @@
 
                     else
                         $scope.project.image = "https://www.woojr.com/wp-content/uploads/2009/04/" + $scope.project.title.toLowerCase()[0] + ".gif";
+					
+					vm.projectTitleNew = $scope.project.title;
 
                     if (!vm.editingMode) {
 
@@ -493,6 +499,18 @@
                                     };
 
                                 User.nodeEmail(email_msg);
+								
+								// US 1328 - Update users who are currently associated with proposed project
+								var allusers; 
+								User.loadAllUsers().then(function (data) {
+									allusers = data;
+									allusers.forEach(function (user, index) {
+										if (user.project == vm.projectTitleOrig) {
+											user.project = vm.projectTitleNew;
+											User.update({user: user});
+										}
+									});
+								});
 
                             }, function (error) {
                                 $scope.result = "An Error Occured Whilst Submitting Project Proposal!";

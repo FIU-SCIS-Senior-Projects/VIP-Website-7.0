@@ -809,9 +809,21 @@
                         <td>{{project.owner_email}}</td>
                         <td>{{project.semester}}</td>
                         <td>{{project.status}}</td>
-						<td ng-show="simpleP">{{project.mentor.name}}</td>
-                        <td ng-show="simpleP">{{project.faculty.name}}</td>
-                        <td>{{project.members_detailed.toString()}}</td>
+						<td ng-show="simpleP">
+							<ul class="csv">
+								<li ng-repeat="mentor in project.mentor">{{mentor.name}}</li>
+							</ul>
+						</td>
+                        <td ng-show="simpleP">
+							<ul class="csv">
+								<li ng-repeat="faculty in project.faculty">{{faculty.name}}</li>
+							</ul>
+						</td>
+                        <td>
+							<ul class="csv">
+								<li ng-repeat="member in project.members_detailed">{{member}}</li>
+							</ul>
+						</td>
 						<td ng-show="simpleP">{{project.description.toString()}}</td>
                         <td ng-show="simpleP">{{project.maxStudents}}</td>
                         <td ng-show="simpleP">{{project.video_url}}</td>

@@ -13,7 +13,7 @@
 
     <!--To Dos are Present-->
     <span ng-show="todo.done">
-      <input type="text" ng-model="searchText" placeholder="Search Keywords" class="form-control">
+      <input type="text" ng-model="searchText" placeholder="Search Keywords" uib-typeahead="todoItem as '' + todoItem.todo + '' for todoItem in todo.list | filter:$viewValue | limitTo:8" class="form-control">
         <div ng-repeat="cat in todo.categories">
             <div ng-show="cat.count > 0" class="panel panel-default">
 
@@ -68,7 +68,7 @@
                         <span ng-show="todoItem.owner_id == null" class="label label-danger">Pi/Copi</span>
 
                         <!--To Do Message / Desciption-->
-                        <a ng-href="{{todoItem.link}}" ng-click="todo.markedAsRead(todoItem)">
+                        <a ng-href="/#/adminpanel" ng-click="todo.markedAsRead(todoItem)">
                             <strong>{{todoItem.todo}}</strong>
                         </a>
                     </li>

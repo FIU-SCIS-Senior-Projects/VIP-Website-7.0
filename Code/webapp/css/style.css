@@ -513,6 +513,8 @@ a {
 
 
 .thumb-card-container {
+    text-align: center;
+    margin: auto;
     height: 85px;
     overflow-y: hidden;
     overflow-x: scroll;

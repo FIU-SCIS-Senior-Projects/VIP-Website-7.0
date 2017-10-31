@@ -52,6 +52,12 @@
                            Semester Maintenance
                    </button>
               </li>
+			  <li>
+                   <button style="float:right;" ng-click="routeCourseMaintenance()" ng-model="routeUserMaint"
+                           class="btn second-button btn-default navbar-btn">
+                           Course Maintenance
+                   </button>
+              </li>
            </ul>
        </div>
    </nav>
@@ -202,6 +208,50 @@
     </div>
 </div>
 
+<div ng-show="showCoursePage">
+	<div class="col-md-6 panel panel-default">
+		<h3 align="center" style="margin-bottom: 0px">Course List</h3>
+		<form role="role" class="form-horizontal">
+			<table class="table table-striped">
+				<tr ng-repeat="course in vm.courses">
+					<td class="col-md-1">
+						<button id="removeCourseButton" class="btn btn-danger" ng-click="vm.removeCourse(course)">
+							<i class="fa fa-times" aria-hidden="true"></i>
+						</button>
+					</td>
+					<td class="col-md-2">{{course.name}}</td>
+					<td class="col-md-3">{{course.title}}</td>
+				</tr>
+			</table>
+			<table class="table table-striped">
+				<tr>
+					<td class="col-md-1">
+						<p></p>
+						<button id="addNewCourseButton" type="button" class="btn btn-primary" ng-click="vm.addCourse()">
+							<i class="fa fa-plus" aria-hidden="true"></i>
+						</button>
+					</td>
+					<td class="col-md-1">
+						Subject<input id="addNewCourseInputSubject" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
+								      maxlength="3" ng-model="addNewCourseInputSubject"/>
+					</td>
+					<td class="col-md-1">
+						Number<input id="addNewCourseInputNumber" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
+									 ng-model="addNewCourseInputNumber" />
+					</td>
+					<td class="col-md-1">
+						Section<input id="addNewCourseInputSection" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="2" 
+									  ng-model="addNewCourseInputSection" />
+					</td>
+					<td class="col-md-2">
+						Title<input id="addNewCourseInputTitle" class="form-control" type="text" ng-model="addNewCourseInputTitle" />
+					</td>
+				</tr>
+			</table>	
+		</form>
+	</div>
+</div>
+
 <div ng-show="showUserMaint">
    <div>
     <div class="panel panel-default" style="width:100%;">
@@ -294,13 +344,14 @@
                     <th>Panther ID</th>
                     <th>User Type</th>
                     <th ng-show="simple">College</th>
+					<th>Course</th>
                     <th>Project</th>
                     <th ng-show="simple">Gender</th>
                     <th ng-show="simple">Joined Project</th>
                     <th ng-show="simple">Rank</th>
                     <th ng-show="simple">Mentor</th>
                     <th>Pi Approval</th>
-             <th>Semester</th>
+					<th>Semester</th>
                     <th ng-show="simple">Multiple Project</th>
                     <th ng-show="simple">Proj App Date</th>
                     <th ng-show="simple">User Reg Date</th>
@@ -308,41 +359,51 @@
                 </tr>
 
                 <tr id="headerInputs">
-             <th></th>
+					<th></th>
                     <th></th>
-             <th></th>
+					<th></th>
                     <th><input class="form-control" type="text" ng-model="query1"/></th>
                     <th><input type="text" class="form-control" ng-model="query2"/></th>
                     <th><input type="text" class="form-control" ng-model="query3"/></th>
                     <th><input type="text" class="form-control" ng-model="query4"/></th>
                     <th><input type="text" class="form-control" ng-model="query5"/></th>
                     <th ng-show="simple"><input type="text" class="form-control" ng-model="query6"/></th>
-                    <th><input type="text" class="form-control" ng-model="query7"/></th>
-                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query8"/></th>
+					<th><input type="text" class="form-control" ng-model="query7"/></th>
+                    <th><input type="text" class="form-control" ng-model="query8"/></th>
                     <th ng-show="simple"><input type="text" class="form-control" ng-model="query9"/></th>
                     <th ng-show="simple"><input type="text" class="form-control" ng-model="query10"/></th>
                     <th ng-show="simple"><input type="text" class="form-control" ng-model="query11"/></th>
-                    <th><input type="text" class="form-control" ng-model="query12"/></th>
-             <th><input type="text" class="form-control" ng-model="query13"/></th>
-                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query14"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query12"/></th>
+                    <th><input type="text" class="form-control" ng-model="query13"/></th>
+					<th><input type="text" class="form-control" ng-model="query14"/></th>
                     <th ng-show="simple"><input type="text" class="form-control" ng-model="query15"/></th>
                     <th ng-show="simple"><input type="text" class="form-control" ng-model="query16"/></th>
-             <th ng-show="simple"><input type="text" class="form-control" ng-model="query17"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query17"/></th>
+					<th ng-show="simple"><input type="text" class="form-control" ng-model="query18"/></th>
                 </tr>
                 </thead>
 
                 <tbody>
 
-          <tr>
-             <td>
+				<tr>
+					<td>
                         <button id="addNewUserStart" class="btn btn-info btn-block" ng-hide="user.userType == 'Pi/CoPi'"
-                       data-toggle="modal" data-target="#addUserModal">
-                       <i class="fa fa-user-plus" aria-hidden="true"></i>
+							data-toggle="modal" data-target="#addUserModal">
+							<i class="fa fa-user-plus" aria-hidden="true"></i>
                         </button>
                     </td>
-          </tr>
+				</tr>
 
-          <tr dir-paginate="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: selectedusertype? {userType: selectedusertype.name}:'' | filter: selecteduserrank? {rank: selecteduserrank}:'' | filter: selecteduserproject? {project: selecteduserproject.title}:'' | filter: selectedGoogle? {email: 'fiu.edu' || 'gmail.com'}:'' | filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' | filter:query14 | filter:query15 | filter:query16 | filter: query17 )) | itemsPerPage: 10" pagination-id="usersPage">
+				<tr dir-paginate="user in (filteredItems = ( vm.tabledata | filter: query1?{firstName:query1}:'' | filter: query2?{lastName:query2}:'' |
+					filter: query3?{email:query3}:'' | filter: query4?{pantherID:query4}:'' | filter: query5?{userType:query5}:'' |
+					filter: query6?{college:query6}:'' | filter: query7?{course:query7}:'' | filter: query8?{project:query8}:'' |
+					filter: query9?{project:gender}:'' | filter: query10?{joined_project:query10}:'' | filter: query11?{rank:query11}:'' |
+					filter: query12?{mentor:query12}:'' | filter: query13?{piApproval:query13}:'' | filter: query14?{semester:query14}:'' |
+					filter: query15?{multipleproject:query15}:'' | filter: query16?{appliedDate:query16}:'' | filter: query17?{RegDate:query17}:'' | filter: query18?{firstlogin_date:query18}:'' |
+					filter: selectedusertype? {userType: selectedusertype.name}:'' | filter: selecteduserrank? {rank: selecteduserrank}:'' |
+					filter: selecteduserproject? {project: selecteduserproject.title}:'' | filter: selectedGoogle? {email: 'fiu.edu' || 'gmail.com'}:'' )) |
+					filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' |
+					itemsPerPage: 10" pagination-id="usersPage">
 
                     <td>
                         <button id="impersonateUser" class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
@@ -369,6 +430,7 @@
                     <td class="center">{{user.pantherID}}</td>
                     <td>{{user.userType}}</td>
                     <td ng-show="simple">{{user.college}}</td>
+					<td>{{user.course}}</td>
                     <td>{{user.project}}</td>
                     <td class="center" ng-show="simple">{{user.gender}}</td>
                     <td ng-show="simple">{{user.joined_project}}</td>
@@ -386,8 +448,9 @@
              <dir-pagination-controls pagination-id="usersPage"></dir-pagination-controls>
          </div>
     </div>
-   </div>
-   <div class="modal fade" id="addUserModal" role="dialog">
+</div>
+
+<div class="modal fade" id="addUserModal" role="dialog">
  <div class="modal-dialog modal-lg">
      <div class="modal-content">
         <div class="modal-header">
@@ -462,14 +525,21 @@
                  </div>
              </div>
              <div class="form-group">
-                 <div class="col-sm-8">
+                 <div class="col-sm-6">
                     <label>Project</label>
                     <select class="form-control" ng-model="addUserProject" id="ddProjectA"
                           ng-options="projects as projects.title for projects in vm.allprojects | filter: addUserTerm? {semester: addUserTerm.name}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
-                 <div class="col-sm-4">
+				 <div class="col-sm-3">
+                    <label>Course</label>
+                    <select class="form-control" ng-model="addUserCourse" id="ddCourseA"
+                          ng-options="course as course.name for course in vm.courses">
+                       <option value=""></option>
+                    </select>
+                 </div>
+                 <div class="col-sm-3">
                     <label>College</label>
                     <select class="form-control" ng-model="addUserCollege" id="ddCollegeA"
                           ng-options="college as college.name for college in vm.colleges">
@@ -544,7 +614,7 @@
                  </div>
              </div>
              <div class="form-group">
-                 <div class="col-sm-4">
+                 <div class="col-sm-3">
                     <label>User Type</label>
                     <select class="form-control" ng-model="editUserType" id="ddUserType"
                                 ng-options="typerank as typerank.name for typerank in vm.typeranks"
@@ -552,17 +622,24 @@
                        <option value=""></option>
                     </select>
                  </div>
-                 <div class="col-sm-4">
+                 <div class="col-sm-3">
                     <label>User Rank</label>
                     <select class="form-control" ng-model="editUserRank" id="ddRank"
                           ng-options="rank for rank in vm.editRanks">
                        <option value=""></option>
                     </select>
                  </div>
-                 <div class="col-sm-4">
+                 <div class="col-sm-3">
                     <label>PI Approval</label>
                     <select class="form-control" ng-model="editUserPIApproval" id="ddPIApproval"
                           ng-options="approval.type for approval in vm.booleanOptions">
+                       <option value=""></option>
+                    </select>
+                 </div>
+				 <div class="col-sm-3">
+                    <label>Semester</label>
+                    <select class="form-control" ng-model="editUserTerm" id="ddTerm"
+                          ng-options="terms as terms.name for terms in vm.terms | filter: editUserProject? {name: editUserProject.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
@@ -575,10 +652,10 @@
                        <option value=""></option>
                     </select>
                  </div>
-                 <div class="col-sm-4">
-                    <label>Semester</label>
-                    <select class="form-control" ng-model="editUserTerm" id="ddTerm"
-                          ng-options="terms as terms.name for terms in vm.terms | filter: editUserProject? {name: editUserProject.semester}:'' ">
+				 <div class="col-sm-4">
+                    <label>Course</label>
+                    <select class="form-control" ng-model="editUserCourse" id="ddCourse"
+                          ng-options="course as course.name for course in vm.courses">
                        <option value=""></option>
                     </select>
                  </div>
@@ -782,10 +859,14 @@
 
                     <tbody>
 
-                    <tr dir-paginate="project in (filteredPItems = ( vm.tabledata_p | filter: selectedPStatus? {status: selectedPStatus.type}:'' | filter: selectedPOwner? {owner_name: selectedPOwner.owner_name}:'' | filter: selectedPTerm? {semester: selectedPTerm.name}:''| filter:queryp1| filter:queryp2| filter:queryp3| filter:queryp4| filter:queryp5| filter:queryp6| filter:queryp7| filter:queryp8| filter:queryp9| filter:queryp10 ))|itemsPerPage: 10"
-                    pagination-id="projectsPage"
-                    >
-                    <td>
+                    <tr dir-paginate="project in (filteredPItems = ( vm.tabledata_p | filter: selectedPStatus? {status: selectedPStatus.type}:'' |
+					filter: selectedPOwner? {owner_name: selectedPOwner.owner_name}:'' | filter: selectedPTerm? {semester: selectedPTerm.name}:''|
+					filter: queryp1?{title:queryp1}:'' | filter: queryp2?{owner_name:queryp2}:'' | filter: queryp3?{owner_rank:queryp3}:'' |
+					filter: queryp4?{owner_email:queryp4}:'' | filter: queryp5?{semester:queryp5}:'' | filter: queryp6?{status:queryp6}:'' |
+					filter: queryp7?{mentor:queryp7}:'' | filter: queryp8?{faculty:queryp8}:'' | filter: queryp9?{members:queryp9}:'' |
+					filter: queryp10?{description:queryp10}:'' | filter: queryp11?{maxStudents:queryp11}:'' | filter: queryp12?{video_url:queryp12}:'')) |
+					itemsPerPage: 10" pagination-id="projectsPage">
+						<td>
                             <button id="editProjectStart" class="btn btn-info" ng-click="vm.editProject(project)"
 									data-toggle="modal" data-target="#editProjectModal">
 									<i class="fa fa-pencil" aria-hidden="true"></i>
@@ -826,7 +907,11 @@
 						</td>
 						<td ng-show="simpleP">{{project.description.toString()}}</td>
                         <td ng-show="simpleP">{{project.maxStudents}}</td>
-                        <td ng-show="simpleP">{{project.video_url}}</td>
+                        <td ng-show="simpleP">
+							<ul class="csv">
+								<li ng-repeat="video in project.video_url">{{video.vidurl}}</li>
+							</ul>
+						</td>
                     </tr>
                     </tbody>
                 </table>
@@ -896,11 +981,35 @@
    							</div>
    						</div>
    						<div class="form-group">
-   							<div class = "textContainer">
-   								<label>Video URL</label>
-   								<input id="editPUrl" class="form-control" type="text" ng-model="editPUrl"/>
-   							</div>
-   						</div>
+							<div class = "textContainer">
+								<table class="table table-striped">
+									<tr>
+										<label>Video URL</label>
+									</tr>
+									<tr ng-repeat="video in vm.editingProject.video_url">
+										<td class="col-md-1">
+											<button id="removePVidButton" class="btn btn-danger" ng-click="vm.removeProjectVideo(video)">
+												<i class="fa fa-times" aria-hidden="true"></i>
+											</button>
+										</td>
+										<td class="col-md-2"><img src="{{video.vimgurl}}" height="50px" width="50px"></td>
+										<td>{{video.vidurl}}</td>
+									</tr>
+								</table>
+								<table class="table table-striped">
+									<tr>
+										<td class="col-md-1">
+											<button id="addPVidButton" type="button" class="btn btn-primary" ng-click="vm.addProjectVideo()">
+												<i class="fa fa-plus" aria-hidden="true"></i>
+											</button>
+										</td>
+										<td>
+											<input id="addPVidUrl" class="form-control" type="text" ng-model="addPVidUrl"/>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
    					</form>
    				</div>
    				<div class="modal-footer">

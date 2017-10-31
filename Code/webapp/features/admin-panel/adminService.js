@@ -13,6 +13,27 @@
                 return data.data;
             });
         };
+		
+		// get all courses
+        adminFactory.loadCourses = function () {
+            return $http.get('/api/courses').then(function (data) {
+                return data.data;
+            });
+        };
+		
+		// add a course
+        adminFactory.addCourse = function (courseData) {
+            return $http.post('/api/courses', courseData).then(function (data) {
+                return data.data;
+            });
+        };
+		
+		// delete a course
+		adminFactory.deleteCourse = function (id) {
+			return $http.delete('/api/courses/' + id).then(function (data) {
+                return data.data;
+            });
+		};
 
         adminFactory.getAllSettings = function()
         {

@@ -387,7 +387,7 @@ function selectedItemChange(item) {
 		function validateEmail(email) {
             return /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(email)
 		};
-		
+
 		function validatePassword(pwd) {
 			if (pwd) {
 				var array = [];
@@ -406,7 +406,7 @@ function selectedItemChange(item) {
 			else
 				return false;
 		};
-		
+
 		function hasSpecialChars(string) {
 			return (string.indexOf('!') != -1 ||
 				string.indexOf('@') != -1 ||
@@ -706,7 +706,6 @@ function selectedItemChange(item) {
 						if (data) {
 							if (data.data.success) {
 								document.getElementById('editUserMessage').innerHTML = 'Editing user was successful';
-								
 								// Update the projects that are associated with the given user (name and email)
 								if (vm.editingUserOrig.firstName != vm.editingUser.firstName || vm.editingUserOrig.lastName != vm.editingUser.lastName || vm.editingUserOrig.email != vm.editingUser.email)
 									updateProjects();
@@ -743,21 +742,21 @@ function selectedItemChange(item) {
 				document.getElementById('editUserMessage').innerHTML = 'Error: Missing required information';
 			}
 		};
-		
+
 		// US 1328 - Update the projects that are currently associated with the given user
 		function updateProjects() {
 			var profileName = vm.editingUser.firstName + ' ' + vm.editingUser.lastName;
-		
+
 			// Find projects that contain the user
 			vm.allprojects.forEach(function (project) {
 				var found = false;
-				
+
 				if (project.owner_email == vm.editingUserOrig.email) {
 					found = true;
 					project.owner_name = profileName;
 					project.owner_email = vm.editingUser.email;
 				}
-				
+
 				project.members.forEach(function (memberEmail, index) {
 					if (memberEmail == vm.editingUserOrig.email) {
 						found = true;
@@ -765,7 +764,7 @@ function selectedItemChange(item) {
 						project.members[index] = vm.editingUser.email;
 					}
 				});
-				
+
 				project.faculty.forEach(function (faculty, index) {
 					if (faculty.email == vm.editingUserOrig.email) {
 						found = true;
@@ -773,7 +772,7 @@ function selectedItemChange(item) {
 						project.faculty[index].email = vm.editingUser.email;
 					}
 				});
-				
+
 				project.mentor.forEach(function (mentor, index) {
 					if (mentor.email == vm.editingUserOrig.email) {
 						found = true;
@@ -781,7 +780,7 @@ function selectedItemChange(item) {
 						project.mentor[index].email = vm.editingUser.email;
 					}
 				});
-				
+
 				// Update project if associated with user
 				if(found) {
 					ProjectService.editProject(project, project._id);						
@@ -1027,16 +1026,16 @@ function selectedItemChange(item) {
 			if(!found)
 				vm.editRanks = [];
         };
-		
+
 		// User Story #1313
-	
+
 		vm.statusList = [{type: 'Active'}, {type: 'Disabled'}];
 
 		// Fill in edit project form with existing values in project
 		vm.editProject = function(project) {
+      
 			vm.editingProject = project;
 			vm.editingProjOrigTitle = project.title;
-
 			// Set initial values of input to be current projects values
 			$scope.editPTitle = vm.editingProject.title;
 			$scope.editPDescription = vm.editingProject.description;
@@ -1127,7 +1126,7 @@ function selectedItemChange(item) {
 						vm.editingProject.semester = null;
 
 					if ($scope.editPStatus)
-                        vm.editingProject.status = $scope.editPStatus.type; 
+                        vm.editingProject.status = $scope.editPStatus.type;
 					else
 						vm.editingProject.status = null;
 
@@ -1161,15 +1160,12 @@ function selectedItemChange(item) {
 			}
 
 		};
-		
+
 		// User story #1238 - Update users associated with this project if project title has changed
 		function updateUsers() {
 			vm.allusers.forEach(function (user) {
-				//console.log("Test Before: ", user.firstName, user.project, vm.editingProjOrigTitle);
 				if (user.project == vm.editingProjOrigTitle) {
-					//console.log("Test: ", user.firstName, user.project, vm.editingProjNewTitle);
 					user.project = vm.editingProjNewTitle;
-					//console.log("Test After: ", user.project);
 					// Update the user with new project title
 					User.update({user: user});
 				}
@@ -1178,7 +1174,7 @@ function selectedItemChange(item) {
 			vm.tabledata = JSON.stringify(vm.filteredusers);
 			vm.tabledata = eval(vm.tabledata);
 		};
-		
+      
 		// User story #1329 - add and remove video urls from an editing project
 		vm.addProjectVideo = function() {
 			if ($scope.addPVidUrl) {
@@ -1206,7 +1202,7 @@ function selectedItemChange(item) {
 				}
 			});
 		};
-        
+      
     function sendDeactivationEmail() {
             var email;
             if (vm.editingProject.status == 'Disabled') {
@@ -1295,8 +1291,47 @@ function selectedItemChange(item) {
 
 
 		vm.editProjectUsers = function(project) {
-			vm.editingProject = project;
-			vm.editingProjOrigMembers = Array.from(vm.editingProject.members);
+         let detailedApproval = []
+         let promiseArr = []
+         project.members.map(email=>{
+            promiseArr.push(
+               new Promise((resolve,reject)=>{
+                  User.getByEmail(email).then((res)=>{
+                     console.log(res)
+                     User.get(res.data).then((user)=>{
+                        resolve(user.data)
+                        // let name = res.firstName + " " res.lastName
+                        // detailedApproval.push({
+                        //    name: name,
+                        //    approved: approvalStat
+                        // })
+                     })
+                  })
+               })
+            )
+
+         })
+         Promise.all(promiseArr).then(obj=>{
+            console.log(obj)
+            obj.map(user=>{
+               console.log(user)
+               name = user.firstName + " " + user.lastName
+               let approved = false
+               user.piProjectApproval ? approved = user.piProjectApproval : approved
+               detailedApproval.push({
+                  name: name,
+                  id: user._id,
+                  approved: approved
+               })
+            })
+            console.log(detailedApproval)
+   			vm.editingProject = project;
+
+            vm.editingProject.members_detailed = detailedApproval
+            console.log(vm.editingProject)
+   			vm.editingProjOrigMembers = Array.from(vm.editingProject.members);
+            $scope.$digest();
+         })
 		};
 
 		vm.addStudentProject = function() {
@@ -1308,11 +1343,23 @@ function selectedItemChange(item) {
 						found = true; break;
 					}
 				if (!found) { // Add student into project list if they are not already in the project
-					vm.editingProject.members_detailed.push(addStudent.firstName + ' ' + addStudent.lastName);
+               let name = addStudent.firstName + ' ' + addStudent.lastName
+					vm.editingProject.members_detailed.push({
+                  name: name,
+                  approved: true
+               });
 					vm.editingProject.members.push(addStudent.email);
 				}
 			}
+         console.log(vm.editingProject.members_detailed)
 		};
+
+      vm.approveStudentProject = function(student){
+         console.log(student)
+         adminService.approveProject(student).then((res)=>{
+            console.log(res)
+         })
+      }
 
 		vm.removeStudentProject = function(removingStudent) {
 			// Remove student from project roster
@@ -1542,13 +1589,13 @@ function selectedItemChange(item) {
         function init() {
             loadUsers();
             loadProjects();
-			// User story - 1176
-			loadAllProjects();
+            // User story - 1176
+            loadAllProjects();
             // Joe's User Story
             loadTerms();
             loadSettings();
-			// User story 1345
-			loadCourses();
+            // User story 1345
+            loadCourses();
         }
 
         vm.adminSettings;

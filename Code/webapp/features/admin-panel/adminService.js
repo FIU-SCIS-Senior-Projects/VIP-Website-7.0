@@ -89,7 +89,12 @@
                 return response.data;
             });
         };
-
+        adminFactory.approveProject = function(user){
+           return $http.get('/users/approveProject/'+user).then((res)=>{
+             console.log(res)
+             return res
+          })
+        }
         return adminFactory;
     }
 

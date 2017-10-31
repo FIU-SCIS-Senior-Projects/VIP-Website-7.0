@@ -1056,11 +1056,24 @@
    										<button id="removePUserButton" class="btn btn-danger" ng-click="vm.removeStudentProject(student)">
    											<i class="fa fa-user-times" aria-hidden="true"></i>
    										</button>
+                                 <button ng-model="approveStud" class="btn btn-primary" ng-click="vm.approveStudentProject(student.id)" ng-disabled="student.approved"> Approve </button>
    									</td>
-   									<td>{{student}}</td>
+   									<td>{{student.name}}</td>
    								</tr>
    							</table>
    						</div>
+                     <!-- <div>
+                        <label>Review Student Applications</label>
+                        <table>
+                           <tr ng-repeat="student in vm.membs | filter:searchText">
+                              <td>{{student.firstName}}</td>
+                              <button class="btn btn-primary" ng-click="vm.approveStudentProject(student)"> Approve </button>
+                              <button class="btn btn-danger" ng-click="vm.rejectStudentProject(student)">
+                                 Reject
+                              </button>
+                           </tr>
+                        </table>
+                     </div> -->
    					</form>
    				</div>
    				<div class="modal-footer">

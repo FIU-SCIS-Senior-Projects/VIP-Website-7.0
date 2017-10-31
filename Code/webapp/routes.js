@@ -50,7 +50,7 @@ angular.module('routes', ['ui.router'])
                 templateUrl: 'features/login/loginTemplate.html'
             })
 
-           
+
 
 			.state('resetpassword', {
                 url:'/resetpassword',
@@ -88,21 +88,21 @@ angular.module('routes', ['ui.router'])
                 /*params: { id: null }*/
                 /*params: { id: null }*/
             })
-            
+
             .state('registration', {
                 url: '/registration',
                 templateUrl: 'features/registration/registrationTemplate.html',
                 controller: 'registrationController',
                 controllerAs: 'regCtlr'
             })
-            
+
             .state('toDo', {
                 url: '/to-do',
                 templateUrl: 'features/to-do/toDo.html',
                 controller: 'toDoController',
                 controllerAs: 'todo',
             })
-            
+
             .state('verification', {
                 url: '/emailVerified',
                 templateUrl: 'features/emailVerification/email-verification.html',
@@ -112,7 +112,7 @@ angular.module('routes', ['ui.router'])
                 url: '/notificationsDisabled',
                 templateUrl: 'features/notificationsDisabled/disableNotifications.html'
             })
-            
+
             // sensitive page:
             .state('studentconfirminfo', {
                 url:'/studentConfirmation/:id',
@@ -122,7 +122,7 @@ angular.module('routes', ['ui.router'])
                     {
                         var profile;
                         var profile_check = {};
-                        
+
                         // check if user is allowed to view this page
                         ProfileService.loadProfile().then(function(data)
                         {
@@ -135,11 +135,11 @@ angular.module('routes', ['ui.router'])
                             // guest user
                             else {
                                 //alert("found guest, redir to login");
-                                
-                                swal({   
-                                    title: "Please Login!",   
-                                    text: "Please login to your account before joining a new project.",   
-                                    type: "info",   
+
+                                swal({
+                                    title: "Please Login!",
+                                    text: "Please login to your account before joining a new project.",
+                                    type: "info",
                                     confirmButtonText: "Okay" ,
                                     allowOutsideClick: false,
                                     timer: 60000,
@@ -149,14 +149,14 @@ angular.module('routes', ['ui.router'])
                                 $window.sessionStorage.setItem('lr', "studentconfirminfo");
                                 $location.path("login").replace();
                             }
-                        });                        
+                        });
                     }
                 },
                 templateUrl: 'features/apply-to-project/StudentConfirmInfo.html',
                 controller: 'projAppCtrl',
                 controllerAs: 'projApp'
             })
-            
+
             // sensitive function
             .state('projectProposal', {
                 url:'/project-proposal',
@@ -166,7 +166,7 @@ angular.module('routes', ['ui.router'])
                     {
                         var profile;
                         var profile_check = {};
-                        
+
                         // check if user is allowed to view this page
                         ProfileService.loadProfile().then(function(data)
                         {
@@ -174,14 +174,14 @@ angular.module('routes', ['ui.router'])
                             if (data)
                             {
                                 profile = data;
-                                
+
                                 // students cannot submit proposals, only Pi/CoPi and Faculty/Staff
                                 if (profile.userType == "Student")
                                 {
                                     swal({
-                                        title: "Error!",   
-                                        text: "Your account doesn't have permission to propose a new project.",   
-                                        type: "info",   
+                                        title: "Error!",
+                                        text: "Your account doesn't have permission to propose a new project.",
+                                        type: "info",
                                         confirmButtonText: "Okay" ,
                                         allowOutsideClick: false,
                                         timer: 60000,
@@ -195,11 +195,11 @@ angular.module('routes', ['ui.router'])
                             // guest user
                             else {
                                 //alert("found guest, redir to login");
-                                
-                                swal({   
-                                    title: "Please Login!",   
-                                    text: "Please login to your account before proposing a new project.",   
-                                    type: "info",   
+
+                                swal({
+                                    title: "Please Login!",
+                                    text: "Please login to your account before proposing a new project.",
+                                    type: "info",
                                     confirmButtonText: "Okay" ,
                                     allowOutsideClick: false,
                                     timer: 60000,
@@ -209,7 +209,7 @@ angular.module('routes', ['ui.router'])
                                 $window.sessionStorage.setItem('lr', "project-proposal");
                                 $location.path("login").replace();
                             }
-                        });                        
+                        });
                     }
                 },
                 templateUrl: 'features/project-proposals/projectProposal.html',
@@ -217,7 +217,7 @@ angular.module('routes', ['ui.router'])
                 controllerAs: 'project',
                 params: { id: null }
             })
-			
+
 			.state('proxy', {
                 url:'/proxy',
 				templateUrl:'features/main-page/home.html',
@@ -243,93 +243,93 @@ angular.module('routes', ['ui.router'])
                     {
                         var profile;
                         var profile_check = {};
-                        
+
                         // check if user is allowed to view this page
                         ProfileService.loadProfile().then(function(data)
                         {
                             if (data) {
                                 profile = data;
-                                
+
                                 // redirect if user is not a Pi, or if a decision has been made
                                 if (profile.userType != "Pi/CoPi") {
                                     //alert("only Pi is allowed to view this page, redir to home");
-                                    
-                                    swal({   
-                                        title: "Error",   
-                                        text: "You don't have permission to view this page!",   
-                                        type: "info",   
+
+                                    swal({
+                                        title: "Error",
+                                        text: "You don't have permission to view this page!",
+                                        type: "info",
                                         confirmButtonText: "Exit" ,
                                         allowOutsideClick: false,
                                         timer: 60000,
                                     }
                                     );
-                                    
+
                                     $location.path("/").replace();
                                     $window.location.href = "/#/";
                                 }
                             }
                             else {
                                 //alert("found guest, redir to login");
-                                
-                                swal({   
-                                    title: "Error",   
-                                    text: "You don't have permission to view this page!",   
-                                    type: "info",   
+
+                                swal({
+                                    title: "Error",
+                                    text: "You don't have permission to view this page!",
+                                    type: "info",
                                     confirmButtonText: "Exit" ,
                                     allowOutsideClick: false,
                                     timer: 60000,
                                 }
                                 );
-                                
+
                                 $location.path("login").replace();
 								$window.sessionStorage.setItem('lr', 'verifyuser/' + $stateParams.user_id);
                                 $window.location.href = "/#/login";
                             }
                         });
-                        
+
                         // check if a decision has already been made for this user, if it has, redir to home
                         reviewRegService.getReg($stateParams.user_id).then(function(data)
                         {
                             profile_check = data;
-                            
+
                             // user_id is invalid and the user doesnt exist in our database. so, inform the Pi the link is invalid
                             if (profile_check == "Invalid link. User cannot be verified.")
-                            {                                
+                            {
                                 swal({
-                                    title: "User Not Found",   
-                                    text: "Dear Pi, this user doesn't appear to be registered in the database, or the URL is invalid.",   
-                                    type: "info",   
+                                    title: "User Not Found",
+                                    text: "Dear Pi, this user doesn't appear to be registered in the database, or the URL is invalid.",
+                                    type: "info",
                                     confirmButtonText: "Continue" ,
                                     allowOutsideClick: true,
                                     timer: 60000,
                                 }
                                 );
-                                
+
                                 $location.path("/").replace();
                                 $window.location.href = "/#/";
-                                
+
                             }
 
                             // needs to redirect to a page thats says the account has already been accepted/rejected
                             if (profile_check.isDecisionMade)
                             {
-                                
-                                swal({   
-                                    title: "No Action Required",   
-                                    text: "Dear Pi, a decision has already been made to accept/reject this user's account.",   
-                                    type: "info",   
+
+                                swal({
+                                    title: "No Action Required",
+                                    text: "Dear Pi, a decision has already been made to accept/reject this user's account.",
+                                    type: "info",
                                     confirmButtonText: "Continue" ,
                                     allowOutsideClick: true,
                                     timer: 60000,
                                 }
                                 );
-                                
+
                                 $location.path("/").replace();
                                 $window.location.href = "/#/";
                             }
 
                         });
-                        
+
                     }
                 },
                 templateUrl: 'features/reviewRegistration/reviewRegistration.html',
@@ -345,16 +345,16 @@ angular.module('routes', ['ui.router'])
                     //function to be resolved, accessFac and $location Injected
                     "check":function(reviewProfileService,ProfileService,$location,$stateParams,$window)
                     {
-                        
+
                         //alert("Requsted user ID = " + $stateParams.user_id);
                         ////alert("Requsted user = " + vm.profile.requested_rank);
-                        
+
                         //alert("entered check function");
                         console.log("entered check function");
-                        
+
                         var profile;
                         var vm = {};
-                        
+
                         // check if the user attempting to view the reviewProfile page has permissions to do so
                         ProfileService.loadProfile().then(function(data)
                         {
@@ -363,10 +363,10 @@ angular.module('routes', ['ui.router'])
                             if (data)
                             {
                                 profile = data;
-                                
+
                                 console.log("loadProfile() usertype is " + profile.userType);
                                 //alert("loadProfile() usertype is " + profile.userType);
-                                
+
                                 // redirect if user is not a Pi, or if a decision has been made
                                 if (profile.userType != "Pi/CoPi")
                                 {
@@ -381,7 +381,7 @@ angular.module('routes', ['ui.router'])
                                 $window.location.href = "/#/login";
                             }
                         });
-                        
+
                         // user has permission to view the reviewProfile page
                         // now, check if there are any profile requested made by the user_id
                         reviewProfileService.getReg($stateParams.user_id).then(function(data)
@@ -423,7 +423,7 @@ angular.module('routes', ['ui.router'])
                     "check":function(ProfileService,$location,$stateParams,$window)
                     {
                         var profile;
-                        
+
                         ProfileService.loadProfile().then(function(data)
                         {
                             // user is logged in, check perms
@@ -438,7 +438,7 @@ angular.module('routes', ['ui.router'])
                                     $window.location.href = "/#/";
                                 }
                             }
-                            
+
                             // guest user, redirect to login
                             else
                             {
@@ -455,7 +455,7 @@ angular.module('routes', ['ui.router'])
 				controller: 'reviewStudentAppController',
 				controllerAs: 'vm'
             })
-			
+
             // sensitive function
 			.state('reviewproject', {
                 url: '/reviewproject',
@@ -464,7 +464,7 @@ angular.module('routes', ['ui.router'])
                     "check":function(ProfileService,$location,$stateParams,$window)
                     {
                         var profile;
-                        
+
                         ProfileService.loadProfile().then(function(data)
                         {
                             // user is logged in, check perms
@@ -479,7 +479,7 @@ angular.module('routes', ['ui.router'])
                                     $window.location.href = "/#/";
                                 }
                             }
-                            
+
                             // guest user, redirect to login
                             else
                             {
@@ -504,14 +504,14 @@ angular.module('routes', ['ui.router'])
                 controllerAs: 'vm'
             })
 
-			
+
 			.state('admin', {
                 url: '/adminpanel',
                 templateUrl: 'features/admin-panel/admin.html',
                 controller: 'adminController',
                 controllerAs: 'vm'
             })
-            
+
 			.state('message', {
                 //url: '/sendmessage',
                 url: '/sendmessage/:user_id/:is_reply_to_email/:original_subject',
@@ -519,5 +519,5 @@ angular.module('routes', ['ui.router'])
                 controller: 'MessengerController',
                 controllerAs: 'vm'
             })
-			
+
         });

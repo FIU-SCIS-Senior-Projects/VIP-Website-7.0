@@ -22,8 +22,8 @@ var UsersSchema = new Schema({
     major:String,
     minor:String,
     image: String,
-	resume: String,
-	modifying: Boolean,
+	 resume: String,
+	 modifying: Boolean,
     userType: {type: String},
     isDecisionMade: Boolean, // whether or not a decision has been made to approve/deny the profile
     requested_userType: {type: String, required: false},
@@ -47,10 +47,11 @@ var UsersSchema = new Schema({
     RegDate: String,
     firstlogin_date: String,
     allowNotifications: Boolean,
-	// User Story #1345
-	course: String,
-	// User Story #1346
-	isEnrolled: Boolean
+    // User Story #1345
+    course: String,
+    // User Story #1346
+    isEnrolled: Boolean,
+    piProjectApproval: Boolean
 });
 
 //Hash the password before the sure is saved
@@ -63,8 +64,8 @@ UsersSchema.pre('save', function(next) {
     if (!user.isModified('password')) {
 		return next();
 	}
-		
-		
+
+
     //Generate the hash
     bcrypt.hash(user.password, null, null, function (err, hash) {
         if (err)

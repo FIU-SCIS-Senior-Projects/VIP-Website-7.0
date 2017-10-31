@@ -1241,9 +1241,17 @@ function selectedItemChange(item) {
 				if (VideoURL.indexOf("youtube.com/embed/") > -1) {
 					return VideoURL;
 				}
-
+				
+				else if (VideoURL.indexOf("&list=") > -1) {
+					//console.log("PLAYLIST!!!!!");
+					videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
+					updatedVideoURL = "https://www.youtube.com/embed/?listType=playlist&list=" + videoID;
+					//console.log("Filtered url: " + updatedVideoURL);
+					return updatedVideoURL;
+				}
+				
 				// youtube.com universal filter
-				if (VideoURL.indexOf("youtube.com") > -1) {
+				else if (VideoURL.indexOf("youtube.com") > -1) {
 					videoID = VideoURL.substr(VideoURL.indexOf("?v=") + 3);
 					updatedVideoURL = "https://www.youtube.com/embed/" + videoID;
 					//console.log("Filtered url: " + updatedVideoURL);
@@ -1270,9 +1278,19 @@ function selectedItemChange(item) {
 		function createThumbURL(VideoURL) {
 			var videoID = "";
 			var createdThumbURL = "";
-			videoID = VideoURL.substr(VideoURL.indexOf("embed/") + 6);
-			createdThumbURL = "http://img.youtube.com/vi/" + videoID + "/0.jpg";
-			return createdThumbURL;
+			
+			if (VideoURL.indexOf("&list=") > -1) {
+				//console.log("Playlist Thumbnail")
+				videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
+				createdThumbURL = "img/playlist.png";
+				//console.log("Filtered url: " + updatedVideoURL);
+				return createdThumbURL;
+			}
+			else {
+				videoID = VideoURL.substr(VideoURL.indexOf("embed/") + 6);
+				createdThumbURL = "http://img.youtube.com/vi/" + videoID + "/0.jpg";
+				return createdThumbURL;
+			}
 		};
 
 

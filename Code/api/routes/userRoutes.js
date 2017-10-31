@@ -234,7 +234,7 @@ module.exports = function (app, express) {
                     }
                 });
             });
-	
+
 
 	// Find User by Term
 	userRouter.route('/users/term/:term')
@@ -249,6 +249,28 @@ module.exports = function (app, express) {
                     }
                 });
             });
+   userRouter.route('/users/approveProject/:user')
+      .get(
+         authProvider.authorizeAll,
+         function (req, res) {
+            User.update({_id: "ObjectId('"+req.params.user+"')", 'piProjectApproval': {$exists : false}}, {$set: {'piProjectApproval': true}}, function(err, raw) {
+                if (err) {
+                    console.log("Failed to approve project for student '" + req.params.user_id + "'.\n" +
+                        "Because of '" + err.toString() + "'.");
+                        return false
+                }
+                return true
+            });
+            User.update({_id: "ObjectId('"+req.params.user+"')"}, {piProjectApproval: true}, function(err, raw) {
+                if (err) {
+                    console.log("Failed to approve project for student '" + req.params.user_id + "'.\n" +
+                        "Because of '" + err.toString() + "'.");
+                        return false
+                }
+                return true
+            });
+         }
+      )
 
     // User.create(vm.userData).success(function(data) from userRegistrationController.js calls this function
     // BUG: This function is returning success even if the user already exists in the database
@@ -270,14 +292,14 @@ module.exports = function (app, express) {
                 user.department = req.body.department;
                 user.RegDate = req.body.RegDate;  // sets the users college
                 user.allowNotifications = true;//new users opt in to notifications by default
-				
+                user.piProjectApproval = false;
 				user.googleKey = " ";
                 user.userType = req.body.userType;
                 user.gender = req.body.gender;
 				user.semester = req.body.semester;
-				
+
 				// Called only when user is created by admin panel (us #1300)
-				if (req.body.adminCreated) { 
+				if (req.body.adminCreated) {
 					user.piApproval = req.body.piApproval;
 					if (typeof user.piApproval === 'boolean' && user.piApproval) {
 						user.piDenial = false;
@@ -293,8 +315,8 @@ module.exports = function (app, express) {
 						user.piDenial = false;
 						user.verifiedEmail = false;
 						user.isDecisionMade = false;
-					}	
-					
+					}
+
 					if (user.userType == "Pi/CoPi")
 						user.isSuperUser = true;
 					else
@@ -308,16 +330,17 @@ module.exports = function (app, express) {
                     user.verifiedEmail = true;
                     user.isDecisionMade = true;
                     user.isSuperUser = true;
-                } 
+                }
 				else {
                     // initially has to be init to false
                     user.piApproval = false;
                     user.piDenial = false;
+                    user.piProjectApproval = false;
                     user.verifiedEmail = false;
                     user.isDecisionMade = false;
                     // always set to false, until the user is approved as a PI
                     user.isSuperUser = false;
-                }			
+                }
 
                 user.save(function (err, newUser) {
                     // an error occured while trying to insert the new user
@@ -357,7 +380,7 @@ module.exports = function (app, express) {
                         user.joined_project = req.body.user.joined_project;
 						user.semester = req.body.user.semester;
 						user.piApproval = req.body.user.piApproval;
-						
+                  user.piProjectApproval = false;
 						if (typeof user.piApproval === 'boolean' && user.piApproval) {
 							user.piDenial = false;
 							user.verifiedEmail = true;
@@ -372,13 +395,13 @@ module.exports = function (app, express) {
 							user.piDenial = false;
 							user.verifiedEmail = false;
 							user.isDecisionMade = false;
-						}	
-					
+						}
+
 						if (user.userType == "Pi/CoPi")
 							user.isSuperUser = true;
 						else
 							user.isSuperUser = false;
-						
+
                         user.save(function (err) {
                             if (err)
 								return res.send({success: false, error: err});

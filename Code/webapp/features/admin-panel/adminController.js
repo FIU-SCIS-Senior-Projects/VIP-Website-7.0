@@ -606,6 +606,8 @@ function selectedItemChange(item) {
 						newUser["joined_project"] = true;
 					else
 						newUser["joined_project"] = false;
+					
+					newUser["isEnrolled"] = false;
 
 					// Send POST request
 					User.create(newUser).then(function(data) {
@@ -695,6 +697,9 @@ function selectedItemChange(item) {
 						vm.editingUser.joined_project = true;
 					else
 						vm.editingUser.joined_project = false;
+					
+					if (!vm.editingUser.isEnrolled)
+						vm.editingUser["isEnrolled"] = false;
 
 					// Send PUT request
 					User.update({user: vm.editingUser}).then(function(data) {
@@ -1160,9 +1165,11 @@ function selectedItemChange(item) {
 		// User story #1238 - Update users associated with this project if project title has changed
 		function updateUsers() {
 			vm.allusers.forEach(function (user) {
+				//console.log("Test Before: ", user.firstName, user.project, vm.editingProjOrigTitle);
 				if (user.project == vm.editingProjOrigTitle) {
+					//console.log("Test: ", user.firstName, user.project, vm.editingProjNewTitle);
 					user.project = vm.editingProjNewTitle;
-		
+					//console.log("Test After: ", user.project);
 					// Update the user with new project title
 					User.update({user: user});
 				}

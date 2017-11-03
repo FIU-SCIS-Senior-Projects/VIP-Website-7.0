@@ -11,10 +11,12 @@
         $scope.showSemesterMaint = false
         $scope.showProjectMaint = false
         $scope.showAdminPage = true
+		$scope.showCoursePage = false
         $scope.routeUserMaint = routeUserMaint
         $scope.routeProjectMaintenance = routeProjectMaintenance
         $scope.routeSemesterMaintenance = routeSemesterMaintenance
         $scope.routeAdminMaint = routeAdminMaint
+		$scope.routeCourseMaintenance = routeCourseMaintenance
         vm.simulateQuery = false;
         vm.isDisabled    = false;
 
@@ -46,24 +48,35 @@ function selectedItemChange(item) {
            $scope.showSemesterMaint = false;
            $scope.showProjectMaint = false;
            $scope.showAdminPage = true;
+		   $scope.showCoursePage = false;
         }
         function routeUserMaint(){
            $scope.showUserMaint = true;
            $scope.showSemesterMaint = false;
            $scope.showProjectMaint = false;
            $scope.showAdminPage = false;
+		   $scope.showCoursePage = false;
         }
         function routeProjectMaintenance(){
            $scope.showUserMaint = false;
            $scope.showSemesterMaint = false;
            $scope.showProjectMaint = true;
            $scope.showAdminPage = false;
+		   $scope.showCoursePage = false;
         }
         function routeSemesterMaintenance(){
            $scope.showUserMaint = false;
            $scope.showSemesterMaint = true;
            $scope.showProjectMaint = false;
            $scope.showAdminPage = false;
+		   $scope.showCoursePage = false;
+        }
+		function routeCourseMaintenance(){
+           $scope.showUserMaint = false;
+           $scope.showSemesterMaint = false;
+           $scope.showProjectMaint = false;
+           $scope.showAdminPage = false;
+		   $scope.showCoursePage = true;
         }
         ProfileService.loadProfile().then(function (data) {
             if (data) {
@@ -86,6 +99,7 @@ function selectedItemChange(item) {
         vm.unconfirmedusers;//Unconfirmed users (Email is not verified)
         vm.filteredusers; //filteredusers affected by filter function
         vm.projects; //Projects that are active
+		vm.courses; // Course list
         vm.terms;
         vm.currentSem;
         vm.currentSemesterName;
@@ -135,7 +149,6 @@ function selectedItemChange(item) {
         vm.userinunconfirmed;
         vm.AddTerms = AddTerms;
         vm.selectUser = function(user){
-           console.log(user)
            $scope.Selecteduserconfirm = user
         }
 
@@ -191,6 +204,88 @@ function selectedItemChange(item) {
         vm.changeEmailSignature = function() {
             vm.savesetting();
         };
+
+		// User Story 1345
+		// Add a course
+		vm.addCourse = function() {
+			if (!$scope.addNewCourseInputSubject || !$scope.addNewCourseInputNumber || !$scope.addNewCourseInputSection ||
+				$scope.addNewCourseInputSubject.length < 3 || $scope.addNewCourseInputNumber.length < 4 || $scope.addNewCourseInputSection.length < 2) {
+				var errMsg = "";
+				if (!$scope.addNewCourseInputSubject)
+					errMsg += "\tSubject Missing\n";
+				else if ($scope.addNewCourseInputSubject.length < 3)
+					errMsg += "\tSubject is not 3 Character Code\n";
+				if (!$scope.addNewCourseInputNumber)
+					errMsg += "\tNumber Missing\n";
+				else if ($scope.addNewCourseInputNumber.length < 4)
+					errMsg += "\tNumber is not 4 Digit Number\n";
+				if (!$scope.addNewCourseInputSection)
+					errMsg += "\tSection Missing\n";
+				else if ($scope.addNewCourseInputSection.length < 2)
+					errMsg += "\tSection is not 2 Digit Number\n";
+
+				swal({
+                    title: "Course could not be added",
+                    text: "Error: \n" + errMsg,
+                    type: "info",
+                    confirmButtonText: "Continue",
+                    allowOutsideClick: true,
+                    timer: 10000,
+					}, function () {}
+				);
+			}
+
+			else {
+				// test if duplicate exists
+				var courseName = $scope.addNewCourseInputSubject + ' ' + $scope.addNewCourseInputNumber + "-U" + $scope.addNewCourseInputSection;
+				var found = false;
+				vm.courses.forEach(function (course) {
+					if (course.name == courseName)
+						found = true;
+                });
+				if (!found) { // Create the new course and save it
+					var newCourse = {
+						name: courseName,
+						subject: $scope.addNewCourseInputSubject,
+						number: $scope.addNewCourseInputNumber,
+						section: "U" + $scope.addNewCourseInputSection
+					};
+
+					if($scope.addNewCourseInputTitle != "")
+						newCourse["title"] = $scope.addNewCourseInputTitle;
+
+					adminService.addCourse(newCourse).then(function (data) {
+						vm.courses.push(data);
+					});
+				}
+			}
+		};
+
+		// Remove a course
+		vm.removeCourse = function(removingCourse) {
+			var courseName = removingCourse.name;
+
+			adminService.deleteCourse(removingCourse._id).then(function (data) {
+				if (data.message == "successfully deleted!") { // http delete request was successful
+					// Remove from courses list
+					vm.courses.forEach(function (course, index) {
+						if (course.name == courseName)
+							vm.courses.splice(index, 1);
+					});
+
+					// Go through users and remove them from the deleted course
+					vm.allusers.forEach(function (user, index) {
+						if (user.course == courseName) {
+							user.course = null;
+							User.update({user: user});
+						}
+					});
+					// Refresh User panel
+					vm.tabledata = JSON.stringify(vm.filteredusers);
+					vm.tabledata = eval(vm.tabledata);
+				}
+			});
+		};
 
 		vm.colleges = [
                 {
@@ -370,7 +465,8 @@ function selectedItemChange(item) {
 				userType: findIndexUserType(vm.editingUser.userType),
 				approval: findIndexApproval(vm.editingUser.piApproval),
 				project: findIndexProject(vm.editingUser.project),
-				term: findIndexTerm(vm.editingUser.semester)
+				term: findIndexTerm(vm.editingUser.semester),
+				course: findIndexCourse(vm.editingUser.course)
 			};
 			var indexRank;
 
@@ -391,7 +487,6 @@ function selectedItemChange(item) {
 				// Modify and search for rank
 				vm.getEditRanks(vm.typeranks[indexes.userType]);
 				indexRank = findIndexEditRank(vm.editingUser.rank);
-				console.log("index rank", indexRank);
 			}
 			else {
 				document.getElementById("ddUserType").selectedIndex = -1;
@@ -414,6 +509,10 @@ function selectedItemChange(item) {
 				$scope.editUserTerm = vm.terms[indexes.term];
 			else
 				document.getElementById("ddTerm").selectedIndex = -1;
+			if (indexes.course != -1)
+				$scope.editUserCourse = vm.courses[indexes.course];
+			else
+				document.getElementById("ddCourse").selectedIndex = -1;
         };
 
 		// List of functions to find object references that match the user value
@@ -474,6 +573,14 @@ function selectedItemChange(item) {
 			return -1;
 		};
 
+		function findIndexCourse(course) {
+			if (course)
+				for (var i=0; i<vm.courses.length; i++)
+                    if (vm.courses[i].name == course)
+                        return i;
+			return -1;
+		};
+
 		vm.newUser; // Stores new user after its created
 
 		// Add newly created user
@@ -503,10 +610,13 @@ function selectedItemChange(item) {
 					if ($scope.addUserGender)
 						newUser["gender"] = $scope.addUserGender.type;
 					if ($scope.addUserProject)
+						newUser["project"] = $scope.addUserProject.title;
 					if ($scope.addUserPIApproval)
 						newUser["piApproval"] = $scope.addUserPIApproval.type;
 					if ($scope.addUserCollege)
 						newUser["college"] = $scope.addUserCollege.name;
+					if ($scope.addUserCourse)
+						newUser["course"] = $scope.addUserCourse.name;
 					if ($scope.addUserType)
 						newUser["userType"] = $scope.addUserType.name;
 					if ($scope.addUserTerm)
@@ -517,7 +627,7 @@ function selectedItemChange(item) {
 					else
 						newUser["joined_project"] = false;
 
-					console.log("Adding User", newUser);
+					newUser["isEnrolled"] = false;
 
 					// Send POST request
 					User.create(newUser).then(function(data) {
@@ -525,39 +635,32 @@ function selectedItemChange(item) {
 							if (data.data.success) {
 								document.getElementById('addUserMessage').innerHTML = 'Adding user was successful';
 								vm.newUser = data.data.object;
-								console.log('Added User', data.data, data.data.object);
 								// Update the project if user is added to one
 								if (newUser.project)
 									addUserToProject(newUser);
 							}
 							else {
 								document.getElementById('addUserMessage').innerHTML = 'Error: HTTP request failed';
-								console.log(data);
 							}
 						} else { // http error
 							document.getElementById('addUserMessage').innerHTML = 'Error: HTTP response not received';
-							console.log('Error: Adding user failed');
 						}
 					});
 				}
 				else {
 					if (!validateEmail($scope.addUserEmail)) {
 						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Email Address';
-						console.log("Error: Invalid Email Address");
 					}
 					else if (!validatePassword($scope.addUserPassword) || !validatePassword($scope.addUserPasswordConf)) {
 						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Password';
-						console.log("Error: Invalid Password");
 					}
 					else {
 						document.getElementById('addUserMessage').innerHTML = 'Error: Mismatched Passwords';
-						console.log("Error: Mismatched Passwords");
 					}
 				}
 			}
 			else {
 				document.getElementById('addUserMessage').innerHTML = 'Error: Missing required information';
-				console.log("Error: Missing required information");
 			}
 		};
 
@@ -604,6 +707,10 @@ function selectedItemChange(item) {
 						vm.editingUser.semester = $scope.editUserTerm.name;
 					else
 						vm.editingUser.semester = null;
+					if ($scope.editUserCourse)
+						vm.editingUser.course = $scope.editUserCourse.name;
+					else
+						vm.editingUser.course = null;
 
 
 					if (vm.editingUser.project)
@@ -611,15 +718,14 @@ function selectedItemChange(item) {
 					else
 						vm.editingUser.joined_project = false;
 
-					console.log("Editing User", vm.editingUser);
+					if (!vm.editingUser.isEnrolled)
+						vm.editingUser["isEnrolled"] = false;
 
 					// Send PUT request
 					User.update({user: vm.editingUser}).then(function(data) {
 						if (data) {
 							if (data.data.success) {
 								document.getElementById('editUserMessage').innerHTML = 'Editing user was successful';
-								console.log('Edited User');
-
 								// Update the projects that are associated with the given user (name and email)
 								if (vm.editingUserOrig.firstName != vm.editingUser.firstName || vm.editingUserOrig.lastName != vm.editingUser.lastName || vm.editingUserOrig.email != vm.editingUser.email)
 									updateProjects();
@@ -636,14 +742,12 @@ function selectedItemChange(item) {
 							}
 							else {
 								document.getElementById('editUserMessage').innerHTML = 'Error: HTTP request failed';
-								console.log(data);
 								// Refresh user panel
 								vm.tabledata = JSON.stringify(vm.filteredusers);
 								vm.tabledata = eval(vm.tabledata);
 							}
 						} else { // http error
 							document.getElementById('editUserMessage').innerHTML = 'Error: HTTP response not received';
-							console.log('Error: Adding user failed');
 							// Refresh user panel
 							vm.tabledata = JSON.stringify(vm.filteredusers);
 							vm.tabledata = eval(vm.tabledata);
@@ -652,12 +756,10 @@ function selectedItemChange(item) {
 				}
 				else {
 					document.getElementById('editUserMessage').innerHTML = 'Error: Invalid Email Address';
-					console.log("Error: Invalid Email Address");
 				}
 			}
 			else {
 				document.getElementById('editUserMessage').innerHTML = 'Error: Missing required information';
-				console.log("Error: Missing required information");
 			}
 		};
 
@@ -671,7 +773,6 @@ function selectedItemChange(item) {
 
 				if (project.owner_email == vm.editingUserOrig.email) {
 					found = true;
-					console.log("Found owner:", project.owner_email, vm.editingUserOrig.email);
 					project.owner_name = profileName;
 					project.owner_email = vm.editingUser.email;
 				}
@@ -679,7 +780,6 @@ function selectedItemChange(item) {
 				project.members.forEach(function (memberEmail, index) {
 					if (memberEmail == vm.editingUserOrig.email) {
 						found = true;
-						console.log("Found member:", project.owner_email, vm.editingUserOrig.email);
 						project.members_detailed[index] = profileName;
 						project.members[index] = vm.editingUser.email;
 					}
@@ -688,7 +788,6 @@ function selectedItemChange(item) {
 				project.faculty.forEach(function (faculty, index) {
 					if (faculty.email == vm.editingUserOrig.email) {
 						found = true;
-						console.log("Found faculty:", faculty.email, vm.editingUserOrig.email);
 						project.faculty[index].name = profileName;
 						project.faculty[index].email = vm.editingUser.email;
 					}
@@ -697,7 +796,6 @@ function selectedItemChange(item) {
 				project.mentor.forEach(function (mentor, index) {
 					if (mentor.email == vm.editingUserOrig.email) {
 						found = true;
-						console.log("Found mentor:", mentor.email, vm.editingUserOrig.email);
 						project.mentor[index].name = profileName;
 						project.mentor[index].email = vm.editingUser.email;
 					}
@@ -705,18 +803,7 @@ function selectedItemChange(item) {
 
 				// Update project if associated with user
 				if(found) {
-					ProjectService.editProject(project, project._id).then(function (data) {
-						if (data) {
-							if (data.data.message == 'Updated!') {
-								console.log('Updated Project (username/email)', data);
-							}
-							else {
-								console.log('Project Update (username/email) failed', data);
-							}
-						} else { // http error
-							console.log('Error: Updating project (username/email) failed');
-						}
-					});
+					ProjectService.editProject(project, project._id);
 				}
 			});
 			// Refresh projects panel
@@ -746,7 +833,6 @@ function selectedItemChange(item) {
 				project.members_detailed.push(user.firstName + " " + user.lastName);
 				project.members.push(user.email);
 				ProjectService.editProject(project, project._id);
-				console.log("Added User to project", project);
 				// Refresh projects panel
 				vm.tabledata_p = JSON.stringify(vm.filteredprojects);
 				vm.tabledata_p = eval(vm.tabledata_p);
@@ -773,7 +859,6 @@ function selectedItemChange(item) {
 					}
 				}
 				ProjectService.editProject(formerProject, formerProject._id);
-				console.log("Removed User from project");
 				// Refresh projects panel
 				vm.tabledata_p = JSON.stringify(vm.filteredprojects);
 				vm.tabledata_p = eval(vm.tabledata_p);
@@ -798,7 +883,6 @@ function selectedItemChange(item) {
 
 		// Update the both projects if user is moved from one project to another
         function updateProjectsUser(user, formerProject) {
-			console.log("Testing moving user project");
 			addUserToProject(user);
 			removeUserFromProject(user, formerProject, false);
         };
@@ -815,7 +899,6 @@ function selectedItemChange(item) {
 				if (data) {
 					if (data.data.message == 'successfully deleted!') {
 						document.getElementById('deleteUserMessage').innerHTML = 'Deleting user was successful';
-						console.log('Deleted User');
 						// Remove user from project if user was in one
 						if (vm.deletingUser.project)
 							removeUserFromProject(vm.deletingUser, vm.deletingUser.project, false);
@@ -823,12 +906,10 @@ function selectedItemChange(item) {
 					else {
 						document.getElementById('deleteUserMessage').innerHTML = 'Error: HTTP request failed';
 						vm.deletingUser = null;
-						console.log(data);
 					}
 				} else { // http error
 					document.getElementById('deleteUserMessage').innerHTML = 'Error: HTTP response not received';
 					vm.deletingUser = null;
-					console.log('Error: Adding user failed');
 				}
             });
 		};
@@ -972,15 +1053,13 @@ function selectedItemChange(item) {
 
 		// Fill in edit project form with existing values in project
 		vm.editProject = function(project) {
-			console.log("In edit project");
+
 			vm.editingProject = project;
 			vm.editingProjOrigTitle = project.title;
-
 			// Set initial values of input to be current projects values
 			$scope.editPTitle = vm.editingProject.title;
 			$scope.editPDescription = vm.editingProject.description;
 			$scope.editPMaxStudents = vm.editingProject.maxStudents;
-			$scope.editPUrl = vm.editingProject.video_url;
 
 			// Search for indexes for references to projects's values (if they exist)
 			var indexes = {
@@ -1033,22 +1112,18 @@ function selectedItemChange(item) {
 				// Then check if there are illegal values
 				if ($scope.editPMaxStudents < 0) {
 					document.getElementById('editProjectMessage').innerHTML = 'Error: Max Students must be a positive value';
-					console.log('Error: Max Students must be a positive value');
 				}
 				else if ($scope.editPMaxStudents < vm.editingProject.members.length) {
 					document.getElementById('editProjectMessage').innerHTML = 'Error: Max Students should not be less than currently enlisted member count';
-					console.log('Error: Max Students should not be less than currently enlisted member count');
 				}
 				else if ($scope.editPStatus.type == 'Active' && vm.terms[findIndexTerm($scope.editPTerm.name)].status != 'Active') {
 					document.getElementById('editProjectMessage').innerHTML = 'Error: Cannot set project to Active status in a non-active semester';
-					console.log('Error: Cannot set project to Active status in a non-active semester');
 				}
 				else { // Update editingProject
 					vm.editingProject.title = $scope.editPTitle;
 					vm.editingProjNewTitle = $scope.editPTitle;
 					vm.editingProject.description = $scope.editPDescription;
 					vm.editingProject.maxStudents = $scope.editPMaxStudents;
-					vm.editingProject.video_url = ProcessVideoURL($scope.editPUrl);
 
 					if ($scope.editPOwner) {
 
@@ -1075,29 +1150,24 @@ function selectedItemChange(item) {
 					else
 						vm.editingProject.status = null;
 
-					console.log("Editing Project", vm.editingProject);
-
 					// Send PUT request
 					ProjectService.editProject(vm.editingProject, vm.editingProject._id).then(function(data) {
 						if (data) {
 							if (data.data.message == 'Updated!') {
                                 document.getElementById('editProjectMessage').innerHTML = 'Editing project was successful';
                                 sendDeactivationEmail();
-								console.log('Edited Project');
 								// Update users associated with this project if project title has changed
 								if (vm.editingProjOrigTitle != vm.editingProjNewTitle)
 									updateUsers();
 							}
 							else {
 								document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP request failed';
-								console.log(data);
 								// Refresh projects panel
 								vm.tabledata_p = JSON.stringify(vm.filteredprojects);
 								vm.tabledata_p = eval(vm.tabledata_p);
 							}
 						} else { // http error
 							document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP response not received';
-							console.log('Error: Editing project failed');
 							// Refresh projects panel
 							vm.tabledata_p = JSON.stringify(vm.filteredprojects);
 							vm.tabledata_p = eval(vm.tabledata_p);
@@ -1107,7 +1177,6 @@ function selectedItemChange(item) {
 			}
 			else {
 				document.getElementById('editProjectMessage').innerHTML = 'Error: Missing required information';
-				console.log("Error: Missing required information");
 			}
 
 		};
@@ -1116,22 +1185,9 @@ function selectedItemChange(item) {
 		function updateUsers() {
 			vm.allusers.forEach(function (user) {
 				if (user.project == vm.editingProjOrigTitle) {
-					console.log("Found project in user:", user.firstName, user.project, vm.editingProjOrigTitle);
 					user.project = vm.editingProjNewTitle;
-
 					// Update the user with new project title
-					User.update({user: user}).then(function(data) {
-						if (data) {
-							if (data.data.success) {
-								console.log('Updating user (project title) was successful');
-							}
-							else {
-								console.log('Error: HTTP request failed', data);
-							}
-						} else { // http error
-							console.log('Error: HTTP response not received');
-						}
-					});
+					User.update({user: user});
 				}
 			});
 			// Refresh user panel
@@ -1139,14 +1195,39 @@ function selectedItemChange(item) {
 			vm.tabledata = eval(vm.tabledata);
 		};
 
+		// User story #1329 - add and remove video urls from an editing project
+		vm.addProjectVideo = function() {
+			if ($scope.addPVidUrl) {
+				var vidUrl = $scope.addPVidUrl;
+				var processedVidUrl = ProcessVideoURL(vidUrl);
+				var processedVidThumb = createThumbURL(processedVidUrl);
+				var found = false;
+				if(vm.editingProject.video_url == null) {
+					vm.editingProject.video_url = [];
+				}
+				vm.editingProject.video_url.forEach(function (user, index) {
+					if (vm.editingProject.video_url[index].vidurl == processedVidUrl)
+						found = true;
+				});
+				if (!found)
+					vm.editingProject.video_url.push({vidurl: processedVidUrl, vimgurl: processedVidThumb});
+			}
+			$scope.addPVidUrl = null;
+		};
+
+		vm.removeProjectVideo = function(video) {
+			vm.editingProject.video_url.forEach(function (user, index) {
+				if (vm.editingProject.video_url[index].vidurl == video.vidurl) {
+					vm.editingProject.video_url.splice(index, 1);
+				}
+			});
+		};
+
     function sendDeactivationEmail() {
             var email;
             if (vm.editingProject.status == 'Disabled') {
-                console.log('Inside Dale Code');
                 for (i = 0; i < vm.editingProject.members.length; i++) {
-                    console.log('Inside Dale Code For loop');
                     email = vm.editingProject.members[i];
-                    console.log(email);
                     var email_msg =
                     {
                         recipient: email,
@@ -1170,13 +1251,23 @@ function selectedItemChange(item) {
 			// input: https://www.youtube.com/watch?v=uQ_DHRI-Xp0
 			// output: https://www.youtube.com/embed/uQ_DHRI-Xp0
 			if (VideoURL) {
+				var videoID = "";
+				var updatedVideoURL = "";
 				// video is already embed format, return
 				if (VideoURL.indexOf("youtube.com/embed/") > -1) {
 					return VideoURL;
 				}
 
+				else if (VideoURL.indexOf("&list=") > -1) {
+					//console.log("PLAYLIST!!!!!");
+					videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
+					updatedVideoURL = "https://www.youtube.com/embed/?listType=playlist&list=" + videoID;
+					//console.log("Filtered url: " + updatedVideoURL);
+					return updatedVideoURL;
+				}
+
 				// youtube.com universal filter
-				if (VideoURL.indexOf("youtube.com") > -1) {
+				else if (VideoURL.indexOf("youtube.com") > -1) {
 					videoID = VideoURL.substr(VideoURL.indexOf("?v=") + 3);
 					updatedVideoURL = "https://www.youtube.com/embed/" + videoID;
 					//console.log("Filtered url: " + updatedVideoURL);
@@ -1200,10 +1291,67 @@ function selectedItemChange(item) {
 			}
         };
 
+		function createThumbURL(VideoURL) {
+			var videoID = "";
+			var createdThumbURL = "";
+
+			if (VideoURL.indexOf("&list=") > -1) {
+				//console.log("Playlist Thumbnail")
+				videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
+				createdThumbURL = "img/playlist.png";
+				//console.log("Filtered url: " + updatedVideoURL);
+				return createdThumbURL;
+			}
+			else {
+				videoID = VideoURL.substr(VideoURL.indexOf("embed/") + 6);
+				createdThumbURL = "http://img.youtube.com/vi/" + videoID + "/0.jpg";
+				return createdThumbURL;
+			}
+		};
+
 
 		vm.editProjectUsers = function(project) {
-			vm.editingProject = project;
-			vm.editingProjOrigMembers = Array.from(vm.editingProject.members);
+         let detailedApproval = []
+         let promiseArr = []
+         project.members.map(email=>{
+            promiseArr.push(
+               new Promise((resolve,reject)=>{
+                  User.getByEmail(email).then((res)=>{
+                     console.log(res)
+                     User.get(res.data).then((user)=>{
+                        resolve(user.data)
+                        // let name = res.firstName + " " res.lastName
+                        // detailedApproval.push({
+                        //    name: name,
+                        //    approved: approvalStat
+                        // })
+                     })
+                  })
+               })
+            )
+
+         })
+         Promise.all(promiseArr).then(obj=>{
+            console.log(obj)
+            obj.map(user=>{
+               console.log(user)
+               name = user.firstName + " " + user.lastName
+               let approved = false
+               user.piProjectApproval ? approved = user.piProjectApproval : approved
+               detailedApproval.push({
+                  name: name,
+                  id: user._id,
+                  approved: approved
+               })
+            })
+            console.log(detailedApproval)
+   			vm.editingProject = project;
+
+            vm.editingProject.members_detailed = detailedApproval
+            console.log(vm.editingProject)
+   			vm.editingProjOrigMembers = Array.from(vm.editingProject.members);
+            $scope.$digest();
+         })
 		};
 
 		vm.addStudentProject = function() {
@@ -1215,11 +1363,23 @@ function selectedItemChange(item) {
 						found = true; break;
 					}
 				if (!found) { // Add student into project list if they are not already in the project
-					vm.editingProject.members_detailed.push(addStudent.firstName + ' ' + addStudent.lastName);
+               let name = addStudent.firstName + ' ' + addStudent.lastName
+					vm.editingProject.members_detailed.push({
+                  name: name,
+                  approved: true
+               });
 					vm.editingProject.members.push(addStudent.email);
 				}
 			}
+         console.log(vm.editingProject.members_detailed)
 		};
+
+      vm.approveStudentProject = function(student){
+         console.log(student)
+         adminService.approveProject(student).then((res)=>{
+            console.log(res)
+         })
+      }
 
 		vm.removeStudentProject = function(removingStudent) {
 			// Remove student from project roster
@@ -1235,13 +1395,11 @@ function selectedItemChange(item) {
 
 		// Update Project's users information
 		vm.saveChangesProjectUsers = function() {
-			console.log("Editing Projects Users", vm.editingProject);
 			// Send PUT request
 			ProjectService.editProject(vm.editingProject, vm.editingProject._id).then(function(data) {
 				if (data) {
 					if (data.data.message == 'Updated!') {
 						document.getElementById('editProjectMessage').innerHTML = 'Editing projects users was successful';
-						console.log('Edited Projects Users');
 
 						vm.editingProjectNew = Array.from(vm.editingProject.members);
 						updateProjectUsers(vm.editingProject.title, vm.editingProjectNew, vm.editingProjOrigMembers);
@@ -1251,14 +1409,12 @@ function selectedItemChange(item) {
 					}
 					else {
 						document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP request failed';
-						console.log(data);
 						// Refresh projects panel
 						vm.tabledata_p = JSON.stringify(vm.filteredprojects);
 						vm.tabledata_p = eval(vm.tabledata_p);
 					}
 				} else { // http error
 					document.getElementById('editProjectMessage').innerHTML = 'Error: HTTP response not received';
-					console.log('Error: Editing project failed');
 					// Refresh projects panel
 					vm.tabledata_p = JSON.stringify(vm.filteredprojects);
 					vm.tabledata_p = eval(vm.tabledata_p);
@@ -1278,26 +1434,11 @@ function selectedItemChange(item) {
 					}
 				}
 				if (!found) {
-					console.log('found added user', projectMembers[i]);
 					var pUser = vm.allusers[findIndexUser(projectMembers[i])];
 					if (pUser) {
 						pUser.project = project;
 						pUser.joined_project = true;
-						User.update({user: pUser}).then(function(data) {
-							if (data) {
-								if (data.data.success) {
-									console.log('Added user updated');
-								}
-								else {
-									console.log(data);
-								}
-							} else { // http error
-								console.log('Error: Updating added user failed');
-							}
-						});
-					}
-					else {
-						console.log('Error: Could not find added user');
+						User.update({user: pUser});
 					}
 				}
 			}
@@ -1311,26 +1452,11 @@ function selectedItemChange(item) {
 					}
 				}
 				if (!found) {
-					console.log('found removed user', formerProjectMembers[j]);
 					var pUser = vm.allusers[findIndexUser(formerProjectMembers[j])];
 					if (pUser) {
 						pUser.project = null;
 						pUser.joined_project = false;
-						User.update({user: pUser}).then(function(data) {
-							if (data) {
-								if (data.data.success) {
-									console.log('Removed user updated');
-								}
-								else {
-									console.log(data);
-								}
-							} else { // http error
-								console.log('Error: Updating removed user failed');
-							}
-						});
-					}
-					else {
-						console.log('Error: Could not find removed user');
+						User.update({user: pUser});
 					}
 				}
 			}
@@ -1354,10 +1480,8 @@ function selectedItemChange(item) {
 		vm.deleteProject = function() {
 			ProjectService.delete(vm.deletingProject._id).then(function(data) {
 				if (data) {
-					console.log('Delete test Data', data);
 					if (data.message == 'successfully deleted!') {
 						document.getElementById('deleteProjectMessage').innerHTML = 'Deleting project was successful';
-						console.log('Deleted Project');
 						// Remove project from all users (if any) in deleted project
 						if (typeof vm.deletingProject.members != "undefined" && vm.deletingProject.members != null && vm.deletingProject.members.length > 0)
 							updateProjectUsers(vm.deletingProject.title, [], vm.deletingProject.members);
@@ -1368,12 +1492,10 @@ function selectedItemChange(item) {
 					else {
 						document.getElementById('deleteProjectMessage').innerHTML = 'Error: HTTP request failed';
 						vm.deletingProject = null;
-						console.log(data);
 					}
 				} else { // http error
 					document.getElementById('deleteProjectMessage').innerHTML = 'Error: HTTP response not received';
 					vm.deletingProject = null;
-					console.log('Error: Deleting project failed');
 				}
             });
 		};
@@ -1488,18 +1610,18 @@ function selectedItemChange(item) {
         function init() {
             loadUsers();
             loadProjects();
-			// User story - 1176
-			loadAllProjects();
+            // User story - 1176
+            loadAllProjects();
             // Joe's User Story
             loadTerms();
             loadSettings();
+            // User story 1345
+            loadCourses();
         }
 
         vm.adminSettings;
         function loadSettings()
         {
-            console.log("Loading settings...");
-
             adminService.getAdminSettings().then(function (data)
             {
                 var result = data;
@@ -1514,7 +1636,6 @@ function selectedItemChange(item) {
                 if (result) {
                     getAdminSettings();
                 } else {
-                    console.log("Creating admin settings");
                     adminService.makeInitialSettings().then(function(response) {
                         getAdminSettings();
                     }, function(response) { });
@@ -1540,9 +1661,6 @@ function selectedItemChange(item) {
                 vm.filteredusers = vm.allusers;
                 vm.tabledata = JSON.stringify(vm.filteredusers);
                 vm.tabledata = eval(vm.tabledata);
-                console.log("***********************")
-                console.log(vm.tabledata)
-                console.log(vm.filteredusers)
             });
         }
 
@@ -1569,6 +1687,7 @@ function selectedItemChange(item) {
             reviewStudentAppService.loadTerms().then(function (data) {
               console.log("loading terms:");
                 vm.terms = data;
+
                 data.forEach(function(term) {
                   if(term.status.currentSemester == true){
                     // Logging for Testing
@@ -1584,22 +1703,31 @@ function selectedItemChange(item) {
                 // console.log("currentSem");
                 // console.log(vm.currentSem);
                 console.log(data);
+
+            });
+        }
+
+		// Loads all courses
+        function loadCourses() {
+            adminService.loadCourses().then(function (data) {
+                vm.courses = data;
+
             });
         }
 
         vm.uncheck = function () {
 
-          for (var i = 1; i <= 17; i++) {
-            $scope['query' + i] = '';
-          }
-          $scope.selectedusertype = '';
-          $scope.selecteduserrank = '';
-          $scope.selecteduserproject = '';
-          $scope.SelectedProject = '';
-          $scope.selectedPiApproval = '';
-          $scope.selectedGoogle = '';
-          // userstory #1176
-          $scope.selectedTerm = '';
+            for (var i = 1; i <= 18; i++) {
+                $scope['query' + i] = '';
+            }
+            $scope.selectedusertype = '';
+            $scope.selecteduserrank = '';
+			$scope.selecteduserproject = '';
+            $scope.SelectedProject = '';
+            $scope.selectedPiApproval = '';
+            $scope.selectedGoogle = '';
+			// userstory #1176
+			$scope.selectedTerm = '';
 
         }
 
@@ -1784,7 +1912,6 @@ function selectedItemChange(item) {
 		}
 
         function currentview(user) {
-            console.log(user);
             var projectTitle = "";
             var project_title = "project_title";
             vm.currentuserview = [];
@@ -1797,7 +1924,6 @@ function selectedItemChange(item) {
                     projectTitle = data.title;
                     user[project_title] = projectTitle;
                     vm.currentuserview.push(user);
-                    console.log(user);
                 }
 
             });
@@ -1832,19 +1958,16 @@ function selectedItemChange(item) {
                 user.isDecisionMade = true;
                 user.__v = 3;
                 user.verifiedEmail = true;
-                console.log("piApproval set to true");
                 vm.message = "User has been Accepted!";
 
                 // if a Pi is approved, mark him in the DB as a super user, so he can switch usertypes to student/faculty/pi without approval
                 if (user.userType == "Pi/CoPi") {
                     user.isSuperUser = true;
-                    console.log("isSuperUser set to true");
                 }
 
                 // non-pi user must be restricted
                 else {
                     user.isSuperUser = false;
-                    console.log("isSuperUser set to false");
                 }
 
                 reviewRegService.acceptProfile(user).then(function (data) {
@@ -1859,7 +1982,6 @@ function selectedItemChange(item) {
                 var user = vm.userinunconfirmed;
                 user.verifiedEmail = false;
                 ProfileService.saveProfile(user).then(function (data) {
-                    console.log("User reject");
                     Reject_msg();
                 });
             }
@@ -1884,11 +2006,9 @@ function selectedItemChange(item) {
             if (vm.userinusertype || vm.usertypeinusertype) {
                 var user = vm.userinusertype;
                 user.userType = vm.usertypeinusertype;
-                console.log("HELLO");
                 user.modifying = true;
                 ProfileService.saveProfile(user).then(function (data) {
                     reviewProfileService.updateProfile(user).then(function (data) {
-                        console.log("UserType Changed");
                         changeut_msg();
                     });
                 });
@@ -2118,19 +2238,15 @@ function selectedItemChange(item) {
             var term = vm.cterm;
 
             var selectedTerm = $scope.selectedTerm.name;
-            console.log(selectedTerm);
-            //console.log(term.name);
             if (term) {
                 var selectedTermStatus = $scope.selectedTermStatus;
                 if (selectedTermStatus == vm.active[0]) {
-                    console.log(selectedTermStatus);
                     selectedTermStatus = 'Active';
                 } else {
                     selectedTermStatus = 'Disabled';
                 }
                 console.log(vm.projects);
                 for (i = 0; i < vm.projects.length; i++) {
-                    //console.log(vm.projects[i].title);
                     if (vm.projects[i].semester == selectedTerm) {
                         vm.projects[i].status = selectedTermStatus;
                         ProjectService.editProject(vm.projects[i], vm.projects[i]._id);

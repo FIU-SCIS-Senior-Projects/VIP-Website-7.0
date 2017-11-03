@@ -843,7 +843,7 @@
                     }
 
                     // youtube.com universal filter
-                    if (VideoURL.indexOf("youtube.com") > -1) {
+                    else if (VideoURL.indexOf("youtube.com") > -1) {
                         videoID = VideoURL.substr(VideoURL.indexOf("?v=") + 3);
                         updatedVideoURL = "https://www.youtube.com/embed/" + videoID;
                         //console.log("Filtered url: " + updatedVideoURL);

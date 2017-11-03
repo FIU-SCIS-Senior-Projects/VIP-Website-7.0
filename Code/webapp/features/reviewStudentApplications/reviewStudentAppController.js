@@ -153,10 +153,10 @@
             //});
 
             user.joined_project = true;
-			ProjectService.getProject(user.projectid).then(function (project) {
-				user.project = project.title;
-				User.update({user: user});
-			});
+   			ProjectService.getProject(user.projectid).then(function (project) {
+   				user.project = project.title;
+   				User.update({user: user});
+   			});
 
             reviewStudentAppService.AddToProject(user._id, user.projectid).then(function (data) {
                 $scope.result = "Approved";

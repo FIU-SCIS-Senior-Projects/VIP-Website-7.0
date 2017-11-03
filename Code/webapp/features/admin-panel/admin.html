@@ -209,18 +209,25 @@
 </div>
 
 <div ng-show="showCoursePage">
-	<div class="col-md-6 panel panel-default">
+	<div class="col-md-12 panel panel-default">
 		<h3 align="center" style="margin-bottom: 0px">Course List</h3>
 		<form role="role" class="form-horizontal">
 			<table class="table table-striped">
+				<tr>
+					<td></td>
+					<td><b>Course</b></td>
+					<td><b>Description</b></td>
+					<td><b>Semester</b></td>
+				</tr>
 				<tr ng-repeat="course in vm.courses">
 					<td class="col-md-1">
 						<button id="removeCourseButton" class="btn btn-danger" ng-click="vm.removeCourse(course)">
 							<i class="fa fa-times" aria-hidden="true"></i>
 						</button>
 					</td>
-					<td class="col-md-2">{{course.name}}</td>
-					<td class="col-md-3">{{course.title}}</td>
+					<td class="col-md-3">{{course.name}}</td>
+					<td class="col-md-4">{{course.title}}</td>
+					<td class="col-md-4">{{course.semester}}</td>
 				</tr>
 			</table>
 			<table class="table table-striped">
@@ -243,11 +250,70 @@
 						Section<input id="addNewCourseInputSection" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="2" 
 									  ng-model="addNewCourseInputSection" />
 					</td>
-					<td class="col-md-2">
+					<td class="col-md-4">
 						Title<input id="addNewCourseInputTitle" class="form-control" type="text" ng-model="addNewCourseInputTitle" />
+					</td>
+					<td class="col-md-4">
+						Semester
+						<select class="form-control" id="selectedCourseTerm" ng-model="selectedCourseTerm"
+                                 ng-options="terms as terms.name for terms in vm.terms">
+								 <option value=""></option>
+						</select>
 					</td>
 				</tr>
 			</table>	
+		</form>
+	</div>
+	
+	<div class="col-md-12 panel panel-default">
+		<h3 align="center" style="margin-bottom: 0px">Sync Users Database</h3>
+		<form role="role" class="form-horizontal">
+			<table class="table table-striped">
+				<tr>
+					<td class="col-md-1"></td>
+					<td class="col-md-4"><b>Course</b></td>
+					<td class="col-md-7"><b>File</b></td>
+				</tr>
+				<tr ng-repeat="courseFile in vm.courseFiles">
+					<td>
+						<button id="removeCourseFileButton" class="btn btn-danger" ng-click="vm.removeCourseFile(courseFile)">
+							<i class="fa fa-times" aria-hidden="true"></i>
+						</button>
+					</td>
+					<td>{{courseFile.course.name}}</td>
+					<td>{{courseFile.file}}</td>
+				</tr>
+				<tr>
+					<td>
+						<button id="addCourseFileButton" type="button" class="btn btn-primary" ng-click="vm.addCourseFile()">
+							<i class="fa fa-plus" aria-hidden="true"></i>
+						</button>
+					</td>
+					<td>
+						<select class="form-control" ng-model="syncCourseSelect" id="syncCourseSelect"
+								ng-options="course as course.name+' '+course.semester for course in vm.courses">
+							<option value=""></option>
+						</select>
+					</td>
+					<td>
+						<input type="file" accept=".xls" value="fileUpload" id="courseFileInput"></label>
+					</td>
+				</tr>
+			</table>
+			<table class="table">
+				<tr>
+					<td class="col-md-5">
+						<button style="width: 120px;" ng-click="vm.syncDatabase()"
+								class="btn btn-success btn-block">Sync Database
+						</button>
+					</td>
+					<td>
+						<button style="width: 100px;" ng-click="vm.clearCourseFiles()"
+								class="btn btn-success btn-danger">Clear List
+						</button>
+					</td>
+				</tr>
+            </table>
 		</form>
 	</div>
 </div>
@@ -519,7 +585,7 @@
 				 <div class="col-sm-3">
                     <label>Semester</label>
                     <select class="form-control" ng-model="addUserTerm" id="ddTermA"
-                          ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' ">
+                          ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' | filter: addUserCourse? {name: addUserCourse.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
@@ -528,14 +594,14 @@
                  <div class="col-sm-6">
                     <label>Project</label>
                     <select class="form-control" ng-model="addUserProject" id="ddProjectA"
-                          ng-options="projects as projects.title for projects in vm.allprojects | filter: addUserTerm? {semester: addUserTerm.name}:'' ">
+                          ng-options="projects as projects.title for projects in vm.allprojects | filter: addUserTerm? {semester: addUserTerm.name}:'' | filter: addUserCourse? {semester: addUserCourse.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
 				 <div class="col-sm-3">
                     <label>Course</label>
                     <select class="form-control" ng-model="addUserCourse" id="ddCourseA"
-                          ng-options="course as course.name for course in vm.courses">
+                          ng-options="course as course.name+' '+course.semester for course in vm.courses | filter: addUserTerm? {semester: addUserTerm.name}:'' | filter: addUserProject? {semester: addUserProject.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
@@ -639,7 +705,7 @@
 				 <div class="col-sm-3">
                     <label>Semester</label>
                     <select class="form-control" ng-model="editUserTerm" id="ddTerm"
-                          ng-options="terms as terms.name for terms in vm.terms | filter: editUserProject? {name: editUserProject.semester}:'' ">
+                          ng-options="terms as terms.name for terms in vm.terms | filter: editUserProject? {name: editUserProject.semester}:'' | filter: editUserCourse? {name: editUserCourse.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
@@ -648,14 +714,14 @@
                  <div class="col-sm-8">
                     <label>Project</label>
                     <select class="form-control" ng-model="editUserProject" id="ddProject"
-                          ng-options="projects as projects.title for projects in vm.allprojects | filter: editUserTerm? {semester: editUserTerm.name}:'' ">
+                          ng-options="projects as projects.title for projects in vm.allprojects | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserCourse? {semester: editUserCourse.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
 				 <div class="col-sm-4">
                     <label>Course</label>
                     <select class="form-control" ng-model="editUserCourse" id="ddCourse"
-                          ng-options="course as course.name for course in vm.courses">
+                          ng-options="course as course.name+' '+course.semester for course in vm.courses | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserProject? {semester: editUserProject.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>

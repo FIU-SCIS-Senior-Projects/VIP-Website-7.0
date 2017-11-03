@@ -52,6 +52,7 @@ module.exports = function (app, express) {
 					course.subject = req.body.subject;
 					course.number = req.body.number;
 					course.section = req.body.section;
+					course.semester = req.body.semester;
 					course.title = req.body.title;
                     
                     course.save(function (err) {

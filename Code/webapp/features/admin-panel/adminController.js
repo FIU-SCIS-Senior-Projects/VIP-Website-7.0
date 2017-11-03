@@ -128,6 +128,8 @@ function selectedItemChange(item) {
 		// User story #1328
 		vm.editingProjOrigTitle;
 		vm.editingProjNewTitle;
+		// User story #1346
+		vm.courseFiles;
 
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
@@ -188,7 +190,7 @@ function selectedItemChange(item) {
 		// User Story 1345
 		// Add a course
 		vm.addCourse = function() {
-			if (!$scope.addNewCourseInputSubject || !$scope.addNewCourseInputNumber || !$scope.addNewCourseInputSection ||
+			if (!$scope.addNewCourseInputSubject || !$scope.addNewCourseInputNumber || !$scope.addNewCourseInputSection || !$scope.selectedCourseTerm ||
 				$scope.addNewCourseInputSubject.length < 3 || $scope.addNewCourseInputNumber.length < 4 || $scope.addNewCourseInputSection.length < 2) {
 				var errMsg = "";
 				if (!$scope.addNewCourseInputSubject)
@@ -203,6 +205,8 @@ function selectedItemChange(item) {
 					errMsg += "\tSection Missing\n";
 				else if ($scope.addNewCourseInputSection.length < 2)
 					errMsg += "\tSection is not 2 Digit Number\n";
+				if (!$scope.selectedCourseTerm)
+					errMsg += "\tSemester Missing\n";
 				
 				swal({
                     title: "Course could not be added",
@@ -220,7 +224,7 @@ function selectedItemChange(item) {
 				var courseName = $scope.addNewCourseInputSubject + ' ' + $scope.addNewCourseInputNumber + "-U" + $scope.addNewCourseInputSection;
 				var found = false;
 				vm.courses.forEach(function (course) {
-					if (course.name == courseName)
+					if (course.name == courseName && course.semester == $scope.selectedCourseTerm.name)
 						found = true;
                 });
 				if (!found) { // Create the new course and save it
@@ -228,7 +232,8 @@ function selectedItemChange(item) {
 						name: courseName,
 						subject: $scope.addNewCourseInputSubject,
 						number: $scope.addNewCourseInputNumber,
-						section: "U" + $scope.addNewCourseInputSection
+						section: "U" + $scope.addNewCourseInputSection,
+						semester: $scope.selectedCourseTerm.name
 					};
 					
 					if($scope.addNewCourseInputTitle != "")
@@ -265,6 +270,78 @@ function selectedItemChange(item) {
 					vm.tabledata = eval(vm.tabledata);
 				}
 			});
+		};
+		
+		// User Story #1346
+		vm.addCourseData;
+		
+		// Adds a course file to course file list
+		vm.addCourseFile = function() {
+			if ($scope.syncCourseSelect && document.getElementById('courseFileInput').value) {
+				// test if duplicate exists in courseFiles list
+				var courseName = $scope.syncCourseSelect.name;
+				var found = false;
+
+				vm.courseFiles.forEach(function (courseFile) {
+					if (courseFile.course.name == courseName)
+						found = true;
+				});
+				if (!found) { // Create the new courseFile and add it to the list
+					var newCourseFile = {
+						course: $scope.syncCourseSelect,
+						file: document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, '')
+					};
+					
+					// Parse the XLS file using File API
+					var fileSource = document.getElementById('courseFileInput').files[0];
+					var reader = new FileReader();
+					//var binaryFileBuffer = reader.readAsBinaryString(fileSource);
+					//var courseData = XLS.read(binaryFileBuffer); 
+					// newCourseFile['data'] = courseData; 
+					
+					reader.onload = function(e) {
+						newCourseFile['data'] = XLS.read(reader.result, {type: 'binary'}); 
+					}
+					reader.readAsBinaryString(fileSource);
+					
+					
+					vm.courseFiles.push(newCourseFile);
+					vm.addCourseData = null;
+				}
+				else {
+					swal({
+						title: "Course already queued with file",
+						text: "Try again with another course or remove the course already queued",
+						type: "info",
+						confirmButtonText: "Continue",
+						allowOutsideClick: true,
+						timer: 10000,
+						}, function () {}
+					);
+				}
+			}
+		};
+		
+		// Removes a course file from course file list
+		vm.removeCourseFile = function(removingCourseFile) {
+			vm.courseFiles.forEach(function (courseFile, index) {
+				if (courseFile.course.name == removingCourseFile.course.name) {
+					vm.courseFiles.splice(index, 1);
+				}
+			});
+		};
+		
+		// Updates each course with its corresponding courseFile in the database
+		vm.syncDatabase = function() {
+			vm.courseFiles.forEach(function (courseFile, index) {
+				console.log(index, ": ", courseFile);
+			});
+			vm.courseFiles = [];
+		};
+		
+		// Clears the course file list
+		vm.clearCourseFiles = function() {
+			vm.courseFiles = [];
 		};
 
 		vm.colleges = [
@@ -1668,11 +1745,12 @@ function selectedItemChange(item) {
             });
         }
 		
-		// Loads all courses
+		// Loads all courses & initializes course file list
         function loadCourses() {
             adminService.loadCourses().then(function (data) {
                 vm.courses = data;
             });
+			vm.courseFiles = [];
         }
 
         vm.uncheck = function () {

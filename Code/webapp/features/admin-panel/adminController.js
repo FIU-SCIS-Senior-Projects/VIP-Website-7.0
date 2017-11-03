@@ -11,12 +11,16 @@
         $scope.showSemesterMaint = false
         $scope.showProjectMaint = false
         $scope.showAdminPage = true
-		$scope.showCoursePage = false
+		    $scope.showCoursePage = false
         $scope.routeUserMaint = routeUserMaint
         $scope.routeProjectMaintenance = routeProjectMaintenance
         $scope.routeSemesterMaintenance = routeSemesterMaintenance
         $scope.routeAdminMaint = routeAdminMaint
-		$scope.routeCourseMaintenance = routeCourseMaintenance
+        $scope.routeCourseMaintenance = routeCourseMaintenance
+        vm.currentSwitchStatus;
+        vm.proposableSwitchStatus;
+        vm.viewableSwitchStatus;
+        vm.applicableSwitchStatus;
         vm.simulateQuery = false;
         vm.isDisabled    = false;
 
@@ -178,6 +182,11 @@ function selectedItemChange(item) {
         vm.ssv = SetSemesterViewable;
         vm.ssa = SetSemesterApplicable;
         vm.ssp = SetSemesterProposable;
+        vm.csf = currentSwitch;
+        vm.vsf = viewableSwitch;
+        vm.asf = applicableSwitch;
+        vm.psf = proposableSwitch;
+        vm.msc = makeSemesterChanges;
 
 
         vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
@@ -403,6 +412,34 @@ function selectedItemChange(item) {
                     ]
                 }
             ];
+
+    function currentSwitch(e) {
+      // console.log("currentSwitch():");
+      // console.log(vm.currentSwitchStatus);
+      vm.currentSwitchStatus = e;
+      // console.log(vm.currentSwitchStatus);
+    }
+
+    function viewableSwitch(e) {
+      // console.log("viewableSwitch():");
+      // console.log(vm.viewableSwitchStatus);
+      vm.viewableSwitchStatus = e;
+      // console.log(vm.viewableSwitchStatus);
+    }
+
+    function proposableSwitch(e) {
+      // console.log("proposableSwitch():");
+      // console.log(vm.proposableSwitchStatus);
+      vm.proposableSwitchStatus = e;
+      // console.log(vm.proposableSwitchStatus);
+    }
+
+    function applicableSwitch(e) {
+      // console.log("applicableSwitch():");
+      // console.log(vm.applicableSwitchStatus);
+      vm.applicableSwitchStatus = e;
+      // console.log(vm.applicableSwitchStatus);
+    }
 
 		function validateEmail(email) {
             return /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(email)
@@ -2258,34 +2295,40 @@ function selectedItemChange(item) {
             changestat_msg();
         }
 
+        function makeSemesterChanges() {
+          var term = vm.cterm;
+          // console.log("in makeSemesterChanges()");
+          if(term) {
+            var selectedSemester = $scope.selectedTerm;
+
+            selectedSemester.status.currentSemester = vm.currentSwitchStatus;
+            selectedSemester.status.openForApply = vm.applicableSwitchStatus;
+            selectedSemester.status.openForProposal = vm.proposableSwitchStatus;
+            selectedSemester.status.viewable = vm.viewableSwitchStatus;
+
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+            vm.currentSem = selectedSemester;
+            vm.currentSemesterName = vm.currentSem.name;
+            // console.log("should be updated");
+          }
+          changestat_msg();
+        }
+
         function SetCurrentSemester() {
           var term = vm.cterm;
 
-          // Logging for Testing
-          // console.log("term:");
-          // console.log(term);
-          // console.log("vm.currentSem:");
-          // console.log(vm.currentSem);
 
 
           console.log("In SetCurrentSemester()");
           if(term) {
             var selectedSemester = $scope.selectedTerm;
-            // console.log("Pre selectedSemester");
-            // console.log(selectedSemester);
             selectedSemester.status.currentSemester = true;
-            // console.log("Post selectedSemester");
-            // console.log(selectedSemester);
 
-            // console.log("Pre currentSem");
-            // console.log(vm.currentSem);
             vm.currentSem.status.currentSemester = false;
-            // console.log("Post currentSem");
-            // console.log(vm.currentSem);
             ProjectService.editTerm(vm.currentSem, vm.currentSem._id);
             ProjectService.editTerm(selectedSemester, selectedSemester._id);
             vm.currentSem = selectedSemester;
-            vm.currentSemesterName = vm.currentSem.Name;
+            vm.currentSemesterName = vm.currentSem.name;
 
             // TODO Remove if not needed
             // var currentSemesterIndex = vm.currentSemesterName.indexOf(vm.currentSem.Name);

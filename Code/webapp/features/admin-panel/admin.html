@@ -216,7 +216,7 @@
 				<tr>
 					<td></td>
 					<td><b>Course</b></td>
-					<td><b>Description</b></td>
+					<td><b>Title</b></td>
 					<td><b>Semester</b></td>
 				</tr>
 				<tr ng-repeat="course in vm.courses">
@@ -247,7 +247,7 @@
 									 ng-model="addNewCourseInputNumber" />
 					</td>
 					<td class="col-md-1">
-						Section<input id="addNewCourseInputSection" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="2" 
+						Section<input id="addNewCourseInputSection" class="form-control" type="text"
 									  ng-model="addNewCourseInputSection" />
 					</td>
 					<td class="col-md-4">

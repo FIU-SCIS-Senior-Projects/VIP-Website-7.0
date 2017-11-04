@@ -191,7 +191,7 @@ function selectedItemChange(item) {
 		// Add a course
 		vm.addCourse = function() {
 			if (!$scope.addNewCourseInputSubject || !$scope.addNewCourseInputNumber || !$scope.addNewCourseInputSection || !$scope.selectedCourseTerm ||
-				$scope.addNewCourseInputSubject.length < 3 || $scope.addNewCourseInputNumber.length < 4 || $scope.addNewCourseInputSection.length < 2) {
+				$scope.addNewCourseInputSubject.length < 3 || $scope.addNewCourseInputNumber.length < 4) {
 				var errMsg = "";
 				if (!$scope.addNewCourseInputSubject)
 					errMsg += "\tSubject Missing\n";
@@ -203,8 +203,6 @@ function selectedItemChange(item) {
 					errMsg += "\tNumber is not 4 Digit Number\n";
 				if (!$scope.addNewCourseInputSection)
 					errMsg += "\tSection Missing\n";
-				else if ($scope.addNewCourseInputSection.length < 2)
-					errMsg += "\tSection is not 2 Digit Number\n";
 				if (!$scope.selectedCourseTerm)
 					errMsg += "\tSemester Missing\n";
 				
@@ -221,7 +219,7 @@ function selectedItemChange(item) {
 			
 			else {
 				// test if duplicate exists
-				var courseName = $scope.addNewCourseInputSubject + ' ' + $scope.addNewCourseInputNumber + "-U" + $scope.addNewCourseInputSection;
+				var courseName = $scope.addNewCourseInputSubject + ' ' + $scope.addNewCourseInputNumber + "-" + $scope.addNewCourseInputSection;
 				var found = false;
 				vm.courses.forEach(function (course) {
 					if (course.name == courseName && course.semester == $scope.selectedCourseTerm.name)
@@ -232,7 +230,7 @@ function selectedItemChange(item) {
 						name: courseName,
 						subject: $scope.addNewCourseInputSubject,
 						number: $scope.addNewCourseInputNumber,
-						section: "U" + $scope.addNewCourseInputSection,
+						section: $scope.addNewCourseInputSection,
 						semester: $scope.selectedCourseTerm.name
 					};
 					
@@ -242,6 +240,12 @@ function selectedItemChange(item) {
 					adminService.addCourse(newCourse).then(function (data) {
 						vm.courses.push(data);
 					});
+					// Clear Input fields
+					$scope.addNewCourseInputSubject = "";
+					$scope.addNewCourseInputNumber = "";
+					$scope.addNewCourseInputSection = "";
+					$scope.addNewCourseInputTitle = "";
+					$scope.selectedCourseTerm = "";
 				}
 			}
 		};
@@ -273,10 +277,60 @@ function selectedItemChange(item) {
 		};
 		
 		// User Story #1346
-		vm.addCourseData;
+		
+		vm.addCourseFileName;
+		vm.addCourseData; // Holds the parsed XLS data after onchanged event fires
+		
+		// Parse the XLS file using File API
+		function handleFile(e) {
+			if (document.getElementById('courseFileInput').value) {
+				var files = e.target.files, fileSource = files[0];
+				var reader = new FileReader();
+				reader.onload = function(e) {
+					vm.addCourseData = parseXLS(e.target.result); 
+				};
+				reader.readAsText(fileSource);
+				
+				// Read fileName and check if existing course exists to set as default course
+				vm.addCourseFileName = document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, '');
+				parseFileName(vm.addCourseFileName);
+			}
+		};
+		document.getElementById('courseFileInput').addEventListener('change', handleFile, false);
+		
+		// Updates the course select box with best fit course given the file name
+		function parseFileName(file) {
+			try {	
+				var activeTerm;
+				vm.terms.forEach(function (term, index) {
+					if (term.status == 'Active')
+						activeTerm = term.name; // This might need updating as term statuses are updated
+				});
+				
+				console.log('activeTerm: ', activeTerm);
+				// Start with cleared selection
+				document.getElementById('syncCourseSelect').selectedIndex = -1;
+				
+				// Try to match a segment of the file name with a course from the active semester
+				vm.courses.forEach(function (course, index) {
+					console.log('courseSemester: ', course.semester, 'courseName: ', course.name);
+					if (course.semester == activeTerm) {
+						var found = file.match(course.name);
+						if (found) {
+							// Update course selection box
+							console.log("match found", index);
+							$scope.syncCourseSelect = vm.courses[index];
+							document.getElementById('syncCourseSelect').selectedIndex = index+1;
+						}
+					}
+				});
+			}
+			catch (err) { /* Don't try match with filename that cannot be parsed */ }
+		};
 		
 		// Adds a course file to course file list
 		vm.addCourseFile = function() {
+			console.log('Add Course File: sync: ', $scope.syncCourseSelect, 'cfileInput: ', document.getElementById('courseFileInput').value , 'bool:', ($scope.syncCourseSelect && document.getElementById('courseFileInput').value));
 			if ($scope.syncCourseSelect && document.getElementById('courseFileInput').value) {
 				// test if duplicate exists in courseFiles list
 				var courseName = $scope.syncCourseSelect.name;
@@ -289,23 +343,16 @@ function selectedItemChange(item) {
 				if (!found) { // Create the new courseFile and add it to the list
 					var newCourseFile = {
 						course: $scope.syncCourseSelect,
-						file: document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, '')
+						file: vm.addCourseFileName,
+						data: vm.addCourseData
 					};
 					
-					// Parse the XLS file using File API
-					var fileSource = document.getElementById('courseFileInput').files[0];
-					var reader = new FileReader();
-					//var binaryFileBuffer = reader.readAsBinaryString(fileSource);
-					//var courseData = XLS.read(binaryFileBuffer); 
-					// newCourseFile['data'] = courseData; 
-					
-					reader.onload = function(e) {
-						newCourseFile['data'] = XLS.read(reader.result, {type: 'binary'}); 
-					}
-					reader.readAsBinaryString(fileSource);
-					
-					
 					vm.courseFiles.push(newCourseFile);
+					// Clear Data and UI
+					$scope.syncCourseSelect = "";
+					document.getElementById('syncCourseSelect').selectedIndex = -1;
+					document.getElementById('courseFileInput').value = null;
+					vm.addCourseFileName = null;
 					vm.addCourseData = null;
 				}
 				else {
@@ -322,6 +369,31 @@ function selectedItemChange(item) {
 			}
 		};
 		
+		// Parse XLS file into readable data
+		function parseXLS(file) {
+			var entries = file.split('<tr>');
+			var users = [];
+			for (var i=2; i<entries.length; i++) {
+				var entryData = entries[i].split('<td>');
+				try {
+					var pid = entryData[3].split('</td>');
+					var email = entryData[4].split('</td>');
+					var name = entryData[5].split('</td>');
+					var nameTokens = name[0].split(',');
+					var firstAndMidName = nameTokens[1].split(' ');
+					var newUser = {
+						pid: pid[0],
+						email: email[0],
+						firstName: firstAndMidName[0],
+						lastName: nameTokens[0]
+					};
+					users.push(newUser);
+				}
+				catch (err) { /* Don't push data that cannot be parsed */ }
+			}
+            return users;
+		};
+		
 		// Removes a course file from course file list
 		vm.removeCourseFile = function(removingCourseFile) {
 			vm.courseFiles.forEach(function (courseFile, index) {
@@ -335,13 +407,17 @@ function selectedItemChange(item) {
 		vm.syncDatabase = function() {
 			vm.courseFiles.forEach(function (courseFile, index) {
 				console.log(index, ": ", courseFile);
+				// TODO
 			});
-			vm.courseFiles = [];
+			// Clear the course file list
+			vm.clearCourseFiles();
 		};
 		
-		// Clears the course file list
+		// Clears the course file list & resets input
 		vm.clearCourseFiles = function() {
 			vm.courseFiles = [];
+			document.getElementById('syncCourseSelect').selectedIndex = -1;
+			document.getElementById('courseFileInput').value = null;
 		};
 
 		vm.colleges = [

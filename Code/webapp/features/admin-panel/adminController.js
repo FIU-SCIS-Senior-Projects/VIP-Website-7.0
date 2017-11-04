@@ -169,6 +169,10 @@ function selectedItemChange(item) {
               vm.vStatus = term.status.viewable;
               vm.pStatus = term.status.openForProposal;
               vm.aStatus = term.status.openForApply;
+              if(vm.currentSwitchStatus == null) { vm.currentSwitchStatus = term.status.currentSemester; }
+              if(vm.viewableSwitchStatus == null) { vm.viewableSwitchStatus = term.status.viewable; }
+              if(vm.proposableSwitchStatus == null) { vm.proposableSwitchStatus = term.status.openForProposal; }
+              if(vm.applicableSwitchStatus == null) { vm.applicableSwitchStatus = term.status.openForApply; }
             }
         }
         vm.sw = ChangeUserProject;
@@ -414,31 +418,19 @@ function selectedItemChange(item) {
             ];
 
     function currentSwitch(e) {
-      // console.log("currentSwitch():");
-      // console.log(vm.currentSwitchStatus);
       vm.currentSwitchStatus = e;
-      // console.log(vm.currentSwitchStatus);
     }
 
     function viewableSwitch(e) {
-      // console.log("viewableSwitch():");
-      // console.log(vm.viewableSwitchStatus);
       vm.viewableSwitchStatus = e;
-      // console.log(vm.viewableSwitchStatus);
     }
 
     function proposableSwitch(e) {
-      // console.log("proposableSwitch():");
-      // console.log(vm.proposableSwitchStatus);
       vm.proposableSwitchStatus = e;
-      // console.log(vm.proposableSwitchStatus);
     }
 
     function applicableSwitch(e) {
-      // console.log("applicableSwitch():");
-      // console.log(vm.applicableSwitchStatus);
       vm.applicableSwitchStatus = e;
-      // console.log(vm.applicableSwitchStatus);
     }
 
 		function validateEmail(email) {
@@ -2297,19 +2289,15 @@ function selectedItemChange(item) {
 
         function makeSemesterChanges() {
           var term = vm.cterm;
-          // console.log("in makeSemesterChanges()");
           if(term) {
             var selectedSemester = $scope.selectedTerm;
-
             selectedSemester.status.currentSemester = vm.currentSwitchStatus;
             selectedSemester.status.openForApply = vm.applicableSwitchStatus;
             selectedSemester.status.openForProposal = vm.proposableSwitchStatus;
             selectedSemester.status.viewable = vm.viewableSwitchStatus;
-
             ProjectService.editTerm(selectedSemester, selectedSemester._id);
             vm.currentSem = selectedSemester;
             vm.currentSemesterName = vm.currentSem.name;
-            // console.log("should be updated");
           }
           changestat_msg();
         }

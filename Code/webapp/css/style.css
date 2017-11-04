@@ -472,9 +472,24 @@ a {
 }
 
 .proj-title-teams {
-    text-align: center;
+    text-align: left;
     font-weight: bold;
-    letter-spacing: 4px;
+    letter-spacing: 0.9px;
+    line-height: 1.15em;
+    font-size: 22px;
+}
+
+.proj-semester-teams {
+    text-align: left;
+    font-weight: bold;
+    letter-spacing: 0.9px;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.proj-title-owner {
+    margin-top: 13px;
+    margin-bottom: 12px;
 }
 
 .read-btn {
@@ -533,6 +548,22 @@ a {
     border-radius: 2px;
     float:left;
     cursor: pointer;
+}
+
+.proj-image-container {
+    height: 135px;
+    width: 135px;
+    float:left;
+    display: inline;
+    line-height: 135px;
+    margin-right: 3px;
+}
+
+.proj-image-container img {
+    padding: 0px 10px 10px 10px; 
+    max-height: 135px; 
+    max-width:135px;
+    vertical-align: middle;
 }
 
 .buttons-container {

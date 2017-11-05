@@ -30,6 +30,7 @@ var ProjectSchema = new Schema({
     image: String,
     //video_url: String,
     video_url: [{vidurl: String, vimgurl: String}],
+    deliverables_attached: [{name: String, url: String}],
 	mingle_url: String,
     youtube_url: String,
     github_url: String,

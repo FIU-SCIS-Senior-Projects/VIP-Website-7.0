@@ -41,6 +41,39 @@
     </div>
 
     <div class="form-group">
+    <label>Upload Previous Deliverables</label>
+    <table class="table table-striped">
+        <tr>
+            <td>
+                <input onchange="uploadDoc()" id="projDoc" accept=".pdf" type="file" class="form-inline" />
+                <small>Upload a file here. Allowed file types: PDF</small>
+                <progress id="pD" class="form-horizontal" style="visibility: hidden; width: 20%; border: none;"/>
+            </td>
+            <td>
+                <p><strong>and/or</strong></p>
+            </td>
+            <td>
+                <input id="project.docLink" type="text" style="width:250px;" class="form-inline" ng-model="project.docLink"/>
+                <small><i><br />Provide a shared document link (i.e. from Google Drive or Dropbox). <br />Please check the link settings to be sure it is public.</i></small>
+            </td>
+            <td>
+                <input id="project.docTitle" type="text" class="form-inline" ng-model="project.docTitle"/>
+                <small><i><br />Name your document</i></small>
+            </td>
+            <td>
+                <button id="addDocButton" type="button" class="btn btn-primary" ng-click="addDocToProject()">Add Document</button>
+            </td>
+        </tr>
+        <tr ng-repeat="doc in project.deliverables_attached">
+            <td>{{doc.name}} - {{doc.url}}</td>
+            <td>
+                <button id="rmDocButton" class="btn btn-danger" ng-click="removeDocFromProject(video)">Remove Document</button>
+            </td>
+        </tr>
+    </table>
+    </div>
+
+    <div class="form-group">
     <label>Video Link</label>
     <!-- <input type="text" ng-model="project.video_url" class="form-control"/>
     <small><i>It is recommended you put an intro video as the first video of a Youtube playlist for easier viewing</i></small> -->
@@ -48,7 +81,7 @@
         <tr>
             <td>
                 <input id="project.videoAdd" type="text" class="form-control" ng-model="project.videoAdd"/>
-                <small><i>It is recommended you put an intro video as the first video of a Youtube playlist for easier viewing</i></small>
+                <small><i>Add several individual videos and/or entire YouTube playlists here.</i></small>
             </td>
             <td>
                 <button id="addVideoButton" type="button" class="btn btn-primary" ng-click="addVideoToProject()">Add Video</button>

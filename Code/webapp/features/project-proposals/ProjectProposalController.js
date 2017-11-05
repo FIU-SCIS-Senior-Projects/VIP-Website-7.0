@@ -1,5 +1,6 @@
 (function () {
     var image;
+    var docuUpload;
 
 
     function uploadImage2() {
@@ -31,6 +32,37 @@
             r.readAsDataURL(f);
         }
     };
+
+    function uploadDoc() {
+        
+            var objDoc = document.getElementById('projDoc');
+            var pD = document.getElementById('pD');
+            pD.max = 100;
+            pD.value = 0;
+            if (objDoc.files.length == 0) {
+    
+            }
+            else {
+                pD.style.visibility = "visible";
+    
+                var f = objDoc.files[0];
+                var r = new FileReader();
+                r.onprogress = function (event) {
+                    if (event.lengthComputable) {
+                        pD.max = event.total;
+                        pD.value = event.loaded;
+                    }
+                };
+                r.onloadend = function (e) {
+    
+                    var dataURL = e.target.result;
+                    docuUpload = dataURL;
+    
+                }
+                r.readAsDataURL(f);
+                console.log("Upload " + r.readAsDataURL(f));
+            }
+        };
 
 
     angular.module('ProjectProposalController', ['ProjectProposalService', 'userService', 'toDoModule', 'vip-projects'])

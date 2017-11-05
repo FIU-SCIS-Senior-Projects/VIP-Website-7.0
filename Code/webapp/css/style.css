@@ -475,7 +475,7 @@ a {
     text-align: left;
     font-weight: bold;
     letter-spacing: 0.9px;
-    line-height: 1.15em;
+    line-height: 1.13em;
     font-size: 22px;
 }
 
@@ -490,11 +490,18 @@ a {
 .proj-title-owner {
     margin-top: 13px;
     margin-bottom: 12px;
+    font-size: 13px;
+}
+
+.proj-card-skills {
+    margin-top: 10px;
+    margin-bottom: 12px;
+    font-size: 13px;
 }
 
 .read-btn {
     float: right;
-    font-weight: bold;
+    margin-top: 5px;
     cursor: pointer;
 }
 
@@ -576,6 +583,7 @@ a {
     font-family: calibri, sans-serif;
 }
 
+/* The class is old - Not used anymore */
 .proj-descrip-teams-vid {
     display: inline-block;
     height: 120px;
@@ -585,6 +593,16 @@ a {
 
 .proj-descrip-teams {
     font-family: calibri, sans-serif;
+    font-size: 14.5px;
+}
+
+.outer-wrapper {
+    height: 236px;
+}
+
+.wrapper {
+    height: 197px;
+    overflow: hidden;
 }
 
 .sort-by-padding {

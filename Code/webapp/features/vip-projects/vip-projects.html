@@ -37,20 +37,26 @@
 <div class="col-md-6 project-info" ng-if="vm.done"   ng-repeat="project in vm.filteredprojects |filter:search | filter:project.status = '!pending'  | filter:project.status = '!Disabled'">
 <!--end-->
 <div>
-<div class="proj-image-container"><img ng-src="{{project.image}}" alt="{{project.title}}"></div>
-<h3 class="proj-semester-teams">{{project.semester}}</h3>
-<h3 class="proj-title-teams"><a ng-href="/#/vip-projects-detailed/{{project._id}}">{{project.title}}</a></h3></h3>
-<h5 class="proj-title-owner">Owner: {{project.owner_name}}</h5>
-<!-- User Story #1142-->
-<!-- <p class="proj-descrip-teams">{{project.description}}</p>  -->
-<div class="proj-descrip-teams-vid"  ng-show="project.video_url[0]"ng-click="vm.viewDetails(project)" style="cursor:pointer;" ng-bind-html="project.description"></div>
-<div class="proj-descrip-teams"  ng-hide="project.video_url[0]"ng-click="vm.viewDetails(project)" style="cursor:pointer;" ng-bind-html="project.description"></div>
+<div class="outer-wrapper">
+    <div class="wrapper">
+        <div class="proj-image-container"><img ng-src="{{project.image}}" alt="{{project.title}}"></div>
+        <h3 class="proj-semester-teams">{{project.semester}}</h3>
+        <h3 class="proj-title-teams"><a ng-href="/#/vip-projects-detailed/{{project._id}}">{{project.title}}</a></h3></h3>
+        <h5 class="proj-title-owner">Owner: {{project.owner_name}}</h5>
+        <!-- User Story #1142-->
+        <!-- <p class="proj-descrip-teams">{{project.description}}</p>  -->
+        <!-- <div class="proj-descrip-teams-vid"  ng-show="project.video_url[0]"ng-click="vm.viewDetails(project)" style="cursor:pointer;" ng-bind-html="project.description"></div> -->
+        <div class="proj-descrip-teams"  ng-show="project.video_url[0]"ng-click="vm.viewDetails(project)" style="cursor:pointer;" ng-bind-html="project.description"></div>
+        <div class="proj-descrip-teams"  ng-hide="project.video_url[0]"ng-click="vm.viewDetails(project)" style="cursor:pointer;" ng-bind-html="project.description"></div>
+    </div>
+    <div class="read-btn"><button type="button" class="btn btn-primary btn-sm" id="readMore" ng-click="vm.viewDetails(project)"><i class="fa fa-share" aria-hidden="true"></i> Read More</button></div>    
+</div>
     <div class="thumb-card-container" ng-show="project.video_url[0]">
         <div class="video-thumb-card" ng-if="project.video_url[0]" ng-repeat="videothumb in project.video_url">
             <img src="{{videothumb.vimgurl}}" ng-click="vm.setVideoModal(videothumb.vidurl, project._id)" height="80px" width="80px" data-dismiss="modal" data-toggle="modal" data-target="#videoCardModal">
         </div>
     </div>
-<div class="proj-title-owner"><label>Skills preferred:</label> {{project.reqskillItem}}</div>
+<div class="proj-card-skills"><label>Skills preferred:</label> {{project.reqskillItem}}</div>
 </div>
 </div>
 <div class="col-md-6 project-info" ng-if="vm.done" ng-repeat="project in vm.filteredprojects | filter: { status: 'modified' }" ng-click="vm.viewDetails(project.old_project[0])">

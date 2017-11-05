@@ -35,7 +35,7 @@
 
     <div class="form-group">
     <label>Upload Team Image</label>
-    <input onchange="uploadImage2()" id="teamImage" accept=".jpg,.png,.gif" type="file" class="form-control" />
+    <input onchange="uploadProposalClass.uploadImage2()" id="teamImage" accept=".jpg,.png,.gif" type="file" class="form-control" />
     <progress id="pI" class="form-control" style="visibility: hidden; width: 20%; border: none;"/>
     <small><i>Picture size MUST be below 2MB</i></small>
     </div>
@@ -45,12 +45,12 @@
     <table class="table table-striped">
         <tr>
             <td>
-                <input onchange="uploadDoc()" id="projDoc" accept=".pdf" type="file" class="form-inline" />
+                <input onchange="uploadProposalClass.uploadDoc()" id="project.projDoc" accept=".pdf" type="file" class="form-inline" />
                 <small>Upload a file here. Allowed file types: PDF</small>
                 <progress id="pD" class="form-horizontal" style="visibility: hidden; width: 20%; border: none;"/>
             </td>
             <td>
-                <p><strong>and/or</strong></p>
+                <p><strong>or</strong></p>
             </td>
             <td>
                 <input id="project.docLink" type="text" style="width:250px;" class="form-inline" ng-model="project.docLink"/>
@@ -64,10 +64,14 @@
                 <button id="addDocButton" type="button" class="btn btn-primary" ng-click="addDocToProject()">Add Document</button>
             </td>
         </tr>
+    </table>
+    </div>
+    <div class="form-group">
+    <table class="table table-striped">
         <tr ng-repeat="doc in project.deliverables_attached">
-            <td>{{doc.name}} - {{doc.url}}</td>
+            <td>{{doc.name}}</td>
             <td>
-                <button id="rmDocButton" class="btn btn-danger" ng-click="removeDocFromProject(video)">Remove Document</button>
+                <button id="rmDocButton" class="btn btn-danger" ng-click="removeDocFromProject(doc)">Remove Document</button>
             </td>
         </tr>
     </table>

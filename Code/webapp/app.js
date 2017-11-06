@@ -22,7 +22,8 @@ angular.module('mainApp', [
    'MessengerController',
 	'angularTrix',
 	'ui.bootstrap',
-	'angularUtils.directives.dirPagination'
+	'angularUtils.directives.dirPagination',
+	'mp.datePicker'
 ]).filter('selectedTags', function() {
     return function(users, members)
     {

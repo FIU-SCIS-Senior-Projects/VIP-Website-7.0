@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('admin',['ui.bootstrap','angularUtils.directives.dirPagination'])
+        .module('admin',['ui.bootstrap','angularUtils.directives.dirPagination', 'mp.datePicker'])
         .controller('adminController', adminCtrl)
     function adminCtrl($location, $window, $state, $scope, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService, DateTimeService) {
         var vm = this;

@@ -18,6 +18,7 @@ module.exports = function(webapp) {
         webapp + "lib/bootstrap/dist/js/bootstrap.min.js",
         webapp + "lib/angular-bootstrap/ui-bootstrap-tpls.min.js",
         webapp + "lib/angularUtils-pagination/dirPagination.js",
+        webapp + "lib/angular-date-picker/angular-date-picker.js",
         //User Story #1142
         webapp + "lib/trix-textarea-toolbar/trix.js",
         webapp + "lib/trix-textarea-toolbar/angular-trix.min.js",

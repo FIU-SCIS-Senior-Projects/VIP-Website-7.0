@@ -4,6 +4,7 @@
   "main": "server.js",
   "dependencies": {
     "@uirouter/angularjs": "^1.0.7",
+    "angular-date-picker": "^1.3.5",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "install": "^0.10.1",

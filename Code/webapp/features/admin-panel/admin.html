@@ -103,8 +103,8 @@
         <!--
             This button is to add new terms to the terms collection in Mongo, leave commented out unless you are planning to add a new collection
             Take Note, this button allows duplicates, so be careful, or you'll have to manually remove duplicate terms from the db
-                    <button  ng-click="vm.AddTerms()">Add Terms</button>
-                    -->
+                    <button  ng-click="vm.AddTerms()">Add Terms</button> -->
+
 
 
         <!--Dafna's code-->
@@ -868,42 +868,72 @@
 
 <div ng-show="showSemesterMaint">
 
-           <div class="col-md-6 panel panel-default">
-               <h3 align="center"> Lock/Unlock Semester </h3>
-               <div class="form-group">
-                   <table class="table">
-                       <tr>
-                           <th>
-                               <b>Term:</b> <select class="form-control" ng-model="selectedTerm"
-                                                    ng-options="terms as terms.name for terms in vm.terms"
-                                                    value="{{vm.currentTerm(selectedTerm)}}"></select>
-                           </th>
-                       </tr>
-                       <tr>
-                           <th>
-                               <b>change Semester's status to: </b>
-                           </th>
-                       </tr>
-                       <tr>
-                           <th>
-                               <select class="form-control" ng-model="selectedTermStatus"
-                                       ng-options="terms as terms for terms in vm.active"
-                                       value="{{vm.currentTerm(selectedTerm)}}"></select>
-                           </th>
-                       </tr>
-                   </table>
-                   <table class="table" style="height: 1px;">
-                       <tr>
-                           <th>
-                               <button style="width: 80px;" ng-click="vm.nw()" class="btn btn-success btn-block">Change
-                               </button>
-                           </th>
-                           <th>
-                           </th>
-                       </tr>
-                   </table>
-               </div>
-           </div>
+
+  <div class="col-md-6 panel panel-default">
+    <h3 align="left">Semester Options</h3>
+    <h4 ng-controller="adminController">Current Semester: <span ng-bind="vm.currentSemesterName"></span></h4>
+
+    <!-- <span ng-repeat="sem in vm.currentSemesterName">{{sem}}<span ng-if="!$last">, </span></span> TODO Remove if not needed-->
+    <div class="form-group">
+      <table class="table">
+        <tr>
+            <th>
+                <b>Semester:</b> <select class="form-control" ng-model="selectedTerm"
+                                     ng-options="terms as terms.name for terms in vm.terms"
+                                     value="{{vm.currentTerm(selectedTerm)}}"></select>
+            </th>
+        </tr>
+      </table>
+      <table class="table" style="height: 1px;">
+          <tr>
+              <th>
+                Current Semester
+              </th>
+              <th>
+                <form action="">
+                  <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value="true">On</input>
+                  <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value="false">Off</input>
+                </form>
+              </th>
+          </tr>
+          <tr>
+              <th>
+                Proposable by Faculty
+              </th>
+              <th>
+                <form action="">
+                  <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="vm.pStatus" value="true">On</input>
+                  <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="!(vm.pStatus)" value="false">Off</input>
+                </form>
+              </th>
+          </tr>
+          <tr>
+              <th>
+                Viewable by Students
+              </th>
+              <th>
+                <form action="">
+                  <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="vm.vStatus" value="true">On</input>
+                  <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="!(vm.vStatus)" value="false">Off</input>
+                </form>
+              </th>
+          </tr>
+          <tr>
+              <th>
+                Applicable by Students
+              </th>
+              <th>
+                <form action="">
+                  <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="vm.aStatus" value="true">On</input>
+                  <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="!(vm.aStatus)" value="false">Off</input>
+                </form>
+              </th>
+          </tr>
+      </table>
+    </div>
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-click="vm.msc()" class="btn btn-success btn-block">Confirm
+    </button>
+  </div>
 </div>
 
 

@@ -70,7 +70,8 @@
             });
 
             //Joe Use Story
-            vm.semesters = ['Spring 2017', 'Summer 2017', 'Fall 2017'];
+            // Semester Dropdown
+            // vm.semesters = ['Spring 2017', 'Summer 2017', 'Fall 2017'];
             6
             $scope.colleges = [
                 {
@@ -320,6 +321,7 @@
             //Joe's User Story
             function loadTerms() {
                 reviewStudentAppService.loadTerms().then(function (data) {
+                    console.log("in loadTerms()");
                     vm.terms = data;
                     console.log(vm.terms);
                 });
@@ -841,7 +843,7 @@
                     }
 
                     // youtube.com universal filter
-                    if (VideoURL.indexOf("youtube.com") > -1) {
+                    else if (VideoURL.indexOf("youtube.com") > -1) {
                         videoID = VideoURL.substr(VideoURL.indexOf("?v=") + 3);
                         updatedVideoURL = "https://www.youtube.com/embed/" + videoID;
                         //console.log("Filtered url: " + updatedVideoURL);

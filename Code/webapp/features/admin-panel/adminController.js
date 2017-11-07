@@ -11,14 +11,18 @@
         $scope.showSemesterMaint = false
         $scope.showProjectMaint = false
         $scope.showAdminPage = true
-		$scope.showCoursePage = false
+		    $scope.showCoursePage = false
         $scope.routeUserMaint = routeUserMaint
         $scope.routeProjectMaintenance = routeProjectMaintenance
         $scope.routeSemesterMaintenance = routeSemesterMaintenance
         $scope.routeAdminMaint = routeAdminMaint
-		$scope.routeCourseMaintenance = routeCourseMaintenance
+        $scope.routeCourseMaintenance = routeCourseMaintenance
+        vm.currentSwitchStatus;
+        vm.proposableSwitchStatus;
+        vm.viewableSwitchStatus;
+        vm.applicableSwitchStatus;
         vm.simulateQuery = false;
-      vm.isDisabled    = false;
+        vm.isDisabled    = false;
 
       // list of `state` value/display objects
       vm.querySearch   = querySearch;
@@ -101,6 +105,13 @@ function selectedItemChange(item) {
         vm.projects; //Projects that are active
 		vm.courses; // Course list
         vm.terms;
+        vm.currentSem;
+        vm.currentSemesterName;
+        vm.cStatus;
+        vm.vStatus;
+        vm.pStatus;
+        vm.aStatus;
+        // vm.currentSemesterName = [];// TODO Remove if not needed
         vm.filterUsers = filterUsers;
         vm.currentuserview;
         vm.currentview = currentview;
@@ -155,6 +166,16 @@ function selectedItemChange(item) {
         }
         vm.currentTerm = function (term) {
             vm.cterm = term;
+            if(term) {
+              vm.cStatus = term.status.currentSemester;
+              vm.vStatus = term.status.viewable;
+              vm.pStatus = term.status.openForProposal;
+              vm.aStatus = term.status.openForApply;
+              if(vm.currentSwitchStatus == null) { vm.currentSwitchStatus = term.status.currentSemester; }
+              if(vm.viewableSwitchStatus == null) { vm.viewableSwitchStatus = term.status.viewable; }
+              if(vm.proposableSwitchStatus == null) { vm.proposableSwitchStatus = term.status.openForProposal; }
+              if(vm.applicableSwitchStatus == null) { vm.applicableSwitchStatus = term.status.openForApply; }
+            }
         }
         vm.sw = ChangeUserProject;
         vm.sc = ClearProject;
@@ -163,10 +184,22 @@ function selectedItemChange(item) {
         vm.se = ChangeProjectStatus;
         vm.nw = ChangeTermStatus;
 
+        vm.scs = SetCurrentSemester;
+        vm.ssv = SetSemesterViewable;
+        vm.ssa = SetSemesterApplicable;
+        vm.ssp = SetSemesterProposable;
+        vm.csf = currentSwitch;
+        vm.vsf = viewableSwitch;
+        vm.asf = applicableSwitch;
+        vm.psf = proposableSwitch;
+        vm.msc = makeSemesterChanges;
+
+
         vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
         //Joe's User Story
         vm.status = ['Active', 'Disabled'];
         vm.active = ['Active', 'Disabled'];
+        vm.open = ['Open', 'Closed'];
         vm.getProjectTitle = function (email) {
             if (email) {
                 if (vm.projects) {
@@ -186,7 +219,7 @@ function selectedItemChange(item) {
         vm.changeEmailSignature = function() {
             vm.savesetting();
         };
-		
+
 		// User Story 1345
 		// Add a course
 		vm.addCourse = function() {
@@ -205,7 +238,7 @@ function selectedItemChange(item) {
 					errMsg += "\tSection Missing\n";
 				if (!$scope.addCourseTerm)
 					errMsg += "\tSemester Missing\n";
-				
+        
 				swal({
                     title: "Course could not be added",
                     text: "Error: \n" + errMsg,
@@ -216,7 +249,7 @@ function selectedItemChange(item) {
 					}, function () {}
 				);
 			}
-			
+
 			else {
 				// test if duplicate exists
 				var courseName = $scope.addNewCourseInputSubject + ' ' + $scope.addNewCourseInputNumber + "-" + $scope.addNewCourseInputSection;
@@ -233,10 +266,10 @@ function selectedItemChange(item) {
 						section: $scope.addNewCourseInputSection,
 						semester: $scope.addCourseTerm.name
 					};
-					
+
 					if($scope.addNewCourseInputTitle != "")
 						newCourse["title"] = $scope.addNewCourseInputTitle;
-					
+
 					adminService.addCourse(newCourse).then(function (data) {
 						vm.courses.push(data);
 						
@@ -260,11 +293,11 @@ function selectedItemChange(item) {
 				}
 			}
 		};
-		
+
 		// Remove a course
 		vm.removeCourse = function(removingCourse) {
 			var courseName = removingCourse.name;
-				
+
 			adminService.deleteCourse(removingCourse._id).then(function (data) {
 				if (data.message == "successfully deleted!") { // http delete request was successful
 					// Remove from courses list
@@ -272,7 +305,7 @@ function selectedItemChange(item) {
 						if (course.name == courseName)
 							vm.courses.splice(index, 1);
 					});
-					
+
 					// Go through users and remove them from the deleted course
 					vm.allusers.forEach(function (user, index) {
 						if (user.course == courseName) {
@@ -630,6 +663,22 @@ function selectedItemChange(item) {
                 }
             ];
 
+    function currentSwitch(e) {
+      vm.currentSwitchStatus = e;
+    }
+
+    function viewableSwitch(e) {
+      vm.viewableSwitchStatus = e;
+    }
+
+    function proposableSwitch(e) {
+      vm.proposableSwitchStatus = e;
+    }
+
+    function applicableSwitch(e) {
+      vm.applicableSwitchStatus = e;
+    }
+
 		function validateEmail(email) {
             return /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(email)
 		};
@@ -798,7 +847,7 @@ function selectedItemChange(item) {
                         return i;
 			return -1;
 		};
-		
+
 		function findIndexCourse(course) {
 			if (course)
 				for (var i=0; i<vm.courses.length; i++)
@@ -852,7 +901,7 @@ function selectedItemChange(item) {
 						newUser["joined_project"] = true;
 					else
 						newUser["joined_project"] = false;
-					
+
 					newUser["isEnrolled"] = false;
 
 					// Send POST request
@@ -943,7 +992,7 @@ function selectedItemChange(item) {
 						vm.editingUser.joined_project = true;
 					else
 						vm.editingUser.joined_project = false;
-					
+
 					if (!vm.editingUser.isEnrolled)
 						vm.editingUser["isEnrolled"] = false;
 
@@ -1029,7 +1078,7 @@ function selectedItemChange(item) {
 
 				// Update project if associated with user
 				if(found) {
-					ProjectService.editProject(project, project._id);						
+					ProjectService.editProject(project, project._id);
 				}
 			});
 			// Refresh projects panel
@@ -1279,7 +1328,7 @@ function selectedItemChange(item) {
 
 		// Fill in edit project form with existing values in project
 		vm.editProject = function(project) {
-      
+
 			vm.editingProject = project;
 			vm.editingProjOrigTitle = project.title;
 			// Set initial values of input to be current projects values
@@ -1420,7 +1469,7 @@ function selectedItemChange(item) {
 			vm.tabledata = JSON.stringify(vm.filteredusers);
 			vm.tabledata = eval(vm.tabledata);
 		};
-      
+
 		// User story #1329 - add and remove video urls from an editing project
 		vm.addProjectVideo = function() {
 			if ($scope.addPVidUrl) {
@@ -1433,14 +1482,14 @@ function selectedItemChange(item) {
 				}
 				vm.editingProject.video_url.forEach(function (user, index) {
 					if (vm.editingProject.video_url[index].vidurl == processedVidUrl)
-						found = true; 
+						found = true;
 				});
 				if (!found)
 					vm.editingProject.video_url.push({vidurl: processedVidUrl, vimgurl: processedVidThumb});
 			}
 			$scope.addPVidUrl = null;
 		};
-		
+
 		vm.removeProjectVideo = function(video) {
 			vm.editingProject.video_url.forEach(function (user, index) {
 				if (vm.editingProject.video_url[index].vidurl == video.vidurl) {
@@ -1448,7 +1497,7 @@ function selectedItemChange(item) {
 				}
 			});
 		};
-      
+
     function sendDeactivationEmail() {
             var email;
             if (vm.editingProject.status == 'Disabled') {
@@ -1483,7 +1532,7 @@ function selectedItemChange(item) {
 				if (VideoURL.indexOf("youtube.com/embed/") > -1) {
 					return VideoURL;
 				}
-				
+
 				else if (VideoURL.indexOf("&list=") > -1) {
 					//console.log("PLAYLIST!!!!!");
 					videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
@@ -1491,7 +1540,7 @@ function selectedItemChange(item) {
 					//console.log("Filtered url: " + updatedVideoURL);
 					return updatedVideoURL;
 				}
-				
+
 				// youtube.com universal filter
 				else if (VideoURL.indexOf("youtube.com") > -1) {
 					videoID = VideoURL.substr(VideoURL.indexOf("?v=") + 3);
@@ -1516,11 +1565,11 @@ function selectedItemChange(item) {
 				return "";
 			}
         };
-		
+
 		function createThumbURL(VideoURL) {
 			var videoID = "";
 			var createdThumbURL = "";
-			
+
 			if (VideoURL.indexOf("&list=") > -1) {
 				//console.log("Playlist Thumbnail")
 				videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
@@ -1748,12 +1797,13 @@ function selectedItemChange(item) {
         //Ravi's Help
         function AddTerms() {
             var termsdata = {
-                name: "Fall 2016",
-                start: new Date('2016', '08'),
+                name: "Fall 2017 Test",
+                start: new Date('2017', '08'),
                 end: new Date('2017', '12'),
                 deadline: new Date('2017, 08'),
                 active: true,
-                status: "Active"
+                status: "Active",
+                open: true
             };
 
             reviewStudentAppService.addterm(termsdata).then(function (success) {
@@ -1910,14 +1960,33 @@ function selectedItemChange(item) {
         //Joe's User Story
         function loadTerms() {
             reviewStudentAppService.loadTerms().then(function (data) {
+              console.log("loading terms:");
                 vm.terms = data;
+
+                data.forEach(function(term) {
+                  if(term.status.currentSemester == true){
+                    // Logging for Testing
+                    // console.log("in if statement");
+                    // console.log("current term?");
+                    // console.log(term);
+                    vm.currentSem = term;
+                    // vm.currentSemesterName.push(term.name); // TODO Remove if not needed
+                    vm.currentSemesterName = term.name;
+                  }
+                })
+                // Logging for Testing
+                // console.log("currentSem");
+                // console.log(vm.currentSem);
+                console.log(data);
+
             });
         }
-		
+	
 		// Loads all courses & initializes course file list
         function loadCourses() {
             adminService.loadCourses().then(function (data) {
                 vm.courses = data;
+
             });
 			vm.courseFiles = [];
         }
@@ -2361,7 +2430,13 @@ function selectedItemChange(item) {
                 function () {}
             );
         };
-
+        function test_msg(test) {
+          swal({
+            title: "This is a test, anddd: " + test,
+          },
+          function() {}
+          );
+        };
         function cannotadd_msg()
         {
             swal({
@@ -2455,6 +2530,7 @@ function selectedItemChange(item) {
                 } else {
                     selectedTermStatus = 'Disabled';
                 }
+                console.log(vm.projects);
                 for (i = 0; i < vm.projects.length; i++) {
                     if (vm.projects[i].semester == selectedTerm) {
                         vm.projects[i].status = selectedTermStatus;
@@ -2465,6 +2541,104 @@ function selectedItemChange(item) {
                 ProjectService.editTerm(term, term._id);
             }
             changestat_msg();
+        }
+
+        function makeSemesterChanges() {
+          var term = vm.cterm;
+          if(term) {
+            var selectedSemester = $scope.selectedTerm;
+            selectedSemester.status.currentSemester = vm.currentSwitchStatus;
+            selectedSemester.status.openForApply = vm.applicableSwitchStatus;
+            selectedSemester.status.openForProposal = vm.proposableSwitchStatus;
+            selectedSemester.status.viewable = vm.viewableSwitchStatus;
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+            vm.currentSem = selectedSemester;
+            vm.currentSemesterName = vm.currentSem.name;
+          }
+          changestat_msg();
+        }
+
+        function SetCurrentSemester() {
+          var term = vm.cterm;
+
+
+
+          console.log("In SetCurrentSemester()");
+          if(term) {
+            var selectedSemester = $scope.selectedTerm;
+            selectedSemester.status.currentSemester = true;
+
+            vm.currentSem.status.currentSemester = false;
+            ProjectService.editTerm(vm.currentSem, vm.currentSem._id);
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+            vm.currentSem = selectedSemester;
+            vm.currentSemesterName = vm.currentSem.name;
+
+            // TODO Remove if not needed
+            // var currentSemesterIndex = vm.currentSemesterName.indexOf(vm.currentSem.Name);
+            // if(currentSemesterIndex < 0) {
+            //   vm.currentSemesterName.push(vm.currentSem.name);
+            // } else {
+            //   vm.currentSemesterName.splice(currentSemesterIndex, 1);
+            // }
+
+          }
+          changestat_msg();
+        }
+
+        function SetSemesterViewable() {
+          var term = vm.cterm;
+          console.log("In SetSemesterViewable()");
+          if(term) {
+            console.log("In if() statment");
+
+            var selectedSemester = $scope.selectedTerm;
+
+            console.log("Pre selectedSemester");
+            console.log(selectedSemester);
+            selectedSemester.status.viewable = !selectedSemester.status.viewable;
+            console.log("Post selectedSemester");
+            console.log(selectedSemester);
+
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+          }
+          changestat_msg();
+        }
+
+        function SetSemesterApplicable() {
+          var term = vm.cterm;
+          console.log("In SetSemesterApplicable()");
+          if(term) {
+            console.log("In if() statment");
+            var selectedSemester = $scope.selectedTerm;
+
+            console.log("Pre selectedSemester");
+            console.log(selectedSemester);
+            selectedSemester.status.openForApply = !selectedSemester.status.openForApply;
+            console.log("Post selectedSemester");
+            console.log(selectedSemester);
+
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+          }
+          changestat_msg();
+        }
+
+        function SetSemesterProposable() {
+          var term = vm.cterm;
+          console.log("In SetSemesterProposable()");
+          if(term) {
+            console.log("In if() statment");
+            var selectedSemester = $scope.selectedTerm;
+
+            console.log("Pre selectedSemester");
+            console.log(selectedSemester);
+            selectedSemester.status.openForProposal = !selectedSemester.status.openForProposal;
+            console.log("Post selectedSemester");
+            console.log(selectedSemester);
+
+            ProjectService.editTerm(selectedSemester, selectedSemester._id);
+          }
+          changestat_msg();
         }
 
         //Remove a user from a project

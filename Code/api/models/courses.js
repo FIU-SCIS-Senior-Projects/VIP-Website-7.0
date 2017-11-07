@@ -6,7 +6,8 @@ var CourseSchema = new Schema({
 	title: String,
 	subject: {type: String, required: true},
 	number: {type: Number, required: true},
-	section: {type: String, required: true}
+	section: {type: String, required: true},
+	semester: {type: String, required: true}
 });
 
 module.exports = mongoose.model('Course', CourseSchema);

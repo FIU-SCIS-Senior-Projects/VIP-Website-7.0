@@ -1,4 +1,4 @@
-(function () {
+  (function () {
     'use strict';
 
     angular
@@ -48,39 +48,39 @@ function selectedItemChange(item) {
   $log.info('Item changed to ' + JSON.stringify(item));
 }
         function routeAdminMaint(){
-           $scope.showUserMaint = false;
-           $scope.showSemesterMaint = false;
-           $scope.showProjectMaint = false;
-           $scope.showAdminPage = true;
-		   $scope.showCoursePage = false;
+          $scope.showUserMaint = false;
+          $scope.showSemesterMaint = false;
+          $scope.showProjectMaint = false;
+          $scope.showAdminPage = true;
+          $scope.showCoursePage = false;
         }
         function routeUserMaint(){
-           $scope.showUserMaint = true;
-           $scope.showSemesterMaint = false;
-           $scope.showProjectMaint = false;
-           $scope.showAdminPage = false;
-		   $scope.showCoursePage = false;
+          $scope.showUserMaint = true;
+          $scope.showSemesterMaint = false;
+          $scope.showProjectMaint = false;
+          $scope.showAdminPage = false;
+          $scope.showCoursePage = false;
         }
         function routeProjectMaintenance(){
-           $scope.showUserMaint = false;
-           $scope.showSemesterMaint = false;
-           $scope.showProjectMaint = true;
-           $scope.showAdminPage = false;
-		   $scope.showCoursePage = false;
+          $scope.showUserMaint = false;
+          $scope.showSemesterMaint = false;
+          $scope.showProjectMaint = true;
+          $scope.showAdminPage = false;
+          $scope.showCoursePage = false;
         }
         function routeSemesterMaintenance(){
-           $scope.showUserMaint = false;
-           $scope.showSemesterMaint = true;
-           $scope.showProjectMaint = false;
-           $scope.showAdminPage = false;
-		   $scope.showCoursePage = false;
+          $scope.showUserMaint = false;
+          $scope.showSemesterMaint = true;
+          $scope.showProjectMaint = false;
+          $scope.showAdminPage = false;
+          $scope.showCoursePage = false;
         }
-		function routeCourseMaintenance(){
-           $scope.showUserMaint = false;
-           $scope.showSemesterMaint = false;
-           $scope.showProjectMaint = false;
-           $scope.showAdminPage = false;
-		   $scope.showCoursePage = true;
+        function routeCourseMaintenance(){
+          $scope.showUserMaint = false;
+          $scope.showSemesterMaint = false;
+          $scope.showProjectMaint = false;
+          $scope.showAdminPage = false;
+          $scope.showCoursePage = true;
         }
         ProfileService.loadProfile().then(function (data) {
             if (data) {
@@ -191,6 +191,7 @@ function selectedItemChange(item) {
         vm.asf = applicableSwitch;
         vm.psf = proposableSwitch;
         vm.msc = makeSemesterChanges;
+        vm.cns = createNewSemester;
 
 
         vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
@@ -2300,6 +2301,38 @@ function selectedItemChange(item) {
             vm.currentSemesterName = vm.currentSem.name;
           }
           changestat_msg();
+        }
+
+        function createNewSemester(n, s, e) {
+          console.log("Name: ");
+          console.log(n);
+          console.log("StartDate:");
+          console.log(s);
+          console.log("endDate: ");
+          console.log(e);
+
+          var termData = {
+              name: n,
+              start: new Date(s),
+              end: new Date(e),
+              // start: new Date('2017', '08'),
+              // end: new Date('2017', '12'),
+              // deadline: new Date('2017, 08'),
+              active: true,
+              status: {
+                currentSemester: false,
+                viewable: false,
+                openForProposal: false,
+                openForApply: false
+              }
+          };
+          console.log("termData");
+          console.log(termData);
+
+          ProjectService.createTerm(termData).then(function (success) {
+            loadTerms();
+            $scope.selectedTerm = termData;
+          }, function (error) { });
         }
 
         function SetCurrentSemester() {

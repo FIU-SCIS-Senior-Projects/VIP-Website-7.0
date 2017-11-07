@@ -27,6 +27,42 @@ module.exports = function (app, express) {
                     return res.json(terms);
                 });
             }
+		)
+    .put(
+			authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
+            function (req, res) {
+
+              var term = new Term();
+              console.log(term);
+              console.log("req.body:");
+              console.log(req.body);
+              term.name = req.body.name;
+              term.status.currentSemester = req.body.status.currentSemester;
+              term.status.viewable = req.body.status.viewable;
+              term.status.openForProposal = req.body.status.openForProposal;
+              term.status.openForApply = req.body.status.openForApply;
+              term.start = req.body.start;
+              term.end = req.body.end;
+              term.active = req.body.active;
+
+              term.save(function (err) {
+                  if (err) {
+                      console.log('GOT TO ERROR')
+                      res.status(400);
+                      return res.send(err);
+                  }
+                  return res.json({message: 'Updated!'});
+                  // console.log("put successful");
+
+              });
+                // Term.create(req.body, function (err) {
+                //     if (err) {
+                //         return res.send('Error found');
+                //     } else {
+                //         res.send('Term has been added');
+                //     }
+                // });
+            }
 		);
 
 	apiRouter.route('/terms/findall')

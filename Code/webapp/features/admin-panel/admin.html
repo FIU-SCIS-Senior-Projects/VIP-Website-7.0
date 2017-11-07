@@ -794,7 +794,7 @@
             <!-- Semester Name: -->
             <label>
              Semester Name:
-             <input type="text" name="userName" ng-model="user.name" required>
+             <input type="text" name="semName" ng-model="semName" required>
             </label>
           </th>
         </tr>
@@ -818,7 +818,7 @@
         </tr>
       </table>
     </div>
-    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-click="" class="btn btn-success btn-block">Create
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(semName && startDate && endDate)" ng-click="vm.cns(semName, startDate, endDate)" class="btn btn-success btn-block">Create
     </button>
   </div>
   <div class="col-md-3 panel panel-default">

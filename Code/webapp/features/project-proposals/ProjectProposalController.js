@@ -930,14 +930,14 @@ var uploadProposalClass = {
                     var found = false;
                     if (projectDocs == null && vm.editingMode == false) {
                         projectDocs = [];
-                        $scope.project.deliverables_attached = [];
+                        $scope.project.attachments = [];
                     }
                     else {
-                        projectDocs = $scope.project.deliverables_attached;
+                        projectDocs = $scope.project.attachments;
                     }
-                    for (i = 0; i < $scope.project.deliverables_attached.length; i++) {
+                    for (i = 0; i < $scope.project.attachments.length; i++) {
                         console.log("Inside For loop");
-                        if ($scope.project.deliverables_attached[i].url == addDoc) {
+                        if ($scope.project.attachments[i].url == addDoc) {
                             console.log("Doc already in project");
                             found = true; 
                             break;
@@ -947,7 +947,7 @@ var uploadProposalClass = {
                         console.log("Doc will be added to project and saved when submit is pressed.");
                         projectDocs.push({name: addDocTitle, url: addDoc});
                         if (vm.editingMode == false) {
-                            $scope.project.deliverables_attached.push({name: addDocTitle, url: addDoc});
+                            $scope.project.attachments.push({name: addDocTitle, url: addDoc});
                         }
                     }
                 }
@@ -958,14 +958,14 @@ var uploadProposalClass = {
                     var found = false;
                     if (projectDocs == null && vm.editingMode == false) {
                         projectDocs = [];
-                        $scope.project.deliverables_attached = [];
+                        $scope.project.attachments = [];
                     }
                     else {
-                        projectDocs = $scope.project.deliverables_attached;
+                        projectDocs = $scope.project.attachments;
                     }
-                    for (i = 0; i < $scope.project.deliverables_attached.length; i++) {
+                    for (i = 0; i < $scope.project.attachments.length; i++) {
                         console.log("Inside For loop");
-                        if ($scope.project.deliverables_attached[i].url == addDoc) {
+                        if ($scope.project.attachments[i].url == addDoc) {
                             console.log("Doc already in project");
                             found = true; 
                             break;
@@ -975,7 +975,7 @@ var uploadProposalClass = {
                         console.log("Doc will be added to project and saved when submit is pressed.");
                         projectDocs.push({name: addDocTitle, url: addDoc});
                         if (vm.editingMode == false) {
-                            $scope.project.deliverables_attached.push({name: addDocTitle, url: addDoc});
+                            $scope.project.attachments.push({name: addDocTitle, url: addDoc});
                         }
                     }
                 }
@@ -986,13 +986,13 @@ var uploadProposalClass = {
             }
 
             function removeDocFromProject(removeDoc) {
-                for (i = 0; i < $scope.project.deliverables_attached.length; i++) {
+                for (i = 0; i < $scope.project.attachments.length; i++) {
                     console.log("Inside Remove For loop");
-                    if ($scope.project.deliverables_attached[i] == removeDoc) {
+                    if ($scope.project.attachments[i] == removeDoc) {
                         if (projectDocs){
                             projectDocs.splice(i, 1);
                         }
-                        $scope.project.deliverables_attached.splice(i, 1);
+                        $scope.project.attachments.splice(i, 1);
                     }
                 }
             }
@@ -1001,12 +1001,12 @@ var uploadProposalClass = {
                 //console.log("Saving Docs. Inside Function...");
                 if (projectDocs) {
                     //console.log("Docs to save not empty!");
-                    $scope.project.deliverables_attached = [];
+                    $scope.project.attachments = [];
                     for (var i = 0; i < projectDocs.length; i++) {
                         var insertedDocName = projectDocs[i].name;
                         var insertedDocURL = projectDocs[i].url;
                         //console.log("Docs saving! Name: " + insertedDocName + " URL: " + insertedDocURL);
-                        $scope.project.deliverables_attached.push({name: insertedDocName, url: insertedDocURL});
+                        $scope.project.attachments.push({name: insertedDocName, url: insertedDocURL});
                     }
                 }
             }

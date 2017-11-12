@@ -50,7 +50,7 @@
                                 <td style="width:50px;">
                                     <i class="fa fa-file-o fa-3x" aria-hidden="true"></i>
                                 </td>
-                                <td style="vertical-align:middle;"><a href="{{doc.url}}">{{doc.name}}</a></td>
+                                <td style="vertical-align:middle;"><a ng-click="vm.openPDF(doc.url)" target="_blank">{{doc.name}}</a></td>
                             </tr>
                         </table>
                     </p>

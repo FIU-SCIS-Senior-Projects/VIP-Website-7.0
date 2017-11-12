@@ -205,6 +205,7 @@ module.exports = function (app, express) {
                     }
 
                     // Adding semester to database
+                    proj.attachments = req.body.attachments;
                     proj.video_url = req.body.video_url;
                     proj.edited = req.body.edited;
                     proj.status = req.body.status;

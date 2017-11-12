@@ -57,7 +57,7 @@ var uploadProposalClass = {
     
                     var dataDocURL = e.target.result;
                     uploadProposalClass.docuUpload = dataDocURL;
-                    console.log("Upload URL " + uploadProposalClass.docuUpload);
+                    //console.log("Upload URL " + uploadProposalClass.docuUpload);
     
                 }
                 rattach.readAsDataURL(fattach);

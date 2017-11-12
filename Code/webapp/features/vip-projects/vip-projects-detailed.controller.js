@@ -32,6 +32,25 @@
 
             $scope.iFrameURL = $sce.trustAsResourceUrl(url);
         }
+        vm.openPDF = function (pdfUrl) {
+            if (pdfUrl.startsWith("data:application")) {
+                var start_pos = pdfUrl.indexOf(':') + 1;
+                var end_pos = pdfUrl.indexOf(';',start_pos);
+                var typeString = pdfUrl.substring(start_pos,end_pos);
+                //console.log("Type" + text_to_get);
+                var base64data = pdfUrl.split("base64,");
+                //console.log("Base 64" + base64data[1]);
+
+                var pdfBlob = b64toBlob(base64data[1], typeString);
+                var blobUrl = URL.createObjectURL(pdfBlob);
+                //console.log("Blob URL \n" + blobUrl);
+
+                window.open(blobUrl, "_blank");
+            }
+            else {
+                window.open(pdfUrl, "_blank");
+            }
+        }
 
         vm.getEmail = function (index) {
             return vm.data.members[index];
@@ -241,5 +260,29 @@
                 confirmButtonText: "Ok",
             });
         }
+
+        function b64toBlob(b64Data, contentType, sliceSize) {
+            contentType = contentType || '';
+            sliceSize = sliceSize || 512;
+          
+            var byteCharacters = atob(b64Data);
+            var byteArrays = [];
+          
+            for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+              var slice = byteCharacters.slice(offset, offset + sliceSize);
+          
+              var byteNumbers = new Array(slice.length);
+              for (var i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+              }
+          
+              var byteArray = new Uint8Array(byteNumbers);
+          
+              byteArrays.push(byteArray);
+            }
+          
+            var blob = new Blob(byteArrays, {type: contentType});
+            return blob;
+          }
     }
 })();

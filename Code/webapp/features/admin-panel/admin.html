@@ -21,7 +21,6 @@
   </a>
 </script>
 <div style="width:100%;">
-
    <nav>
        <div class="container-fluid">
            <div class="navbar-header">
@@ -287,6 +286,7 @@
                 <tr id="headerLabels">
              <th></th>
                     <th></th>
+                    <th></th>
              <th></th>
                     <th>First Name</th>
                     <th>Last Name</th>
@@ -310,6 +310,7 @@
                 <tr id="headerInputs">
              <th></th>
                     <th></th>
+             <th></th>
              <th></th>
                     <th><input class="form-control" type="text" ng-model="query1"/></th>
                     <th><input type="text" class="form-control" ng-model="query2"/></th>
@@ -362,7 +363,10 @@
                        <i class="fa fa-user-times" aria-hidden="true"></i>
                         </button>
                     </td>
-
+                    <td>
+                       <button ng-model="approveUser" class="btn btn-primary" ng-click="vm.approveUser(user._id)" ng-disabled="user.piApproval" ng-show="!user.piApproval"> Approve </button>
+                       <button ng-model="unapproveUser" class="btn btn-danger" ng-click="vm.unapproveUser(user._id)" ng-disabled="!user.piApproval" ng-show="user.piApproval"> Unapprove</button>
+                    </td>
                     <td>{{user.firstName}}</td>
                     <td>{{user.lastName}}</td>
                     <td>{{user.email}}</td>
@@ -453,7 +457,7 @@
                        <option value=""></option>
                     </select>
                  </div>
-				 <div class="col-sm-3">
+				     <div class="col-sm-3">
                     <label>Semester</label>
                     <select class="form-control" ng-model="addUserTerm" id="ddTermA"
                           ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' ">

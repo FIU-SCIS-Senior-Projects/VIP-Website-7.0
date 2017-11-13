@@ -2,9 +2,9 @@
     'use strict';
 
     angular
-        .module('admin',['ui.bootstrap','angularUtils.directives.dirPagination'])
+        .module('admin',['ui.bootstrap','angularUtils.directives.dirPagination','ui.toggle'])
         .controller('adminController', adminCtrl)
-    function adminCtrl($location, $window, $state, $scope, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService, DateTimeService) {
+    function adminCtrl($location, $window, $state,$timeout, $scope, $stateParams, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService, DateTimeService) {
         var vm = this;
         $scope.states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
         $scope.showUserMaint = false
@@ -1250,9 +1250,41 @@ function selectedItemChange(item) {
          console.log(student)
          adminService.approveProject(student).then((res)=>{
             console.log(res)
+            $timeout(function() {
+            // We must reevaluate the value in case it was changed by a subsequent
+            // watch handler in the digest.
+
+            $scope.$digest()
+          }, 0, false);
+         })
+      }
+      vm.approveUser = function(user){
+         console.log(vm.tabledata)
+         adminService.approveUser(user).then((res)=>{
+            console.log(res)
+            $state.reload()
+            $timeout(function() {
+            // We must reevaluate the value in case it was changed by a subsequent
+            // watch handler in the digest.
+
+            $scope.$digest()
+          }, 0, false);
          })
       }
 
+      vm.unapproveUser = function(user){
+         console.log(vm.tabledata)
+         adminService.unapproveUser(user).then((res)=>{
+            console.log(res)
+            $state.reload()
+            $timeout(function() {
+            // We must reevaluate the value in case it was changed by a subsequent
+            // watch handler in the digest.
+
+            $scope.$digest()
+          }, 0, false);
+         })
+      }
 		vm.removeStudentProject = function(removingStudent) {
 			// Remove student from project roster
 			for (i = 0; i < vm.editingProject.members.length; i++) {
@@ -1524,7 +1556,23 @@ function selectedItemChange(item) {
             // Joe's User Story
             loadTerms();
             loadSettings();
-
+            console.log($stateParams)
+            if($stateParams.id){
+               console.log('here')
+               switch($stateParams.id){
+                  case('Project Proposal Review'):
+                     console.log(1)
+                     break;
+                  case('User Account Registration Review'):
+                     console.log(2)
+                     break;
+                  case('Student Application Review'):
+                     console.log(3)
+                     break;
+                  default:
+                     console.log('admin panel')
+               }
+            }
         }
 
         vm.adminSettings;

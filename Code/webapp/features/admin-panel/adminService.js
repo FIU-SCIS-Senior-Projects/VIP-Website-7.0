@@ -69,7 +69,20 @@
             });
         };
         adminFactory.approveProject = function(user){
-           return $http.get('/users/approveProject/'+user).then((res)=>{
+           console.log(user)
+           return $http.put('/vip/usersUpdate/approveProject/'+user).then((res)=>{
+             console.log(res)
+             return res
+          })
+        }
+        adminFactory.approveUser = function(user){
+           return $http.put('/vip/usersUpdate/approveUser/'+user).then((res)=>{
+             console.log(res)
+             return res
+          })
+        }
+        adminFactory.unapproveUser = function(user){
+           return $http.put('/vip/usersUpdate/unapproveUser/'+user).then((res)=>{
              console.log(res)
              return res
           })

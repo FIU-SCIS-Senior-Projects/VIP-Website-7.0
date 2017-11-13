@@ -68,7 +68,7 @@
                         <span ng-show="todoItem.owner_id == null" class="label label-danger">Pi/Copi</span>
 
                         <!--To Do Message / Desciption-->
-                        <a ng-href="/#/adminpanel" ng-click="todo.markedAsRead(todoItem)">
+                        <a ng-href="/#/adminpanel/{{cat.headerText}}" ng-click="todo.markedAsRead(todoItem)">
                             <strong>{{todoItem.todo}}</strong>
                         </a>
                     </li>

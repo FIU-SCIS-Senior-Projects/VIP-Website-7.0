@@ -6,8 +6,9 @@
         // create a new object
         var profileFactory = {};
 
-        profileFactory.loadProfile = function () {
-            return $http.get('/api/reviewuser/').then(function (data) {
+        profileFactory.loadProfile = function (email) {
+            return $http.get('/api/reviewuser/'+email).then(function (data) {
+                  console.log(data)
                 return data.data;
             });
         };
@@ -18,7 +19,7 @@
                 return data.data;
             });
         };
-		
+
 		// Get projects from every semester
 		profileFactory.loadAllProjects = function () {
             return $http.get('/api/projects/findall').then(function (data) {
@@ -26,7 +27,7 @@
                 return data.data;
             });
         };
-		
+
 		// Changed Term API
         profileFactory.loadTerms = function () {
             return $http.get('/api/terms/findall').then(function (data) {

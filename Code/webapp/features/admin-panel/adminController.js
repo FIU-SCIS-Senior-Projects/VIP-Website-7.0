@@ -2066,116 +2066,150 @@ function selectedItemChange(item) {
             });
         }
 
-        function confirm_msg() {
-            swal({
-                    title: "User Confirmed!",
-                    text: "User's account has been confirmed!",
-                    type: "info",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,
-                }, function () {
-                    $window.location.reload();
-                }
-            );
-        };
+      function confirm_msg() {
+        swal( {
+          title: "User Confirmed!",
+          text: "User's account has been confirmed!",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
+          $window.location.reload();
+        } );
+      };
 
-        function Reject_msg() {
-            swal({
-                    title: "User Rejected!",
-                    text: "User's account has been deleted!",
-                    type: "info",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,
-                }, function () {
-                    $window.location.reload();
-                }
-            );
-        };
+      function Reject_msg() {
+        swal( {
+          title: "User Rejected!",
+          text: "User's account has been deleted!",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
+          $window.location.reload();
+        } );
+      };
 
-        function delete_msg() {
-            swal({
-                    title: "User Deleted!",
-                    text: "User's account has been deleted!",
-                    type: "info",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,
-                }, function () {
-                    $window.location.reload();
-                }
-            );
-        };
+      function delete_msg() {
+        swal( {
+          title: "User Deleted!",
+          text: "User's account has been deleted!",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
+          $window.location.reload();
+        } );
+      };
 
 
-        function changeut_msg() {
-            swal({
-                    title: "Usertype Changed",
-                    text: "User's type has been changed!",
-                    type: "info",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,
-                }, function () {
+      function changeut_msg() {
+        swal( {
+          title: "Usertype Changed",
+          text: "User's type has been changed!",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
 
-                }
-            );
-        };
+        } );
+      };
 
-        function changepro_msg() {
-            swal({
-                    title: "User's Project Changed",
-                    text: "User's project has been changed!",
-                    type: "info",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,
-                }, function () {
+      function changepro_msg() {
+        swal( {
+          title: "User's Project Changed",
+          text: "User's project has been changed!",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
 
-                }
-            );
-        };
-        function changestat_msg() {
-            swal({
-                    title: "Project Status Has Changed",
-                    text: "Project's status has been changed!",
-                    type: "info",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,
-                }, function () {
+        } );
+      };
 
-                }
-            );
-        };
-        function changeclear_msg() {
-            swal({
-                    title: "User's Project Cleared",
-                    text: "User's project has been cleared!",
-                    type: "info",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,
-                }, function () {
+      function semesterchange_msg() {
+        swal( {
+          title: "Semester Properties have Changed",
+          text: "",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
 
-                }
-            );
-        };
+        } );
+      };
 
-        function savesettings_msg()
-        {
-            swal({
-                title: "Admin Settings Saved",
-                text: "Admin preferences have been saved!",
-                type: "info",
-                confirmButtonText: "Continue",
-                allowOutsideClick: true,
-                timer: 10000,
-        },
-                function () {}
-            );
-        };
+      function semestercreate_msg() {
+        swal( {
+          title: "Semester has been Created",
+          text: "",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
+
+        } );
+      };
+
+      function semesterdelete_msg() {
+        swal( {
+          title: "Semester has been Deleted",
+          text: "",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
+
+        } );
+      };
+
+      function changestat_msg() {
+        swal( {
+          title: "Project Status Has Changed",
+          text: "Project's status has been changed!",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
+
+        } );
+      };
+
+      function changeclear_msg() {
+        swal( {
+          title: "User's Project Cleared",
+          text: "User's project has been cleared!",
+          type: "info",
+          confirmButtonText: "Continue",
+          allowOutsideClick: true,
+          timer: 10000,
+        }, function() {
+
+        } );
+      };
+
+      function savesettings_msg() {
+        swal( {
+            title: "Admin Settings Saved",
+            text: "Admin preferences have been saved!",
+            type: "info",
+            confirmButtonText: "Continue",
+            allowOutsideClick: true,
+            timer: 10000,
+          },
+          function() {}
+        );
+      };
+
         function test_msg(test) {
           swal({
             title: "This is a test, anddd: " + test,
@@ -2301,8 +2335,8 @@ function selectedItemChange(item) {
             vm.currentSem = selectedSemester;
             vm.currentSemesterName = vm.currentSem.name;
           }
-          changestat_msg();
-        }
+        semesterchange_msg();
+      }
 
       function createNewSemester( n, s, e ) {
         var termData = {
@@ -2322,7 +2356,7 @@ function selectedItemChange(item) {
           delete $scope.semName;
           delete $scope.startDate;
           delete $scope.endDate;
-          changestat_msg();
+          semestercreate_msg();
         }, function( error ) {} );
         $scope.selectedTerm = termData;
       }
@@ -2335,7 +2369,7 @@ function selectedItemChange(item) {
             console.log( "Successfully Deleted Semester" );
             delete $scope.selectedTerm;
             loadTerms();
-            changestat_msg();
+            semesterdelete_msg();
           }, function( error ) {} );
         }
       }

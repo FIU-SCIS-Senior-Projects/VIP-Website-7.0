@@ -318,6 +318,9 @@ function selectedItemChange(item) {
 					vm.tabledata = JSON.stringify(vm.filteredusers);
 					vm.tabledata = eval(vm.tabledata);
 					
+					// Clears the course file list & resets input
+					vm.clearCourseFiles();
+					
 					// Notify User of Deleted Course
 					swal({
 						title: "Notice",
@@ -1146,7 +1149,9 @@ function selectedItemChange(item) {
 					else
 						vm.editingUser.joined_project = false;
 
-					if (!vm.editingUser.isEnrolled)
+					if (vm.editingUser.isEnrolled)
+						vm.editingUser.isEnrolled = false;
+					else
 						vm.editingUser["isEnrolled"] = false;
 
 					// Send PUT request

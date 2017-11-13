@@ -351,9 +351,9 @@
            <form role="role" class="form-horizontal">
              <table class="table table-striped">
 				<tr>
-					<td class="col-md-1"></td>
-					<td class="col-md-4"><b>Course</b></td>
-					<td class="col-md-7"><b>File</b></td>
+					<td class="col-md-1"><b>Add File</b></td>
+					<td class="col-md-3"><b>Course</b></td>
+					<td class="col-md-4"><b>File</b></td>
 				</tr>
 				<tr ng-repeat="courseFile in vm.courseFiles">
 					<td>
@@ -380,6 +380,43 @@
 						<input type="file" accept=".xls" value="fileUpload" id="courseFileInput"></label>
 					</td>
 				</tr>
+			 </table>
+			 <table class="table table-striped" ng-show="showAddCourse">
+				<tr>
+					<td class="col-md-1"><b>Add Course</b></td>
+					<td class="col-md-1"><b>Subject</b></td>
+					<td class="col-md-1"><b>Number</b></td>
+					<td class="col-md-1"><b>Section</b></td>
+					<td class="col-md-2"><b>Title</b></td>
+					<td class="col-md-2"><b>Semester</b></td>
+				</tr>
+				<tr>
+					<td>
+						<button id="addCourseButton2" type="button" class="btn btn-info" ng-click="vm.addCourse2()">
+							<i class="fa fa-plus" aria-hidden="true"></i>
+						</button>
+					</td>
+					<td>
+						<input id="addNewCourseInputSubject2" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
+						       maxlength="3" ng-model="addNewCourseInputSubject2"/>
+					</td>
+					<td>
+						<input id="addNewCourseInputNumber2" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
+						       ng-model="addNewCourseInputNumber2" />
+					</td>
+					<td>
+						<input id="addNewCourseInputSection2" class="form-control" type="text" ng-model="addNewCourseInputSection2" />
+					</td>
+					<td>
+						<input id="addNewCourseInputTitle2" class="form-control" type="text" ng-model="addNewCourseInputTitle2" />
+					</td>
+					<td>
+						<select class="form-control" id="addCourseTerm2" ng-model="addCourseTerm2"
+								ng-options="terms as terms.name for terms in vm.terms">
+							<option value=""></option>
+						</select>
+					</td>
+				</td>
 			 </table>
            </form>
         </div>

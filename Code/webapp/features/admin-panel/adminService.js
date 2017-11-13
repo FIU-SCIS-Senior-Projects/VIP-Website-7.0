@@ -102,6 +102,8 @@
      adminFactory.unapproveUser = function(user){
         return $http.put('/vip/usersUpdate/unapproveUser/'+user).then((res)=>{
           console.log(res)
+       })
+    }
         return adminFactory;
     }
 

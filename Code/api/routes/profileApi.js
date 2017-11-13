@@ -192,6 +192,9 @@ module.exports = function (app, express) {
                     profile.volunteer = req.body.volunteer;
                     profile.independentstudy = req.body.independentstudy;
                     // this field will be set to true if the acceptProfile() function called us
+                    if( req.body.selectedSemester ) {
+                      profile.selectedSemester = req.body.selectedSemester;
+                    }
                     if (req.body.piApproval) {
                         profile.piApproval = req.body.piApproval;
                     } else if (req.body.piDenial && req.body.isDecisionMade) {

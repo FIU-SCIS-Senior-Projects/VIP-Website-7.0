@@ -51,7 +51,11 @@ var UsersSchema = new Schema({
     course: String,
     // User Story #1346
     isEnrolled: Boolean,
-    piProjectApproval: Boolean
+    piProjectApproval: Boolean,
+    selectedSemester: {
+      type: String,
+      required: false
+    }
 });
 
 //Hash the password before the sure is saved

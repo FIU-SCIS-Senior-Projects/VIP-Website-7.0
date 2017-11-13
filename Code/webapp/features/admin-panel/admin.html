@@ -290,7 +290,7 @@
                 </tr>
                 </tbody>
              </table>
-             <dir-pagination-controls pagination-id="coursesPage"></dir-pagination-controls> 
+             <dir-pagination-controls pagination-id="coursesPage"></dir-pagination-controls>
          </div>
     </div>
 </div>
@@ -554,7 +554,7 @@
 					filter: query15?{multipleproject:query15}:'' | filter: query16?{appliedDate:query16}:'' | filter: query17?{RegDate:query17}:'' | filter: query18?{firstlogin_date:query18}:'' |
 					filter: selectedusertype? {userType: selectedusertype.name}:'' | filter: selecteduserrank? {rank: selecteduserrank}:'' |
 					filter: selecteduserproject? {project: selecteduserproject.title}:'' | filter: selectedGoogle? {email: 'fiu.edu' || 'gmail.com'}:'' |
-					filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' | 
+					filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' |
 					filter: selectedCouse? {course: selectedCouse.name}:'' | filter: selectedIsEnrolled? {isEnrolled: true}:'' )) |
 					itemsPerPage: 10" pagination-id="usersPage">
 
@@ -934,7 +934,25 @@
     <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-click="vm.msc()" class="btn btn-success btn-block">Confirm
     </button>
   </div>
-</div>
+
+  <div class="col-md-3 panel panel-default">
+    <h3 align="left">Set Default Semester</h3>
+
+    <div class="form-group">
+      <table class="table">
+        <tr>
+            <th>
+                <b>Semester:</b> <select class="form-control" ng-model="selectedTerm"
+                                     ng-options="terms as terms.name for terms in vm.terms"
+                                     value="{{vm.currentTerm(selectedTerm)}}"></select>
+            </th>
+        </tr>
+      </table>
+    </div>
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-click="vm.sds()" class="btn btn-success btn-block">Confirm
+    </button>
+    
+  </div>
 
 
 <div ng-show="showProjectMaint">

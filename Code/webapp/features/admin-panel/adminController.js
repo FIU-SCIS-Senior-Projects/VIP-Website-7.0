@@ -85,6 +85,7 @@ function selectedItemChange(item) {
         ProfileService.loadProfile().then(function (data) {
             if (data) {
                 $scope.done = true;
+                vm.cuser = data;
                 var profile = data;
                 if (profile.userType != "Pi/CoPi") {
                     //$location.path("/");
@@ -184,15 +185,12 @@ function selectedItemChange(item) {
         vm.se = ChangeProjectStatus;
         vm.nw = ChangeTermStatus;
 
-        vm.scs = SetCurrentSemester;
-        vm.ssv = SetSemesterViewable;
-        vm.ssa = SetSemesterApplicable;
-        vm.ssp = SetSemesterProposable;
         vm.csf = currentSwitch;
         vm.vsf = viewableSwitch;
         vm.asf = applicableSwitch;
         vm.psf = proposableSwitch;
         vm.msc = makeSemesterChanges;
+        vm.sds = setDefaultSemester;
 
 
         vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
@@ -238,7 +236,7 @@ function selectedItemChange(item) {
 					errMsg += "\tSection Missing\n";
 				if (!$scope.addCourseTerm)
 					errMsg += "\tSemester Missing\n";
-        
+
 				swal({
                     title: "Course could not be added",
                     text: "Error: \n" + errMsg,
@@ -273,7 +271,7 @@ function selectedItemChange(item) {
 
 					adminService.addCourse(newCourse).then(function (data) {
 						vm.courses.push(data);
-						
+
 						// Notify User of Added Course
 						swal({
 							title: "Notice",
@@ -317,7 +315,7 @@ function selectedItemChange(item) {
 					// Refresh User panel
 					vm.tabledata = JSON.stringify(vm.filteredusers);
 					vm.tabledata = eval(vm.tabledata);
-					
+
 					// Notify User of Deleted Course
 					swal({
 						title: "Notice",
@@ -331,22 +329,22 @@ function selectedItemChange(item) {
 				}
 			});
 		};
-		
+
 		// User Story #1346
-		
+
 		vm.addCourseFileName;
 		vm.addCourseData; // Holds the parsed XLS data after onchanged event fires
-		
+
 		// Parse the XLS file using File API
 		function handleFile(e) {
 			if (document.getElementById('courseFileInput').value) {
 				var files = e.target.files, fileSource = files[0];
 				var reader = new FileReader();
 				reader.onload = function(e) {
-					vm.addCourseData = parseXLS(e.target.result); 
+					vm.addCourseData = parseXLS(e.target.result);
 				};
 				reader.readAsText(fileSource);
-				
+
 				// Read fileName and check if existing course exists to set as default course
 				vm.addCourseFileName = document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, '');
 				parseFileName(vm.addCourseFileName);
@@ -356,16 +354,16 @@ function selectedItemChange(item) {
 
 		// Updates the course select box with best fit course given the file name
 		function parseFileName(file) {
-			try {	
+			try {
 				var currentTerm;
 				vm.terms.forEach(function (term, index) {
 					if (term.status.currentSemester)
 						currentTerm = term.name;
 				});
-				
+
 				// Start with cleared selection
 				document.getElementById('syncCourseSelect').selectedIndex = -1;
-				
+
 				// Try to match a segment of the file name with a course from the active semester
 				var found = false;
 				vm.courses.forEach(function (course, index) {
@@ -401,8 +399,8 @@ function selectedItemChange(item) {
 							timer: 10000,
 							}, function () {}
 						);
-						
-						// Create course and update select box if course isnt already created						
+
+						// Create course and update select box if course isnt already created
 						adminService.addCourse(newCourseObj).then(function (data) {
 							if (data != "Error found") {
 								//console.log("created course:", data);
@@ -428,7 +426,7 @@ function selectedItemChange(item) {
 			}
 			catch (err) { /* Don't try match with filename that cannot be parsed */ }
 		};
-		
+
 		// Adds a course file to course file list
 		vm.addCourseFile = function() {
 			if ($scope.syncCourseSelect && document.getElementById('courseFileInput').value) {
@@ -446,7 +444,7 @@ function selectedItemChange(item) {
 						file: vm.addCourseFileName,
 						data: vm.addCourseData
 					};
-					
+
 					vm.courseFiles.push(newCourseFile);
 					// Clear Data and UI
 					$scope.syncCourseSelect = "";
@@ -468,7 +466,7 @@ function selectedItemChange(item) {
 				}
 			}
 		};
-		
+
 		// Parse XLS file into readable data
 		function parseXLS(file) {
 			var entries = file.split('<tr>');
@@ -493,7 +491,7 @@ function selectedItemChange(item) {
 			}
             return users;
 		};
-		
+
 		// Removes a course file from course file list
 		vm.removeCourseFile = function(removingCourseFile) {
 			vm.courseFiles.forEach(function (courseFile, index) {
@@ -502,7 +500,7 @@ function selectedItemChange(item) {
 				}
 			});
 		};
-		
+
 		// Updates each course with its corresponding courseFile in the database
 		vm.syncDatabase = function() {
 			// Build map for users for fast lookup
@@ -510,7 +508,7 @@ function selectedItemChange(item) {
 			vm.allusers.forEach(function (user, index) {
 				userMap.set(user.email, index);
 			});
-			
+
 			vm.courseFiles.forEach(function (courseFile, indexA) {
 				// Map for users in this course file
 				var courseEnrolled = new Map();
@@ -522,18 +520,18 @@ function selectedItemChange(item) {
 						// Determine if user needs to be updated
 						var testUser = vm.allusers[userMap.get(courseUser.email)];
 						var needUpdate = false;
-						
+
 						if (testUser.course != courseFile.course.name) {
 							needUpdate = true;
 						}
 						if (testUser.isEnrolled != true) {
 							needUpdate = true;
 						}
-						
-						// Update the user in the database 
+
+						// Update the user in the database
 						if (needUpdate) {
 							testUser.course = courseFile.course.name;
-							testUser.isEnrolled = true;	
+							testUser.isEnrolled = true;
 							User.update({user: testUser});
 						}
 					}
@@ -544,7 +542,7 @@ function selectedItemChange(item) {
 						courseUser['piApproval'] = true;
 						courseUser['adminCreated'] = true;
 						courseUser['RegDate'] = DateTimeService.getCurrentDateTimeAsString();
-						
+
 						User.create(courseUser).then(function(data) {
 							if (data) {
 								if (data.data.success) {
@@ -558,14 +556,14 @@ function selectedItemChange(item) {
 						});
 					}
 				});
-				
+
 				// Remove users that are no longer in this specific course
 				vm.allusers.forEach(function (user, index) {
 					if (!courseEnrolled.get(user.email)) {
 						if (user.course == courseFile.course.name) {
-							// Update the user in the database 
+							// Update the user in the database
 							user.course = "";
-							user.isEnrolled = false;	
+							user.isEnrolled = false;
 							User.update({user: user});
 						}
 					}
@@ -576,7 +574,7 @@ function selectedItemChange(item) {
 			vm.tabledata = eval(vm.tabledata);
 			// Clear the course file list
 			vm.clearCourseFiles();
-			
+
 			swal({
 				title: "Synchronization successful",
 				text: "Users database has been updated with the uploaded course file data",
@@ -587,7 +585,7 @@ function selectedItemChange(item) {
 				}, function () {}
 			);
 		};
-		
+
 		// Clears the course file list & resets input
 		vm.clearCourseFiles = function() {
 			vm.courseFiles = [];
@@ -2021,7 +2019,7 @@ function selectedItemChange(item) {
 
             });
         }
-	
+
 		// Loads all courses & initializes course file list
         function loadCourses() {
             adminService.loadCourses().then(function (data) {
@@ -2058,7 +2056,7 @@ function selectedItemChange(item) {
 			$scope.selectedPTerm = '';
 			$scope.selectedPStatus = '';
         }
-		
+
 		vm.uncheckc = function () {
 			// userstory #1346
 			for (var i = 1; i <= 3; i++) {
@@ -2598,87 +2596,19 @@ function selectedItemChange(item) {
           changestat_msg();
         }
 
-        function SetCurrentSemester() {
+        function setDefaultSemester() {
           var term = vm.cterm;
+          var user = vm.cuser;
 
-
-
-          console.log("In SetCurrentSemester()");
-          if(term) {
+          if ( term && user ) {
             var selectedSemester = $scope.selectedTerm;
-            selectedSemester.status.currentSemester = true;
+            console.log("In term && user");
+            console.log(term);
+            console.log(user);
 
-            vm.currentSem.status.currentSemester = false;
-            ProjectService.editTerm(vm.currentSem, vm.currentSem._id);
-            ProjectService.editTerm(selectedSemester, selectedSemester._id);
-            vm.currentSem = selectedSemester;
-            vm.currentSemesterName = vm.currentSem.name;
-
-            // TODO Remove if not needed
-            // var currentSemesterIndex = vm.currentSemesterName.indexOf(vm.currentSem.Name);
-            // if(currentSemesterIndex < 0) {
-            //   vm.currentSemesterName.push(vm.currentSem.name);
-            // } else {
-            //   vm.currentSemesterName.splice(currentSemesterIndex, 1);
-            // }
-
+            user.selectedSemester = selectedSemester;
+            ProfileService.saveProfile(user);
           }
-          changestat_msg();
-        }
-
-        function SetSemesterViewable() {
-          var term = vm.cterm;
-          console.log("In SetSemesterViewable()");
-          if(term) {
-            console.log("In if() statment");
-
-            var selectedSemester = $scope.selectedTerm;
-
-            console.log("Pre selectedSemester");
-            console.log(selectedSemester);
-            selectedSemester.status.viewable = !selectedSemester.status.viewable;
-            console.log("Post selectedSemester");
-            console.log(selectedSemester);
-
-            ProjectService.editTerm(selectedSemester, selectedSemester._id);
-          }
-          changestat_msg();
-        }
-
-        function SetSemesterApplicable() {
-          var term = vm.cterm;
-          console.log("In SetSemesterApplicable()");
-          if(term) {
-            console.log("In if() statment");
-            var selectedSemester = $scope.selectedTerm;
-
-            console.log("Pre selectedSemester");
-            console.log(selectedSemester);
-            selectedSemester.status.openForApply = !selectedSemester.status.openForApply;
-            console.log("Post selectedSemester");
-            console.log(selectedSemester);
-
-            ProjectService.editTerm(selectedSemester, selectedSemester._id);
-          }
-          changestat_msg();
-        }
-
-        function SetSemesterProposable() {
-          var term = vm.cterm;
-          console.log("In SetSemesterProposable()");
-          if(term) {
-            console.log("In if() statment");
-            var selectedSemester = $scope.selectedTerm;
-
-            console.log("Pre selectedSemester");
-            console.log(selectedSemester);
-            selectedSemester.status.openForProposal = !selectedSemester.status.openForProposal;
-            console.log("Post selectedSemester");
-            console.log(selectedSemester);
-
-            ProjectService.editTerm(selectedSemester, selectedSemester._id);
-          }
-          changestat_msg();
         }
 
         //Remove a user from a project

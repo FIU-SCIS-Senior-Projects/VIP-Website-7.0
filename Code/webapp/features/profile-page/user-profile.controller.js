@@ -71,6 +71,7 @@ var userProfile = {
         vm.image = "";
         vm.updateProfile = updateProfile;
         vm.destroyAccount = destroyAccount;
+		vm.isStudent = false; // Used to toggle ability to change email address
 		
 		// US 1328 - Keeps track of original data for user's name and email
 		vm.firstNameOrig;
@@ -99,6 +100,10 @@ var userProfile = {
                         vm.selectedCollege = vm.Colleges[i];
                     }
                 }
+				// Set email input to be disabled if user rank is Student
+				if (currRank == 'Student') {
+					vm.isStudent = true;
+				}
             });
         }
 

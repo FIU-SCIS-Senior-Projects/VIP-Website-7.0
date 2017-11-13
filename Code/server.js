@@ -74,6 +74,7 @@ var settingsRoutes = require('./api/routes/settingsRoutes')(app,express);
 var skillsRoutes = require('./api/routes/skillsRoutes')(app, express);
 
 var termRoutes = require('./api/routes/termRoutes')(app, express);
+var courseRoutes = require('./api/routes/courseRoutes')(app, express);
 
 
 app.use('/api', projectRoutes);
@@ -86,6 +87,7 @@ app.use('/settings', settingsRoutes);
 app.use('/api', skillsRoutes);
 
 app.use('/api', termRoutes);
+app.use('/api', courseRoutes);
 
 
 //home page

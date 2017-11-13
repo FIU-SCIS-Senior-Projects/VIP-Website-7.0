@@ -472,14 +472,36 @@ a {
 }
 
 .proj-title-teams {
-    text-align: center;
+    text-align: left;
     font-weight: bold;
-    letter-spacing: 4px;
+    letter-spacing: 0.9px;
+    line-height: 1.13em;
+    font-size: 22px;
+}
+
+.proj-semester-teams {
+    text-align: left;
+    font-weight: bold;
+    letter-spacing: 0.9px;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.proj-title-owner {
+    margin-top: 13px;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+
+.proj-card-skills {
+    margin-top: 10px;
+    margin-bottom: 12px;
+    font-size: 13px;
 }
 
 .read-btn {
     float: right;
-    font-weight: bold;
+    margin-top: 5px;
     cursor: pointer;
 }
 
@@ -513,6 +535,8 @@ a {
 
 
 .thumb-card-container {
+    text-align: center;
+    margin: auto;
     height: 85px;
     overflow-y: hidden;
     overflow-x: scroll;
@@ -533,6 +557,22 @@ a {
     cursor: pointer;
 }
 
+.proj-image-container {
+    height: 135px;
+    width: 135px;
+    float:left;
+    display: inline;
+    line-height: 135px;
+    margin-right: 3px;
+}
+
+.proj-image-container img {
+    padding: 0px 10px 10px 10px; 
+    max-height: 135px; 
+    max-width:135px;
+    vertical-align: middle;
+}
+
 .buttons-container {
     margin-bottom: 10px;
 }
@@ -543,6 +583,7 @@ a {
     font-family: calibri, sans-serif;
 }
 
+/* The class is old - Not used anymore */
 .proj-descrip-teams-vid {
     display: inline-block;
     height: 120px;
@@ -552,6 +593,16 @@ a {
 
 .proj-descrip-teams {
     font-family: calibri, sans-serif;
+    font-size: 14.5px;
+}
+
+.outer-wrapper {
+    height: 236px;
+}
+
+.wrapper {
+    height: 197px;
+    overflow: hidden;
 }
 
 .sort-by-padding {

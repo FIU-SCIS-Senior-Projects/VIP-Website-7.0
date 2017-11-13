@@ -35,7 +35,7 @@ module.exports = function (app, express) {
             active: true
         }
     ];
-	
+
     var findActiveTerm = function () {
         Term.findOne({active: true}, function (err, term) {
             if (err) {
@@ -44,10 +44,10 @@ module.exports = function (app, express) {
             currentTerm = term._id;
         });
     }
-	
+
 	//Find the active term and set currentTerm to it
 	findActiveTerm();
-	 
+
     //route get or adding projects to a users account
     apiRouter.route('/projects')
         .post(
@@ -109,7 +109,7 @@ module.exports = function (app, express) {
                     return res.json(projects);
                 });
             });
-			
+
 	//route - get every project
     apiRouter.route('/projects/findall')
 		.get(
@@ -123,7 +123,7 @@ module.exports = function (app, express) {
                     return res.json(projects);
                 });
             });
-	
+
 	//route to find and change projects from terms that are not currently active
     apiRouter.route('/projects/term/:term')
         .post(
@@ -205,6 +205,7 @@ module.exports = function (app, express) {
                     }
 
                     // Adding semester to database
+                    proj.attachments = req.body.attachments;
                     proj.video_url = req.body.video_url;
                     proj.edited = req.body.edited;
                     proj.status = req.body.status;

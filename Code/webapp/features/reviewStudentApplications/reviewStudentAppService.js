@@ -18,7 +18,7 @@
                 return data.data;
             });
         };
-		
+
 		// Get projects from every semester
 		profileFactory.loadAllProjects = function () {
             return $http.get('/api/projects/findall').then(function (data) {
@@ -26,13 +26,19 @@
                 return data.data;
             });
         };
-		
+
 		// Changed Term API
         profileFactory.loadTerms = function () {
             return $http.get('/api/terms/findall').then(function (data) {
                 return data.data;
             });
         };
+
+        profileFactory.getTerm = function (id) {
+          return $http.get('/api/terms/' + id).then(function (data) {
+            return data.data;
+          })
+        }
         //Gets the individual member
         profileFactory.loadUser = function (id) {
             return $http.get('/api/profilestudent/' + id).then(function (data) {

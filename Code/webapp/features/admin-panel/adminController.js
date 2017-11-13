@@ -91,6 +91,14 @@ function selectedItemChange(item) {
                     //$location.path("/");
                     $location.path('/').replace();
                 }
+                if(profile.selectedSemester) {
+                  reviewStudentAppService.getTerm(profile.selectedSemester).then(function(term) {
+                    console.log(profile.firstName + "'s selectedSemester:");
+                    console.log(term.name);
+                    $scope.query14 = term.name;
+                    $scope.queryp5 = term.name;
+                  })
+                }
             }
             else {
                 $scope.done = true;

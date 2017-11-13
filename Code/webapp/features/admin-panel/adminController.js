@@ -2304,48 +2304,41 @@ function selectedItemChange(item) {
           changestat_msg();
         }
 
-        function createNewSemester(n, s, e) {
-          console.log("Name: ");
-          console.log(n);
-          console.log("StartDate:");
-          console.log(s);
-          console.log("endDate: ");
-          console.log(e);
-
-          var termData = {
-              name: n,
-              start: new Date(s),
-              end: new Date(e),
-              // start: new Date('2017', '08'),
-              // end: new Date('2017', '12'),
-              // deadline: new Date('2017, 08'),
-              active: true,
-              status: {
-                currentSemester: false,
-                viewable: false,
-                openForProposal: false,
-                openForApply: false
-              }
-          };
-          console.log("termData");
-          console.log(termData);
-
-          ProjectService.createTerm(termData).then(function (success) {
-            loadTerms();
-            $scope.selectedTerm = termData;
-          }, function (error) { });
-        }
+      function createNewSemester( n, s, e ) {
+        var termData = {
+          name: n,
+          start: new Date( s ),
+          end: new Date( e ),
+          active: true,
+          status: {
+            currentSemester: false,
+            viewable: false,
+            openForProposal: false,
+            openForApply: false
+          }
+        };
+        ProjectService.createTerm( termData ).then( function( success ) {
+          loadTerms();
+          delete $scope.semName;
+          delete $scope.startDate;
+          delete $scope.endDate;
+          changestat_msg();
+        }, function( error ) {} );
+        $scope.selectedTerm = termData;
+      }
 
         function deleteSemester() {
           var term = vm.cterm;
 
-          if ( term ) {
-            ProjectService.deleteTerm( term._id ).then( function( success ) {
-              console.log( "Successfully Deleted Semester" );
-              changestat_msg();
-            }, function( error ) {} );
-          }
+        if ( term ) {
+          ProjectService.deleteTerm( term._id ).then( function( success ) {
+            console.log( "Successfully Deleted Semester" );
+            delete $scope.selectedTerm;
+            loadTerms();
+            changestat_msg();
+          }, function( error ) {} );
         }
+      }
 
         function SetCurrentSemester() {
           var term = vm.cterm;

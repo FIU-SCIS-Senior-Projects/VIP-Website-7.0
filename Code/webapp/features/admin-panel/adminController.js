@@ -2,9 +2,9 @@
     'use strict';
 
     angular
-        .module('admin',['ui.bootstrap','angularUtils.directives.dirPagination'])
+        .module('admin',['ui.bootstrap','angularUtils.directives.dirPagination','ui.toggle'])
         .controller('adminController', adminCtrl)
-    function adminCtrl($location, $window, $state, $scope, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService, DateTimeService) {
+    function adminCtrl($location, $window, $state,$timeout, $scope, $stateParams, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService, DateTimeService) {
         var vm = this;
         $scope.states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
         $scope.showUserMaint = false
@@ -238,7 +238,7 @@ function selectedItemChange(item) {
 					errMsg += "\tSection Missing\n";
 				if (!$scope.addCourseTerm)
 					errMsg += "\tSemester Missing\n";
-        
+
 				swal({
                     title: "Course could not be added",
                     text: "Error: \n" + errMsg,
@@ -273,7 +273,7 @@ function selectedItemChange(item) {
 
 					adminService.addCourse(newCourse).then(function (data) {
 						vm.courses.push(data);
-						
+
 						// Notify User of Added Course
 						swal({
 							title: "Notice",
@@ -317,10 +317,10 @@ function selectedItemChange(item) {
 					// Refresh User panel
 					vm.tabledata = JSON.stringify(vm.filteredusers);
 					vm.tabledata = eval(vm.tabledata);
-					
+          
 					// Clears the course file list & resets input
 					vm.clearCourseFiles();
-					
+
 					// Notify User of Deleted Course
 					swal({
 						title: "Notice",
@@ -334,22 +334,22 @@ function selectedItemChange(item) {
 				}
 			});
 		};
-		
+
 		// User Story #1346
-		
+
 		vm.addCourseFileName;
 		vm.addCourseData; // Holds the parsed XLS data after onchanged event fires
-		
+
 		// Parse the XLS file using File API
 		function handleFile(e) {
 			if (document.getElementById('courseFileInput').value) {
 				var files = e.target.files, fileSource = files[0];
 				var reader = new FileReader();
 				reader.onload = function(e) {
-					vm.addCourseData = parseXLS(e.target.result); 
+					vm.addCourseData = parseXLS(e.target.result);
 				};
 				reader.readAsText(fileSource);
-				
+
 				// Read fileName and check if existing course exists to set as default course
 				vm.addCourseFileName = document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, '');
 				parseFileName(vm.addCourseFileName);
@@ -359,7 +359,7 @@ function selectedItemChange(item) {
 
 		// Updates the course select box with best fit course given the file name
 		function parseFileName(file) {
-			try {	
+			try {
 				var currentTerms = [], currentTermIndex = -1;
 				vm.terms.forEach(function (term, index) {
 					if (term.status.currentSemester) {
@@ -368,13 +368,13 @@ function selectedItemChange(item) {
 							currentTermIndex = index;
 					}
 				});
-				
+
 				// Start with cleared selection
 				document.getElementById('syncCourseSelect').selectedIndex = -1;
 				// Hide add course table
 				$scope.showAddCourse = false;
 				$scope.$digest();
-				
+
 				// Try to match a segment of the file name with a course from a current semester
 				var found = false;
 				vm.courses.forEach(function (course, index) {
@@ -394,7 +394,7 @@ function selectedItemChange(item) {
 					// Try to find a pattern match for a complete course name
 					var courseMatch = file.match(/[A-Z]{3}\s[0-9]{4}-[A-Z0-9]+/);
 					//console.log("courseMatch:", file.match(/[A-Z]{3}\s[0-9]{4}-[A-Z0-9]+/));
-					if (courseMatch) {	
+					if (courseMatch) {
 						var newCourseData = {
 							subject: courseMatch[0].substr(0, 3),
 							number: courseMatch[0].substr(4, 4),
@@ -409,7 +409,7 @@ function selectedItemChange(item) {
 						$scope.addCourseTerm2 = vm.terms[currentTermIndex];
 						document.getElementById('addCourseTerm2').selectedIndex = currentTermIndex+1;
 						$scope.$digest();
-						
+
 						// Prompt User to Comfirm course match
 						swal({
 							title: "Course not found",
@@ -446,7 +446,7 @@ function selectedItemChange(item) {
 			}
 			catch (err) { /* Don't try match with filename that cannot be parsed */ }
 		};
-		
+
 		// Adds a course file to course file list
 		vm.addCourseFile = function() {
 			if ($scope.syncCourseSelect && document.getElementById('courseFileInput').value) {
@@ -464,7 +464,7 @@ function selectedItemChange(item) {
 						file: vm.addCourseFileName,
 						data: vm.addCourseData
 					};
-					
+
 					vm.courseFiles.push(newCourseFile);
 					// Clear Data and UI
 					$scope.syncCourseSelect = "";
@@ -488,7 +488,7 @@ function selectedItemChange(item) {
 				}
 			}
 		};
-		
+
 		// Add a course within the course file modal
 		vm.addCourse2 = function() {
 			if (!$scope.addNewCourseInputSubject2 || !$scope.addNewCourseInputNumber2 || !$scope.addNewCourseInputSection2 || !$scope.addCourseTerm2 ||
@@ -506,7 +506,7 @@ function selectedItemChange(item) {
 					errMsg += "\tSection Missing\n";
 				if (!$scope.addCourseTerm2)
 					errMsg += "\tSemester Missing\n";
-        
+
 				swal({
                     title: "Course could not be added",
                     text: "Error: \n" + errMsg,
@@ -538,12 +538,12 @@ function selectedItemChange(item) {
 
 					if($scope.addNewCourseInputTitle2 != "")
 						newCourse["title"] = $scope.addNewCourseInputTitle2;
-					
+
 					adminService.addCourse(newCourse).then(function (data) {
 						vm.courses.push(data);
-						// Update course selection box 
+						// Update course selection box
 						$scope.syncCourseSelect = vm.courses[vm.courses.length-1];
-						
+
 						// Notify User of Added Course
 						swal({
 							title: "Notice",
@@ -557,7 +557,7 @@ function selectedItemChange(item) {
 					});
 					// Hide add course table
 					$scope.showAddCourse = false;
-					
+
 					// Clear Input fields
 					$scope.addNewCourseInputSubject2 = "";
 					$scope.addNewCourseInputNumber2 = "";
@@ -567,7 +567,7 @@ function selectedItemChange(item) {
 				}
 			}
 		};
-		
+
 		// Parse XLS file into readable data
 		function parseXLS(file) {
 			var entries = file.split('<tr>');
@@ -592,7 +592,7 @@ function selectedItemChange(item) {
 			}
             return users;
 		};
-		
+
 		// Removes a course file from course file list
 		vm.removeCourseFile = function(removingCourseFile) {
 			vm.courseFiles.forEach(function (courseFile, index) {
@@ -601,7 +601,7 @@ function selectedItemChange(item) {
 				}
 			});
 		};
-		
+
 		// Updates each course with its corresponding courseFile in the database
 		vm.syncDatabase = function() {
 			// Build map for users for fast lookup
@@ -609,7 +609,7 @@ function selectedItemChange(item) {
 			vm.allusers.forEach(function (user, index) {
 				userMap.set(user.email, index);
 			});
-			
+
 			vm.courseFiles.forEach(function (courseFile, indexA) {
 				// Map for users in this course file
 				var courseEnrolled = new Map();
@@ -621,18 +621,18 @@ function selectedItemChange(item) {
 						// Determine if user needs to be updated
 						var testUser = vm.allusers[userMap.get(courseUser.email)];
 						var needUpdate = false;
-						
+
 						if (testUser.course != courseFile.course.name) {
 							needUpdate = true;
 						}
 						if (testUser.isEnrolled != true) {
 							needUpdate = true;
 						}
-						
-						// Update the user in the database 
+
+						// Update the user in the database
 						if (needUpdate) {
 							testUser.course = courseFile.course.name;
-							testUser.isEnrolled = true;	
+							testUser.isEnrolled = true;
 							User.update({user: testUser});
 						}
 					}
@@ -643,7 +643,7 @@ function selectedItemChange(item) {
 						courseUser['piApproval'] = true;
 						courseUser['adminCreated'] = true;
 						courseUser['RegDate'] = DateTimeService.getCurrentDateTimeAsString();
-						
+
 						User.create(courseUser).then(function(data) {
 							if (data) {
 								if (data.data.success) {
@@ -657,14 +657,14 @@ function selectedItemChange(item) {
 						});
 					}
 				});
-				
+
 				// Remove users that are no longer in this specific course
 				vm.allusers.forEach(function (user, index) {
 					if (!courseEnrolled.get(user.email)) {
 						if (user.course == courseFile.course.name) {
-							// Update the user in the database 
+							// Update the user in the database
 							user.course = "";
-							user.isEnrolled = false;	
+							user.isEnrolled = false;
 							User.update({user: user});
 						}
 					}
@@ -675,7 +675,7 @@ function selectedItemChange(item) {
 			vm.tabledata = eval(vm.tabledata);
 			// Clear the course file list
 			vm.clearCourseFiles();
-			
+
 			swal({
 				title: "Synchronization successful",
 				text: "Users database has been updated with the uploaded course file data",
@@ -686,7 +686,7 @@ function selectedItemChange(item) {
 				}, function () {}
 			);
 		};
-		
+
 		// Clears the course file list & resets input
 		vm.clearCourseFiles = function() {
 			vm.courseFiles = [];
@@ -1811,9 +1811,41 @@ function selectedItemChange(item) {
          console.log(student)
          adminService.approveProject(student).then((res)=>{
             console.log(res)
+            $timeout(function() {
+            // We must reevaluate the value in case it was changed by a subsequent
+            // watch handler in the digest.
+
+            $scope.$digest()
+          }, 0, false);
+         })
+      }
+      vm.approveUser = function(user){
+         console.log(vm.tabledata)
+         adminService.approveUser(user).then((res)=>{
+            console.log(res)
+            $state.reload()
+            $timeout(function() {
+            // We must reevaluate the value in case it was changed by a subsequent
+            // watch handler in the digest.
+
+            $scope.$digest()
+          }, 0, false);
          })
       }
 
+      vm.unapproveUser = function(user){
+         console.log(vm.tabledata)
+         adminService.unapproveUser(user).then((res)=>{
+            console.log(res)
+            $state.reload()
+            $timeout(function() {
+            // We must reevaluate the value in case it was changed by a subsequent
+            // watch handler in the digest.
+
+            $scope.$digest()
+          }, 0, false);
+         })
+      }
 		vm.removeStudentProject = function(removingStudent) {
 			// Remove student from project roster
 			for (i = 0; i < vm.editingProject.members.length; i++) {
@@ -2130,7 +2162,7 @@ function selectedItemChange(item) {
 
             });
         }
-	
+
 		// Loads all courses & initializes course file list
         function loadCourses() {
             adminService.loadCourses().then(function (data) {
@@ -2167,7 +2199,7 @@ function selectedItemChange(item) {
 			$scope.selectedPTerm = '';
 			$scope.selectedPStatus = '';
         }
-		
+
 		vm.uncheckc = function () {
 			// userstory #1346
 			for (var i = 1; i <= 3; i++) {

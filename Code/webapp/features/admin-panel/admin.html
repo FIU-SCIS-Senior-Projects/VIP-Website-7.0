@@ -21,7 +21,6 @@
   </a>
 </script>
 <div style="width:100%;">
-
    <nav>
        <div class="container-fluid">
            <div class="navbar-header">
@@ -290,7 +289,7 @@
                 </tr>
                 </tbody>
              </table>
-             <dir-pagination-controls pagination-id="coursesPage"></dir-pagination-controls> 
+             <dir-pagination-controls pagination-id="coursesPage"></dir-pagination-controls>
          </div>
     </div>
 </div>
@@ -526,6 +525,7 @@
                 <tr id="headerLabels">
              <th></th>
                     <th></th>
+                    <th></th>
              <th></th>
                     <th>First Name</th>
                     <th>Last Name</th>
@@ -591,7 +591,7 @@
 					filter: query15?{multipleproject:query15}:'' | filter: query16?{appliedDate:query16}:'' | filter: query17?{RegDate:query17}:'' | filter: query18?{firstlogin_date:query18}:'' |
 					filter: selectedusertype? {userType: selectedusertype.name}:'' | filter: selecteduserrank? {rank: selecteduserrank}:'' |
 					filter: selecteduserproject? {project: selecteduserproject.title}:'' | filter: selectedGoogle? {email: 'fiu.edu' || 'gmail.com'}:'' |
-					filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' | 
+					filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' |
 					filter: selectedCouse? {course: selectedCouse.name}:'' | filter: selectedIsEnrolled? {isEnrolled: true}:'' )) |
 					itemsPerPage: 10" pagination-id="usersPage">
 
@@ -613,7 +613,10 @@
                        <i class="fa fa-user-times" aria-hidden="true"></i>
                         </button>
                     </td>
-
+                    <td>
+                       <button ng-model="approveUser" class="btn btn-primary" ng-click="vm.approveUser(user._id)" ng-disabled="user.piApproval" ng-show="!user.piApproval"> Approve </button>
+                       <button ng-model="unapproveUser" class="btn btn-danger" ng-click="vm.unapproveUser(user._id)" ng-disabled="!user.piApproval" ng-show="user.piApproval"> Unapprove</button>
+                    </td>
                     <td>{{user.firstName}}</td>
                     <td>{{user.lastName}}</td>
                     <td>{{user.email}}</td>
@@ -706,7 +709,7 @@
                        <option value=""></option>
                     </select>
                  </div>
-				 <div class="col-sm-3">
+				     <div class="col-sm-3">
                     <label>Semester</label>
                     <select class="form-control" ng-model="addUserTerm" id="ddTermA"
                           ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' | filter: addUserCourse? {name: addUserCourse.semester}:'' ">

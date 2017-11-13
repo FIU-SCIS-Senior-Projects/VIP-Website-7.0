@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-      .module('reviewStudentApp', ['reviewProjectProposals', 'ProjectProposalService'])
+      .module('reviewStudentApp', ['ui.bootstrap','reviewProjectProposals', 'ProjectProposalService'])
       .filter('custom', function() {
         return function(input, search) {
            console.log(search)
@@ -52,12 +52,23 @@
         init();
         function init() {
             loadProjects();
-            loadLogs();
+            setTimeout(loadLogs,1000) // for those who see this, i'm feeling lazy, change this to a promise and what not
+            // loadLogs();
             loadToDos();
         }
 
         function loadLogs() {
             reviewPPS.loadLog("student").then(function (data) {
+               let projArr = []
+               console.log(vm.projects)
+               vm.projects.map(proj=>{
+                  projArr.push(proj.title)
+               })
+               console.log(projArr)
+               data = data.filter(student=>{
+                  return projArr.includes(student.selectProject)
+               })
+               console.log(data)
                 vm.logs = data;
             });
         }
@@ -65,6 +76,10 @@
         //Loads all project information for active projects including applications from interested students
         function loadProjects() {
             reviewStudentAppService.loadProjects().then(function (data) {
+               data = data.filter(proj=>{
+                  return proj.owner_email == vm.adminEmail
+               })
+               console.log(data)
                 vm.projects = data;
                 for (var i = 0; i < vm.projects.length; i++) {
                     for (var x = 0; x < vm.projects[i].members.length; x++) {
@@ -77,16 +92,16 @@
 
         //Loads all Student information and matches them to their student applications
         function loadData() {
-            reviewStudentAppService.loadProfile().then(function (data) {
+            reviewStudentAppService.loadProfile(vm.adminEmail).then(function (data) {
                 vm.profile = data;
 
                 var tempFilter = [];
                 var tmpCount = 0;
-
+               //  console.log(data)
                 vm.profile.forEach(function (obj) {
                     vm.projects.forEach(function (obj2) {
                         obj2.members.forEach(function (obj3) {
-                            //console.log("test: " + obj3);
+                           //  console.log("test: " + obj3);
                             if (obj.email == obj3 && !obj.joined_project) {
                                 console.log("match: " + obj.lastName + ", project: " + obj2.title);
                                 obj.project = obj2.title;
@@ -99,8 +114,12 @@
                     });
                 });
 
+               //  tempFilter = Object.assign({},tempFilter,{
+               //     facultyEmail: vm.adminEmail
+               //  })
                 vm.membs = tempFilter;
-                console.log(vm.membs)
+               //  console.log(vm.membs)
+
             });
         }
 

@@ -561,7 +561,6 @@ function selectedItemChange(item) {
 					$scope.addNewCourseInputSection2 = "";
 					$scope.addNewCourseInputTitle2 = "";
 					$scope.addCourseTerm2 = "";
-					$scope.addCourseTerm2 = "";
 				}
 			}
 		};
@@ -690,6 +689,14 @@ function selectedItemChange(item) {
 			vm.courseFiles = [];
 			document.getElementById('syncCourseSelect').selectedIndex = -1;
 			document.getElementById('courseFileInput').value = null;
+			// Hide add course table
+			$scope.showAddCourse = false;
+			// Clear Input fields
+			$scope.addNewCourseInputSubject2 = "";
+			$scope.addNewCourseInputNumber2 = "";
+			$scope.addNewCourseInputSection2 = "";
+			$scope.addNewCourseInputTitle2 = "";
+			$scope.addCourseTerm2 = "";
 		};
 
 		vm.colleges = [

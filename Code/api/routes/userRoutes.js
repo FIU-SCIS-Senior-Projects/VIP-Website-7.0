@@ -17,11 +17,34 @@ module.exports = function (app, express) {
 
     app.get('/auth/google/callback',
         authProvider.authorizeAll,
-        passport.authenticate('google',
-            {
-                successRedirect: '/#',
-                failureRedirect: '/status'
-            })
+      //   passport.authenticate('google',
+      //       {
+      //           successRedirect: '/#',
+      //           failureRedirect: '/status'
+      //       }
+      //    )
+      function(req,res,next){
+         passport.authenticate('google',function(err, user, info){
+            console.log(user)
+             if (err) {
+                return res.redirect('/status');
+             }
+             if (!user) {
+                return res.redirect('/status');
+             }
+             User.findOne({email: user.email}, function (error, usr) {
+                usr.piApproval = true
+                usr.save(function (err) {
+                   console.log(err)
+                });
+             })
+             req.login(user,function(err){
+                if (err) { return next(err); }
+                return res.redirect('/#');
+             })
+           })(req, res, next)
+      }
+
     );
 
     app.get('/status',
@@ -250,28 +273,69 @@ module.exports = function (app, express) {
                     }
                 });
             });
-   userRouter.route('/users/approveProject/:user')
-      .get(
+   userRouter.route('/usersUpdate/approveProject/:user')
+      .put(
          authProvider.authorizeAll,
          function (req, res) {
-            User.update({_id: "ObjectId('"+req.params.user+"')", 'piProjectApproval': {$exists : false}}, {$set: {'piProjectApproval': true}}, function(err, raw) {
-                if (err) {
-                    console.log("Failed to approve project for student '" + req.params.user_id + "'.\n" +
-                        "Because of '" + err.toString() + "'.");
-                        return false
-                }
-                return true
-            });
-            User.update({_id: "ObjectId('"+req.params.user+"')"}, {piProjectApproval: true}, function(err, raw) {
-                if (err) {
-                    console.log("Failed to approve project for student '" + req.params.user_id + "'.\n" +
-                        "Because of '" + err.toString() + "'.");
-                        return false
-                }
-                return true
-            });
+            console.log('*************** HERE ****************')
+            User.findById(req.params.user, function (err, user) {
+               console.log(user)
+               user.piProjectApproval = true
+               user.save(function (err) {
+                  if (err)
+                     return res.send({success: false, error: err});
+                  else
+                     res.json({
+                        success: true,
+                        objectId: user._id,
+                        message: 'User account updated.'
+                     });
+               });
+            })
          }
       )
+      userRouter.route('/usersUpdate/approveUser/:user')
+         .put(
+            authProvider.authorizeAll,
+            function (req, res) {
+               console.log('*************** HERE ****************')
+               User.findById(req.params.user, function (err, user) {
+                  console.log(user)
+                  user.piApproval = true
+                  user.save(function (err) {
+                     if (err)
+                        return res.send({success: false, error: err});
+                     else
+                        res.json({
+                           success: true,
+                           objectId: user._id,
+                           message: 'User account updated.'
+                        });
+                  });
+               })
+            }
+         )
+      userRouter.route('/usersUpdate/unapproveUser/:user')
+            .put(
+               authProvider.authorizeAll,
+               function (req, res) {
+                  console.log('*************** HERE ****************')
+                  User.findById(req.params.user, function (err, user) {
+                     console.log(user)
+                     user.piApproval = false
+                     user.save(function (err) {
+                        if (err)
+                           return res.send({success: false, error: err});
+                        else
+                           res.json({
+                              success: true,
+                              objectId: user._id,
+                              message: 'User account updated.'
+                           });
+                     });
+                  })
+               }
+            )
 
     // User.create(vm.userData).success(function(data) from userRegistrationController.js calls this function
     // BUG: This function is returning success even if the user already exists in the database

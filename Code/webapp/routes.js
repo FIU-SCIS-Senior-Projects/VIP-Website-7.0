@@ -511,7 +511,12 @@ angular.module('routes', ['ui.router'])
                 controller: 'adminController',
                 controllerAs: 'vm'
             })
-
+         .state('admin2',{
+            url: '/adminpanel/:id',
+            templateUrl: 'features/admin-panel/admin.html',
+            controller: 'adminController',
+            controllerAs: 'vm'
+         })
 			.state('message', {
                 //url: '/sendmessage',
                 url: '/sendmessage/:user_id/:is_reply_to_email/:original_subject',

@@ -43,6 +43,17 @@
                         <label>Semester:</label>
                         {{vm.data.semester}}
                     </p>
+                    <p ng-show="vm.data.attachments[0].url">
+                        <label>Attachments:</label><br />
+                        <table class="table">
+                            <tr ng-repeat="doc in vm.data.attachments">
+                                <td style="width:50px;">
+                                    <i class="fa fa-file-o fa-3x" aria-hidden="true"></i>
+                                </td>
+                                <td style="vertical-align:middle;"><a ng-click="vm.openPDF(doc.url)" target="_blank">{{doc.name}}</a></td>
+                            </tr>
+                        </table>
+                    </p>
             </div>
         </div>
 

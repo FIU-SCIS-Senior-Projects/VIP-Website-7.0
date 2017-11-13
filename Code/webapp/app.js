@@ -22,7 +22,8 @@ angular.module('mainApp', [
    'MessengerController',
 	'angularTrix',
 	'ui.bootstrap',
-	'angularUtils.directives.dirPagination'
+	'angularUtils.directives.dirPagination',
+	'ui.toggle'
 ]).filter('selectedTags', function() {
     return function(users, members)
     {
@@ -41,4 +42,7 @@ angular.module('mainApp', [
              return users;
          }
     };
+}).config(function($compileProvider) {
+    var hrefWhiteList = /^\s*((https?|ftp|mailto|tel|file|blob):|data:application\/)/;
+    $compileProvider.aHrefSanitizationWhitelist(hrefWhiteList);
 });

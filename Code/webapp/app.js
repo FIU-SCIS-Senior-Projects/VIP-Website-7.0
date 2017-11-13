@@ -41,4 +41,7 @@ angular.module('mainApp', [
              return users;
          }
     };
+}).config(function($compileProvider) {
+    var hrefWhiteList = /^\s*((https?|ftp|mailto|tel|file|blob):|data:application\/)/;
+    $compileProvider.aHrefSanitizationWhitelist(hrefWhiteList);
 });

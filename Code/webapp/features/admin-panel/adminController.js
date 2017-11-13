@@ -264,7 +264,8 @@ function selectedItemChange(item) {
 						subject: $scope.addNewCourseInputSubject,
 						number: $scope.addNewCourseInputNumber,
 						section: $scope.addNewCourseInputSection,
-						semester: $scope.addCourseTerm.name
+						semester: $scope.addCourseTerm.name,
+						fullName: courseName + ' ' + $scope.addCourseTerm.name
 					};
 
 					if($scope.addNewCourseInputTitle != "")
@@ -352,30 +353,93 @@ function selectedItemChange(item) {
 			}
 		};
 		document.getElementById('courseFileInput').addEventListener('change', handleFile, false);
-		
+
 		// Updates the course select box with best fit course given the file name
 		function parseFileName(file) {
 			try {	
-				var activeTerm;
+				var currentTerms = [], currentTermIndex = -1;
 				vm.terms.forEach(function (term, index) {
-					if (term.status == 'Active')
-						activeTerm = term.name; // This might need updating as term statuses are updated
+					if (term.status.currentSemester) {
+						currentTerms.push(term.name);
+						if (currentTermIndex == -1)
+							currentTermIndex = index;
+					}
 				});
 				
 				// Start with cleared selection
 				document.getElementById('syncCourseSelect').selectedIndex = -1;
+				// Hide add course table
+				$scope.showAddCourse = false;
+				$scope.$digest();
 				
-				// Try to match a segment of the file name with a course from the active semester
+				// Try to match a segment of the file name with a course from a current semester
+				var found = false;
 				vm.courses.forEach(function (course, index) {
-					if (course.semester == activeTerm) {
-						var found = file.match(course.name);
-						if (found) {
-							// Update course selection box
-							$scope.syncCourseSelect = vm.courses[index];
-							document.getElementById('syncCourseSelect').selectedIndex = index+1;
+					currentTerms.forEach(function (cTerm) {
+						if (course.semester == cTerm) {
+							if (file.match(course.name)) {
+								// Update course selection box
+								$scope.syncCourseSelect = vm.courses[index];
+								document.getElementById('syncCourseSelect').selectedIndex = index+1;
+								found = true;
+							}
 						}
-					}
+					});
 				});
+				// Create a course object that would represent this course File
+				if (!found) {
+					// Try to find a pattern match for a complete course name
+					var courseMatch = file.match(/[A-Z]{3}\s[0-9]{4}-[A-Z0-9]+/);
+					//console.log("courseMatch:", file.match(/[A-Z]{3}\s[0-9]{4}-[A-Z0-9]+/));
+					if (courseMatch) {	
+						var newCourseData = {
+							subject: courseMatch[0].substr(0, 3),
+							number: courseMatch[0].substr(4, 4),
+							section: courseMatch[0].substr(9)
+						};
+						// Show add course table
+						$scope.showAddCourse = true;
+						// Populate the add course fields with matched data
+						$scope.addNewCourseInputSubject2 = newCourseData.subject;
+						$scope.addNewCourseInputNumber2 = newCourseData.number;
+						$scope.addNewCourseInputSection2 = newCourseData.section;
+						$scope.addCourseTerm2 = vm.terms[currentTermIndex];
+						document.getElementById('addCourseTerm2').selectedIndex = currentTermIndex+1;
+						$scope.$digest();
+						
+						// Prompt User to Comfirm course match
+						swal({
+							title: "Course not found",
+							text: "Confirm the creation of new course '" + courseMatch[0] + "' for " + currentTerms[0],
+							type: "info",
+							confirmButtonText: "Continue",
+							allowOutsideClick: false,
+							timer: 10000,
+							}, function () {}
+						);
+					}
+					else {
+						// Show add course table
+						$scope.showAddCourse = true;
+						// Clear the add course fields
+						$scope.addNewCourseInputSubject2 = "";
+						$scope.addNewCourseInputNumber2 = "";
+						$scope.addNewCourseInputSection2 = "";
+						$scope.addCourseTerm2 = vm.terms[currentTermIndex];
+						document.getElementById('addCourseTerm2').selectedIndex = currentTermIndex+1;
+						$scope.$digest();
+						// Prompt User to enter course information
+						swal({
+							title: "Course not found",
+							text: "Could not automatically generate a course for this file, please create a course for this file",
+							type: "info",
+							confirmButtonText: "Continue",
+							allowOutsideClick: true,
+							timer: 10000,
+							}, function () {}
+						);
+					}
+				}
 			}
 			catch (err) { /* Don't try match with filename that cannot be parsed */ }
 		};
@@ -405,6 +469,8 @@ function selectedItemChange(item) {
 					document.getElementById('courseFileInput').value = null;
 					vm.addCourseFileName = null;
 					vm.addCourseData = null;
+					// Hide add course table
+					$scope.showAddCourse = false;
 				}
 				else {
 					swal({
@@ -416,6 +482,86 @@ function selectedItemChange(item) {
 						timer: 10000,
 						}, function () {}
 					);
+				}
+			}
+		};
+		
+		// Add a course within the course file modal
+		vm.addCourse2 = function() {
+			if (!$scope.addNewCourseInputSubject2 || !$scope.addNewCourseInputNumber2 || !$scope.addNewCourseInputSection2 || !$scope.addCourseTerm2 ||
+				$scope.addNewCourseInputSubject2.length < 3 || $scope.addNewCourseInputNumber2.length < 4) {
+				var errMsg = "";
+				if (!$scope.addNewCourseInputSubject2)
+					errMsg += "\tSubject Missing\n";
+				else if ($scope.addNewCourseInputSubject2.length < 3)
+					errMsg += "\tSubject is not 3 Character Code\n";
+				if (!$scope.addNewCourseInputNumber2)
+					errMsg += "\tNumber Missing\n";
+				else if ($scope.addNewCourseInputNumber2.length < 4)
+					errMsg += "\tNumber is not 4 Digit Number\n";
+				if (!$scope.addNewCourseInputSection2)
+					errMsg += "\tSection Missing\n";
+				if (!$scope.addCourseTerm2)
+					errMsg += "\tSemester Missing\n";
+        
+				swal({
+                    title: "Course could not be added",
+                    text: "Error: \n" + errMsg,
+                    type: "info",
+                    confirmButtonText: "Continue",
+                    allowOutsideClick: true,
+                    timer: 10000,
+					}, function () {}
+				);
+			}
+
+			else {
+				// test if duplicate exists
+				var courseName = $scope.addNewCourseInputSubject2 + ' ' + $scope.addNewCourseInputNumber2 + "-" + $scope.addNewCourseInputSection2;
+				var found = false;
+				vm.courses.forEach(function (course) {
+					if (course.name == courseName && course.semester == $scope.addCourseTerm2.name)
+						found = true;
+                });
+				if (!found) { // Create the new course and save it
+					var newCourse = {
+						name: courseName,
+						subject: $scope.addNewCourseInputSubject2,
+						number: $scope.addNewCourseInputNumber2,
+						section: $scope.addNewCourseInputSection2,
+						semester: $scope.addCourseTerm2.name,
+						fullName: courseName + ' ' + $scope.addCourseTerm2.name
+					};
+
+					if($scope.addNewCourseInputTitle2 != "")
+						newCourse["title"] = $scope.addNewCourseInputTitle2;
+					
+					adminService.addCourse(newCourse).then(function (data) {
+						vm.courses.push(data);
+						// Update course selection box 
+						$scope.syncCourseSelect = vm.courses[vm.courses.length-1];
+						
+						// Notify User of Added Course
+						swal({
+							title: "Notice",
+							text: "Course " + courseName + " has been added to the database",
+							type: "info",
+							confirmButtonText: "Continue",
+							allowOutsideClick: true,
+							timer: 10000,
+							}, function () {}
+						);
+					});
+					// Hide add course table
+					$scope.showAddCourse = false;
+					
+					// Clear Input fields
+					$scope.addNewCourseInputSubject2 = "";
+					$scope.addNewCourseInputNumber2 = "";
+					$scope.addNewCourseInputSection2 = "";
+					$scope.addNewCourseInputTitle2 = "";
+					$scope.addCourseTerm2 = "";
+					$scope.addCourseTerm2 = "";
 				}
 			}
 		};
@@ -1960,24 +2106,15 @@ function selectedItemChange(item) {
         //Joe's User Story
         function loadTerms() {
             reviewStudentAppService.loadTerms().then(function (data) {
-              console.log("loading terms:");
                 vm.terms = data;
 
                 data.forEach(function(term) {
                   if(term.status.currentSemester == true){
-                    // Logging for Testing
-                    // console.log("in if statement");
-                    // console.log("current term?");
-                    // console.log(term);
                     vm.currentSem = term;
                     // vm.currentSemesterName.push(term.name); // TODO Remove if not needed
                     vm.currentSemesterName = term.name;
                   }
                 })
-                // Logging for Testing
-                // console.log("currentSem");
-                // console.log(vm.currentSem);
-                console.log(data);
 
             });
         }

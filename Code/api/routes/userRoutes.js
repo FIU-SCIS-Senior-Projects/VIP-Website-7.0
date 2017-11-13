@@ -4,6 +4,7 @@ var emailService = require('../services/EmailService');
 var User = require('../models/users');
 var ImpersonationLog = require('../models/impersonationLog');
 var authProvider = require('../services/AuthorizationProvider');
+var Key = require('../config/key');
 
 module.exports = function (app, express) {
 
@@ -420,6 +421,26 @@ module.exports = function (app, express) {
                     }
                 });
             });
+
+
+             //User story 1356 - API endpoints for consumption by Mobile Judge et. al.
+             userRouter.route('/api/getUserInfo/:token/:email')
+             .get(authProvider.authorizeAll,
+                 //passport.authenticate('bearer', { session: false }),
+                 function(req, res) {
+                     if(Key.key === req.params.token) {
+                     User.findOne({ userType: "Student", email: req.params.email }, 'firstName lastName email project pantherID', function(err, users) {
+                         if (err) {
+                             return res.send(err);
+                         } else if (users) {
+                             return res.json(users);
+                         }
+                     }
+ 
+                     );
+                    }
+                    else return res.json( {msg: "Token not authorized, please see your admin" + Key.key})
+                 });
 
     return userRouter;
 };

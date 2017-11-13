@@ -2616,6 +2616,8 @@ function selectedItemChange(item) {
 
             user.selectedSemester = selectedSemester;
             ProfileService.saveProfile(user);
+            $scope.query14 = selectedSemester.name;
+            $scope.queryp5 = selectedSemester.name;
           }
         }
 

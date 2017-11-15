@@ -1792,14 +1792,15 @@ function selectedItemChange(item) {
 					}
 				if (!found) { // Add student into project list if they are not already in the project
                let name = addStudent.firstName + ' ' + addStudent.lastName
-					vm.editingProject.members_detailed.push({
+					vm.editingProject.members_detailed_copy.push({
                   name: name,
                   approved: true
                });
 					vm.editingProject.members.push(addStudent.email);
+               vm.editingProject.members_detailed.push(addStudent.email);
 				}
 			}
-         console.log(vm.editingProject.members_detailed)
+         console.log(vm.editingProject.members_detailed_copy)
 		};
 
       vm.approveStudentProject = function(student){
@@ -1843,10 +1844,12 @@ function selectedItemChange(item) {
       }
 		vm.removeStudentProject = function(removingStudent) {
 			// Remove student from project roster
+         console.log(removingStudent)
 			for (i = 0; i < vm.editingProject.members.length; i++) {
-				if (vm.editingProject.members_detailed[i] == removingStudent) {
+				if (vm.editingProject.members_detailed_copy[i].name == removingStudent) {
 					vm.editingProject.members.splice(i, 1);
 					vm.editingProject.members_detailed.splice(i, 1);
+               vm.editingProject.members_detailed_copy.splice(i, 1);
 				}
 			}
 		};

@@ -1348,7 +1348,7 @@
    								</tr>
    								<tr ng-repeat="student in vm.editingProject.members_detailed_copy">
    									<td>
-   										<button id="removePUserButton" class="btn btn-danger" ng-click="vm.removeStudentProject(student)">
+   										<button id="removePUserButton" class="btn btn-danger" ng-click="vm.removeStudentProject(student.name)">
    											<i class="fa fa-user-times" aria-hidden="true"></i>
    										</button>
                                  <button ng-model="approveStud" class="btn btn-primary" ng-click="vm.approveStudentProject(student.id)" ng-disabled="student.approved"> <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> </button>

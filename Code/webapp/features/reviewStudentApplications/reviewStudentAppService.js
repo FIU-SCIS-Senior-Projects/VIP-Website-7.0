@@ -30,7 +30,7 @@
                    data.members_detailed.map(memb=>{
                       arr.push({name: memb})
                    })
-                   data.members_detailed = arr
+                   data.members_detailed_copy = arr
                 })
                 // data.data.members_detailed.map(memb => {
                 //    mod_data.push({name: memb})

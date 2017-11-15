@@ -1195,7 +1195,7 @@
 						</td>
                         <td>
 							<ul class="csv">
-								<li ng-repeat="member in project.members_detailed">{{member.name}}</li>
+								<li ng-repeat="member in project.members_detailed">{{member}}</li>
 							</ul>
 						</td>
 						<td ng-show="simpleP">{{project.description.toString()}}</td>
@@ -1346,7 +1346,7 @@
    										</select>
    									</td>
    								</tr>
-   								<tr ng-repeat="student in vm.editingProject.members_detailed">
+   								<tr ng-repeat="student in vm.editingProject.members_detailed_copy">
    									<td>
    										<button id="removePUserButton" class="btn btn-danger" ng-click="vm.removeStudentProject(student)">
    											<i class="fa fa-user-times" aria-hidden="true"></i>

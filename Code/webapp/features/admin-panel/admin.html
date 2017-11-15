@@ -616,11 +616,7 @@
 					<th></th>
                     <th></th>
 					<th></th>
-<<<<<<< HEAD
-               <th></th>
-=======
 					<th></th>
->>>>>>> fdb9de1462b606a6ddbd4880ea4827611b828376
                     <th><input class="form-control" type="text" ng-model="query1"/></th>
                     <th><input type="text" class="form-control" ng-model="query2"/></th>
                     <th><input type="text" class="form-control" ng-model="query3"/></th>
@@ -684,10 +680,10 @@
                         </button>
                     </td>
                     <td>
-                       <button ng-model="approveUser" class="btn btn-primary" ng-click="vm.approveUser(user._id)" ng-disabled="user.piApproval" ng-show="!user.piApproval"> 
+                       <button ng-model="approveUser" class="btn btn-primary" ng-click="vm.approveUser(user._id)" ng-disabled="user.piApproval" ng-show="!user.piApproval">
 							<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
 						</button>
-                       <button ng-model="unapproveUser" class="btn btn-danger" ng-click="vm.unapproveUser(user._id)" ng-disabled="!user.piApproval" ng-show="user.piApproval"> 
+                       <button ng-model="unapproveUser" class="btn btn-danger" ng-click="vm.unapproveUser(user._id)" ng-disabled="!user.piApproval" ng-show="user.piApproval">
 							<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
 					   </button>
                     </td>
@@ -1199,7 +1195,7 @@
 						</td>
                         <td>
 							<ul class="csv">
-								<li ng-repeat="member in project.members_detailed">{{member}}</li>
+								<li ng-repeat="member in project.members_detailed">{{member.name}}</li>
 							</ul>
 						</td>
 						<td ng-show="simpleP">{{project.description.toString()}}</td>

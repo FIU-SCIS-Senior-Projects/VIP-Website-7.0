@@ -39,7 +39,10 @@
       vm.sortType     = 'name'; // set the default sort type
       vm.sortReverse  = false;
 		vm.adminEmail;
-
+      $scope.orderByField = ''
+      $scope.reverseSort = false;
+      $scope.orderByFieldApp = ''
+      $scope.reverseSortApp = false;
         adminService.getAdminSettings().then(function (data)
         {
             var adminData;

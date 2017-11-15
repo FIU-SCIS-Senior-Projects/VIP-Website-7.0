@@ -83,7 +83,7 @@
             });
         };
         adminFactory.approveProject = function(user){
-           return $http.get('/users/approveProject/'+user).then((res)=>{
+           return $http.put('/vip/usersUpdate/approveProject/'+user).then((res)=>{
              return res
           })
         }

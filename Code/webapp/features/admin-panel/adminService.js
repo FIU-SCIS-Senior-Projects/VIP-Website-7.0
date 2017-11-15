@@ -25,6 +25,13 @@
                 return data.data;
             });
         };
+		
+		// edit a course
+        adminFactory.updateCourse = function (courseData, id) {
+            return $http.put('/api/courses/' + id, courseData).then(function (data) {
+                return data.data;
+            });
+        };
 
 		// delete a course
 		adminFactory.deleteCourse = function (id) {

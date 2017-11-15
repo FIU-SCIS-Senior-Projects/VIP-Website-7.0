@@ -60,7 +60,7 @@ module.exports = function (app, express) {
                             res.status(400);
                             return res.send(err);
                         }
-                        res.json({message: 'Updated!'});
+                        res.json({success: true, message: 'Updated!'});
                     });
                 });
             })

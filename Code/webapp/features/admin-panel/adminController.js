@@ -1208,7 +1208,7 @@ function selectedItemChange(item) {
 				project.members.forEach(function (memberEmail, index) {
 					if (memberEmail == vm.editingUserOrig.email) {
 						found = true;
-						project.members_detailed[index] = profileName;
+						project.members_detailed[index].name = profileName;
 						project.members[index] = vm.editingUser.email;
 					}
 				});
@@ -1258,7 +1258,7 @@ function selectedItemChange(item) {
                 }
             }
 			if(!exists) {
-				project.members_detailed.push(user.firstName + " " + user.lastName);
+				project.members_detailed.push({name:user.firstName + " " + user.lastName});
 				project.members.push(user.email);
 				ProjectService.editProject(project, project._id);
 				// Refresh projects panel
@@ -1844,7 +1844,7 @@ function selectedItemChange(item) {
 		vm.removeStudentProject = function(removingStudent) {
 			// Remove student from project roster
 			for (i = 0; i < vm.editingProject.members.length; i++) {
-				if (vm.editingProject.members_detailed[i] == removingStudent) {
+				if (vm.editingProject.members_detailed[i].name == removingStudent) {
 					vm.editingProject.members.splice(i, 1);
 					vm.editingProject.members_detailed.splice(i, 1);
 				}
@@ -2652,11 +2652,11 @@ function selectedItemChange(item) {
                     }
                 }
                 project.members[project.members.length] = email;
-                project.members_detailed[project.members_detailed.length] = name;
+                project.members_detailed[project.members_detailed.length].name = name;
                 ProjectService.editProject(project, project._id);
                 if (formerProject) {
                     for (i = 0; i < formerProject.members_detailed.length; i++) {
-                        if (formerProject.members_detailed[i] == name) {
+                        if (formerProject.members_detailed[i].name == name) {
                             formerProject.members_detailed.splice(i, 1);
                         }
                     }
@@ -2844,7 +2844,7 @@ function selectedItemChange(item) {
 
                 if (formerProject) {
                     for (i = 0; i < formerProject.members_detailed.length; i++) {
-                        if (formerProject.members_detailed[i] == name) {
+                        if (formerProject.members_detailed[i].name == name) {
                             formerProject.members_detailed.splice(i, 1);
                         }
                     }

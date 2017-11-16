@@ -276,9 +276,7 @@ module.exports = function (app, express) {
       .put(
          authProvider.authorizeAll,
          function (req, res) {
-            console.log('*************** HERE ****************')
             User.findById(req.params.user, function (err, user) {
-               console.log(user)
                user.piProjectApproval = true
                user.save(function (err) {
                   if (err)
@@ -297,9 +295,7 @@ module.exports = function (app, express) {
          .put(
             authProvider.authorizeAll,
             function (req, res) {
-               console.log('*************** HERE ****************')
                User.findById(req.params.user, function (err, user) {
-                  console.log(user)
                   user.piApproval = true
                   user.save(function (err) {
                      if (err)
@@ -318,9 +314,7 @@ module.exports = function (app, express) {
             .put(
                authProvider.authorizeAll,
                function (req, res) {
-                  console.log('*************** HERE ****************')
                   User.findById(req.params.user, function (err, user) {
-                     console.log(user)
                      user.piApproval = false
                      user.save(function (err) {
                         if (err)

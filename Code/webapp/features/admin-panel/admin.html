@@ -385,21 +385,7 @@
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" id="addNewCourseButton" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesCourseModal"
-                 ng-click="vm.saveChangesCourse()">Save Changes</button>
-        </div>
-     </div>
- </div>
-</div>
-
-<div class="modal fade" id="editSavedChangesCourseModal" role="dialog">
- <div class="modal-dialog">
-     <div class="modal-content">
-        <div class="modal-header">
-           <label id="editCourseMessage">Editing course was successful</label>
-        </div>
-        <div class="modal-body">
-           <button type="button" class="btn btn-primary" id="editCourseConfirm" data-dismiss="modal">OK</button>
+           <button type="button" class="btn btn-primary" id="addNewCourseButton" ng-click="vm.saveChangesCourse()">Save Changes</button>          
         </div>
      </div>
  </div>
@@ -1341,7 +1327,7 @@
    									</td>
    									<td>
    										<select id="addPUser" class="form-control" ng-model="addPUser"
-   												ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.allusers | filter: {userType: 'Student'} | filter: studentQuery? studentQuery:'' ">
+   												ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.allusers | filter: {userType: 'Student'} | filter: studentQuery? studentQuery:'' | filter: vm.editingProject.semester? {semester: vm.editingProject.semester}:'' ">
    											<option value=""></option>
    										</select>
    									</td>

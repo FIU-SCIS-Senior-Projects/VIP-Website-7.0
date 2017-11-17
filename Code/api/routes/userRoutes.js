@@ -2,6 +2,7 @@ var passport = require('passport');
 var nodemailer = require('nodemailer');
 var emailService = require('../services/EmailService');
 var User = require('../models/users');
+var Project = require('../models/projects');
 var ImpersonationLog = require('../models/impersonationLog');
 var authProvider = require('../services/AuthorizationProvider');
 var Key = require('../config/key');
@@ -488,22 +489,47 @@ module.exports = function (app, express) {
 
 
              //User story 1356 - API endpoints for consumption by Mobile Judge et. al.
-             userRouter.route('/api/getUserInfo/:token/:email')
+             userRouter.route('/api/getAll/:token')
              .get(authProvider.authorizeAll,
-                 //passport.authenticate('bearer', { session: false }),
                  function(req, res) {
+                     
                      if(Key.key === req.params.token) {
-                     User.findOne({ userType: "Student", email: req.params.email }, 'firstName lastName email project pantherID', function(err, users) {
-                         if (err) {
-                             return res.send(err);
-                         } else if (users) {
-                             return res.json(users);
+                        var response = [];
+                     User.find({ project: 'Agricultural Robotics 1.0'},
+                                'email pantherID firstName lastName project', 
+                                function(err, users) {
+                                    if (err) {
+                                        return res.send(err);
+                                    } else if (users) {
+                                        response =  users.map(function(user){    
+                                        console.log(user.project );
+                                            var tempObj = {
+                                                email : user.email,
+                                                id : user.pantherID,
+                                                firstName: user.firstName,
+                                                lastName: user.lastName,
+                                                middle: null,
+                                                valid: true,
+                                                projectTitle: user.project,
+                                                projectId:  null                                             
+                                            }
+                                        
+                                            return tempObj;
+                                       
+                                        } )
+                             console.log(response);
+                                        
+                             Project.findOne({ title: "Neat 1.0"}, function(err, proj){console.log( proj)});
+                            
+                             
                          }
-                     }
+                     })
  
-                     );
+                     return  res.json(response);
                     }
-                    else return res.json( {msg: "Token not authorized, please see your admin" + Key.key})
+                    else {  res.status(400);
+                    return  res.json( {msg: "Token not authorized, please see your admin"})
+                    }
                  });
 
     return userRouter;

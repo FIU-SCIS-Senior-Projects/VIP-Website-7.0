@@ -1922,8 +1922,8 @@ function selectedItemChange(item) {
 
 
 		vm.editProjectUsers = function(project) {
-         let detailedApproval = []
-         let promiseArr = []
+         var detailedApproval = []
+         var promiseArr = []
          project.members.map(email=>{
             promiseArr.push(
                new Promise((resolve,reject)=>{
@@ -1947,7 +1947,7 @@ function selectedItemChange(item) {
             obj.map(user=>{
                //console.log(user)
                name = user.firstName + " " + user.lastName
-               let approved = false
+               var approved = false
                user.piProjectApproval ? approved = user.piProjectApproval : approved
                detailedApproval.push({
                   name: name,
@@ -1974,7 +1974,7 @@ function selectedItemChange(item) {
 						found = true; break;
 					}
 				if (!found) { // Add student into project list if they are not already in the project
-               let name = addStudent.firstName + ' ' + addStudent.lastName
+               var name = addStudent.firstName + ' ' + addStudent.lastName
 					vm.editingProject.members_detailed_copy.push({
                   name: name,
                   approved: true

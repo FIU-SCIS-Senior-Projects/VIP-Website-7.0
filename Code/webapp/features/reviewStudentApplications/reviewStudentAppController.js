@@ -62,7 +62,7 @@
 
         function loadLogs() {
             reviewPPS.loadLog("student").then(function (data) {
-               let projArr = []
+               var projArr = []
                console.log(vm.projects)
                vm.projects.map(proj=>{
                   projArr.push(proj.title)

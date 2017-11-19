@@ -24,9 +24,9 @@
 		profileFactory.loadAllProjects = function () {
             return $http.get('/api/projects/findall').then(function (data) {
                 console.log(data.data);
-                let mod_data = []
-                let data_test = data.data.map(data=>{
-                   let arr = []
+                var mod_data = []
+                var data_test = data.data.map(data=>{
+                   var arr = []
                    data.members_detailed.map(memb=>{
                       arr.push({name: memb})
                    })

@@ -464,7 +464,7 @@ module.exports = function (app, express) {
                         return res.send('error');
                     }
                   //   console.log(profile)
-                    let userProfilesPromises = []
+                    var userProfilesPromises = []
                     profile.map(info => {
                        console.log('###################')
                        console.log(info.project)
@@ -481,7 +481,7 @@ module.exports = function (app, express) {
                                    }
                                    if(project){
                                     //  console.log(project.owner_email)
-                                     let prof = Object.assign({},info._doc,{
+                                     var prof = Object.assign({},info._doc,{
                                         owner_email: project.owner_email
                                      })
                                      console.log(prof)

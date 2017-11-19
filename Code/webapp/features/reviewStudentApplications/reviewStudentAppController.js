@@ -39,7 +39,10 @@
       vm.sortType     = 'name'; // set the default sort type
       vm.sortReverse  = false;
 		vm.adminEmail;
-
+      $scope.orderByField = ''
+      $scope.reverseSort = false;
+      $scope.orderByFieldApp = ''
+      $scope.reverseSortApp = false;
         adminService.getAdminSettings().then(function (data)
         {
             var adminData;
@@ -59,7 +62,7 @@
 
         function loadLogs() {
             reviewPPS.loadLog("student").then(function (data) {
-               let projArr = []
+               var projArr = []
                console.log(vm.projects)
                vm.projects.map(proj=>{
                   projArr.push(proj.title)

@@ -491,16 +491,27 @@ module.exports = function (app, express) {
              //User story 1356 - API endpoints for consumption by Mobile Judge et. al.
              userRouter.route('/api/getAll/:token')
              .get(authProvider.authorizeAll,
+<<<<<<< HEAD
                  function(req, res) {
                      
                      if(Key.key === req.params.token) {
                         var response = [];
                      User.find({ project: 'Agricultural Robotics 1.0'},
                                 'email pantherID firstName lastName project', 
+=======
+
+                 function(req, res) {
+                     
+                     if(Key.key === req.params.token) {
+                    
+                    User.find({ project: 'Agricultural Robotics 1.0'},
+                    'email pantherID firstName lastName project',
+>>>>>>> develop
                                 function(err, users) {
                                     if (err) {
                                         return res.send(err);
                                     } else if (users) {
+<<<<<<< HEAD
                                         response =  users.map(function(user){    
                                         console.log(user.project );
                                             var tempObj = {
@@ -529,6 +540,52 @@ module.exports = function (app, express) {
                     }
                     else {  res.status(400);
                     return  res.json( {msg: "Token not authorized, please see your admin"})
+=======
+                                        var userPromises = [];
+                                        users.map(function(user){    
+                                            userPromises.push(  new Promise(function(resolve, reject){
+                                                Project.findOne({ title: "Neat 1.0"}, function(err, proj){
+                                                  
+                                                    if(err){
+                                                        reject('')
+                                                    }
+                                                    if(proj) {
+
+                                                        var tempObj = {
+                                                            email : user.email,
+                                                            id : user.pantherID,
+                                                            firstName: user.firstName,
+                                                            lastName: user.lastName,
+                                                            middle: null,
+                                                            valid: true,
+                                                            projectTitle: user.project,
+                                                            projectId:  proj._id                                             
+                                                        }
+
+                                                        console.log(tempObj)
+                                                        resolve(tempObj)
+
+                                                    } else {
+                                                        resolve('')
+                                                    }
+                                                    
+                                                })
+                                            })
+                                         )
+                                    })
+                                    Promises.all(userPromises).then(function(results){
+                                        res.json(results)
+                                    }).catch(function(err){
+                                        res.send(err)
+                                    })
+                                }
+                            })
+ 
+                     
+                    
+                    } else {
+                        return  res.json( {msg: "Token not authorized, please see your admin"})
+>>>>>>> develop
                     }
                  });
 

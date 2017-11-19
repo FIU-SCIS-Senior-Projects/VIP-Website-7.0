@@ -2,8 +2,10 @@ var passport = require('passport');
 var nodemailer = require('nodemailer');
 var emailService = require('../services/EmailService');
 var User = require('../models/users');
+var Project = require('../models/projects');
 var ImpersonationLog = require('../models/impersonationLog');
 var authProvider = require('../services/AuthorizationProvider');
+var Key = require('../config/key');
 
 module.exports = function (app, express) {
 
@@ -276,7 +278,9 @@ module.exports = function (app, express) {
       .put(
          authProvider.authorizeAll,
          function (req, res) {
+            console.log('*************** HERE ****************')
             User.findById(req.params.user, function (err, user) {
+               console.log(user)
                user.piProjectApproval = true
                user.save(function (err) {
                   if (err)
@@ -295,7 +299,9 @@ module.exports = function (app, express) {
          .put(
             authProvider.authorizeAll,
             function (req, res) {
+               console.log('*************** HERE ****************')
                User.findById(req.params.user, function (err, user) {
+                  console.log(user)
                   user.piApproval = true
                   user.save(function (err) {
                      if (err)
@@ -314,7 +320,9 @@ module.exports = function (app, express) {
             .put(
                authProvider.authorizeAll,
                function (req, res) {
+                  console.log('*************** HERE ****************')
                   User.findById(req.params.user, function (err, user) {
+                     console.log(user)
                      user.piApproval = false
                      user.save(function (err) {
                         if (err)
@@ -478,6 +486,68 @@ module.exports = function (app, express) {
                     }
                 });
             });
+
+
+             //User story 1356 - API endpoints for consumption by Mobile Judge et. al.
+             userRouter.route('/api/getAll/:token')
+             .get(authProvider.authorizeAll,
+
+                 function(req, res) {
+                     
+                     if(Key.key === req.params.token) {
+                    
+                    User.find({ project: 'Agricultural Robotics 1.0'},
+                    'email pantherID firstName lastName project',
+                                function(err, users) {
+                                    if (err) {
+                                        return res.send(err);
+                                    } else if (users) {
+                                        var userPromises = [];
+                                        users.map(function(user){    
+                                            userPromises.push(  new Promise(function(resolve, reject){
+                                                Project.findOne({ title: "Neat 1.0"}, function(err, proj){
+                                                  
+                                                    if(err){
+                                                        reject('')
+                                                    }
+                                                    if(proj) {
+
+                                                        var tempObj = {
+                                                            email : user.email,
+                                                            id : user.pantherID,
+                                                            firstName: user.firstName,
+                                                            lastName: user.lastName,
+                                                            middle: null,
+                                                            valid: true,
+                                                            projectTitle: user.project,
+                                                            projectId:  proj._id                                             
+                                                        }
+
+                                                        console.log(tempObj)
+                                                        resolve(tempObj)
+
+                                                    } else {
+                                                        resolve('')
+                                                    }
+                                                    
+                                                })
+                                            })
+                                         )
+                                    })
+                                    Promises.all(userPromises).then(function(results){
+                                        res.json(results)
+                                    }).catch(function(err){
+                                        res.send(err)
+                                    })
+                                }
+                            })
+ 
+                     
+                    
+                    } else {
+                        return  res.json( {msg: "Token not authorized, please see your admin"})
+                    }
+                 });
 
     return userRouter;
 };

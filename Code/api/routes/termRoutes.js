@@ -33,9 +33,6 @@ module.exports = function (app, express) {
             function (req, res) {
 
               var term = new Term();
-              console.log(term);
-              console.log("req.body:");
-              console.log(req.body);
               term.name = req.body.name;
               term.status.currentSemester = req.body.status.currentSemester;
               term.status.viewable = req.body.status.viewable;

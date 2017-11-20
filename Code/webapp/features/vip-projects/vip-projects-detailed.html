@@ -139,6 +139,18 @@
                     </table>
                 </div>
 
+                <h4 ng-show="vm.data.deliverables_attached[0].url">Previous Deliverables</h4>
+                <div>
+                    <table class="table student-list">
+                        <tr ng-repeat="deliverable in vm.data.deliverables_attached track by $index" style="padding:2px;">
+                            <td style="width:50px;">
+                                <i class="fa fa-file-o fa-lg" aria-hidden="true" style="display: inline;"></i>
+                            </td>
+                            <td style="vertical-align:middle;"><a ng-click="vm.openPDF(deliverable.url)" target="_blank">{{deliverable.name}}</a></td>
+                        </tr>
+                    </table>
+                </div>
+
             </div>
             <div class="sidebar-bottom-wrap">
 

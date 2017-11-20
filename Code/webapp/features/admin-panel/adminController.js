@@ -192,6 +192,7 @@ function selectedItemChange(item) {
         vm.psf = proposableSwitch;
         vm.msc = makeSemesterChanges;
         vm.cns = createNewSemester;
+        vm.ds = deleteSemester;
 
 
         vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
@@ -2333,6 +2334,17 @@ function selectedItemChange(item) {
             loadTerms();
             $scope.selectedTerm = termData;
           }, function (error) { });
+        }
+
+        function deleteSemester() {
+          var term = vm.cterm;
+
+          if ( term ) {
+            ProjectService.deleteTerm( term._id ).then( function( success ) {
+              console.log( "Successfully Deleted Semester" );
+              changestat_msg();
+            }, function( error ) {} );
+          }
         }
 
         function SetCurrentSemester() {

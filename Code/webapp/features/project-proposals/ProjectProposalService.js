@@ -53,6 +53,12 @@
                 });
             };
 
+            projectFactory.deleteTerm = function (id) {
+                return $http.delete('/api/terms/' + id).then(function (data) {
+                    return data.data;
+                });
+            };
+
             //Joe User Story
             /*projectFactory.getTermData = function() {
              return $http.get('api/terms/').then(function(data){

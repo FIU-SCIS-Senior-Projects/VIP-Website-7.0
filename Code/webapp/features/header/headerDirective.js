@@ -1,6 +1,6 @@
 (function() {
     angular.module('vipHeader', ['toDoModule'])
-    .directive('vipHeader', function (ToDoService,ProfileService)
+    .directive('vipHeader', function (ToDoService,ProfileService, reviewStudentAppService)
     {
 
 
@@ -25,6 +25,12 @@
 						vm.data = data;
 						vm.current_user = data.firstName;
 						vm.user_type = data.userType;
+            if(data.selectedSemester) {
+              console.log("Trying to get selectedSemester name");
+              reviewStudentAppService.getTerm(data.selectedSemester).then(function(term) {
+                vm.selectedSemester = term.name;
+              })
+            }
 						var id = data._id;
 						vm.logged_in = true;
 

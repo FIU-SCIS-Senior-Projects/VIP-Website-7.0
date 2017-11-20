@@ -10,7 +10,7 @@ module.exports = function (app, express) {
             function (req, res) {
                 Course.create(req.body, function (err, course) {
                     if (err) {
-                        return res.send('Error found');
+                        res.send('Error found');
                     } else {
                         res.json(course);
                     }
@@ -47,11 +47,12 @@ module.exports = function (app, express) {
                         res.status(400);
                         res.send(err);
                     }
-					
+					course.fullName = req.body.fullName;
 					course.name = req.body.name;
 					course.subject = req.body.subject;
 					course.number = req.body.number;
 					course.section = req.body.section;
+					course.semester = req.body.semester;
 					course.title = req.body.title;
                     
                     course.save(function (err) {

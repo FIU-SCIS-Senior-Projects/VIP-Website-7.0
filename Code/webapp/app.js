@@ -23,7 +23,8 @@ angular.module('mainApp', [
 	'angularTrix',
 	'ui.bootstrap',
 	'angularUtils.directives.dirPagination',
-	'mp.datePicker'
+	'mp.datePicker',
+	'ui.toggle'
 ]).filter('selectedTags', function() {
     return function(users, members)
     {
@@ -42,4 +43,7 @@ angular.module('mainApp', [
              return users;
          }
     };
+}).config(function($compileProvider) {
+    var hrefWhiteList = /^\s*((https?|ftp|mailto|tel|file|blob):|data:application\/)/;
+    $compileProvider.aHrefSanitizationWhitelist(hrefWhiteList);
 });

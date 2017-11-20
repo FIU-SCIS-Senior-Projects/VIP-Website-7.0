@@ -14,15 +14,15 @@ var sendEmail = function (recipient, text, subject, errorHandler, successHandler
         html: text
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            if (errorHandler) {
-                errorHandler(error);
-            }
-        } else if (successHandler) {
-            successHandler();
-        }
-    });
+    // transporter.sendMail(mailOptions, function (error, info) {
+    //     if (error) {
+    //         if (errorHandler) {
+    //             errorHandler(error);
+    //         }
+    //     } else if (successHandler) {
+    //         successHandler();
+    //     }
+    // });
 };
 
 var sendEmailWithHeaderAndSignature = function (user, mainText, subject, errorHandler, successHandler) {
@@ -39,7 +39,7 @@ var sendEmailWithHeaderAndSignature = function (user, mainText, subject, errorHa
         var greeting = "Dear " + name + ",<br/><br/>";
         var signature = "<br/><br/>" + (setting && setting.emailSignature ? setting.emailSignature : "");
 
-        sendEmail(user.email, greeting + mainText + signature, subject, errorHandler, successHandler);
+        // sendEmail(user.email, greeting + mainText + signature, subject, errorHandler, successHandler);
     });
 };
 
@@ -50,9 +50,9 @@ exports.sendEmailWithHeaderAndSignatureNoUser = function (recipient, mainText, s
     User.findOne({ email: recipient }, function(error, user) {
         if (error || !user) {
             console.log("Failed to find user " + recipient + " to send an email to.\n" + ((error) ? error.toString() : ""));
-            sendEmailWithHeaderAndSignature({ email: recipient }, mainText, subject, errorHandler, successHandler);
+            // sendEmailWithHeaderAndSignature({ email: recipient }, mainText, subject, errorHandler, successHandler);
         } else {
-            sendEmailWithHeaderAndSignature(user, mainText, subject, errorHandler, successHandler);
+            // sendEmailWithHeaderAndSignature(user, mainText, subject, errorHandler, successHandler);
         }
     });
 }

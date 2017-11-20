@@ -27,6 +27,7 @@ module.exports = function(webapp) {
         webapp + 'lib/textAngular/dist/textAngular.min.js',
         webapp + 'lib/admin-report/alasql.js',
         webapp + 'lib/admin-report/xlsx.core.min.js',
+        webapp + 'lib/angular-bootstrap-toggle-master/dist/angular-bootstrap-toggle.js',
         //modules: These files need to be loaded first in order for the controller and directives and factories to be able to use them
         webapp + "features/to-do/ToDoModule.js",
         webapp + "features/vip-projects/vip-projects.module.js",

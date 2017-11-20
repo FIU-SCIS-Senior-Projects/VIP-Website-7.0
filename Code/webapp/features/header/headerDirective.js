@@ -26,7 +26,6 @@
 						vm.current_user = data.firstName;
 						vm.user_type = data.userType;
             if(data.selectedSemester) {
-              console.log("Trying to get selectedSemester name");
               reviewStudentAppService.getTerm(data.selectedSemester).then(function(term) {
                 vm.selectedSemester = term.name;
               })

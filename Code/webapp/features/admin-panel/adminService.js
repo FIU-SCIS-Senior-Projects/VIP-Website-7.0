@@ -11,14 +11,14 @@
                 return data.data;
             });
         };
-		
+
 		// get all courses
         adminFactory.loadCourses = function () {
             return $http.get('/api/courses').then(function (data) {
                 return data.data;
             });
         };
-		
+
 		// add a course
         adminFactory.addCourse = function (courseData) {
             return $http.post('/api/courses', courseData).then(function (data) {
@@ -26,6 +26,13 @@
             });
         };
 		
+		// edit a course
+        adminFactory.updateCourse = function (courseData, id) {
+            return $http.put('/api/courses/' + id, courseData).then(function (data) {
+                return data.data;
+            });
+        };
+
 		// delete a course
 		adminFactory.deleteCourse = function (id) {
 			return $http.delete('/api/courses/' + id).then(function (data) {
@@ -83,10 +90,27 @@
             });
         };
         adminFactory.approveProject = function(user){
-           return $http.get('/users/approveProject/'+user).then((res)=>{
+           return $http.put('/vip/usersUpdate/approveProject/'+user).then((res)=>{
              return res
           })
         }
+     //    console.log(user)
+     //    return $http.put('/vip/usersUpdate/approveProject/'+user).then((res)=>{
+     //      console.log(res)
+     //      return res
+     //   })
+     // }
+     adminFactory.approveUser = function(user){
+        return $http.put('/vip/usersUpdate/approveUser/'+user).then((res)=>{
+          console.log(res)
+          return res
+       })
+     }
+     adminFactory.unapproveUser = function(user){
+        return $http.put('/vip/usersUpdate/unapproveUser/'+user).then((res)=>{
+          console.log(res)
+       })
+    }
         return adminFactory;
     }
 

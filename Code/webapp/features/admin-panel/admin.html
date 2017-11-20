@@ -22,7 +22,6 @@
   </a>
 </script>
 <div style="width:100%;">
-
    <nav>
        <div class="container-fluid">
            <div class="navbar-header">
@@ -255,12 +254,14 @@
 
                 <tr id="headerLabels">
 					<th></th>
+					<th></th>
                     <th>Course</th>
 					<th>Title</th>
 					<th>Semester</th>
                 </tr>
 
                 <tr id="headerInputs">
+					<th></th>
 					<th></th>
                     <th><input class="form-control" type="text" ng-model="queryC1"/></th>
                     <th><input type="text" class="form-control" ng-model="queryC2"/></th>
@@ -279,13 +280,17 @@
 
 				<tr dir-paginate="course in (filteredCItems = ( vm.courses | filter: queryC1?{name:queryC1}:'' | filter: queryC2?{title:queryC2}:'' |
 					filter: queryC3?{semester:queryC3}:'' | filter: selectedCourseTerm? {semester: selectedCourseTerm.name}:'' )) | itemsPerPage: 10" pagination-id="coursesPage">
-                    <td class="col-md-1">
+                    <td>
+                        <button id="editCourseButton" class="btn btn-primary" ng-click="vm.editCourse(course)" data-toggle="modal" data-target="#editCourseModal">
+							<i class="fa fa-pencil" aria-hidden="true"></i>
+						</button>
+                    </td>
+					<td>
                         <button id="removeCourseButton" class="btn btn-danger" ng-click="vm.removeCourse(course)">
 							<i class="fa fa-times" aria-hidden="true"></i>
 						</button>
                     </td>
-
-                    <td class="col-md-3">{{course.name}}</td>
+                    <td class="col-md-4">{{course.name}}</td>
 					<td class="col-md-4">{{course.title}}</td>
 					<td class="col-md-4">{{course.semester}}</td>
                 </tr>
@@ -342,6 +347,51 @@
  </div>
 </div>
 
+<div class="modal fade" id="editCourseModal" role="dialog">
+ <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Edit Course</h3>
+        </div>
+        <div class="modal-body">
+           <form role="role" class="form-horizontal">
+             <div class="form-group">
+                 <div class="col-md-2">
+                    <label>Subject</label>
+                    <input id="editCourseInputSubject" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
+						   maxlength="3" ng-model="editCourseInputSubject"/>
+                 </div>
+                 <div class="col-md-2">
+                    <label>Number</label>
+                    <input id="editCourseInputNumber" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
+						   ng-model="editCourseInputNumber" />
+                 </div>
+                 <div class="col-md-2">
+                    <label>Section</label>
+                    <input id="editCourseInputSection" class="form-control" type="text" ng-model="editCourseInputSection" />
+                 </div>
+                 <div class="col-md-3">
+                    <label>Title</label>
+                    <input id="editCourseInputTitle" class="form-control" type="text" ng-model="editCourseInputTitle" />
+                 </div>
+				 <div class="col-md-3">
+                    <label>Semester</label>
+                    <select class="form-control" id="editCourseTerm" ng-model="editCourseTerm"
+                            ng-options="terms as terms.name for terms in vm.terms">
+						<option value=""></option>
+					</select>
+                 </div>
+             </div>
+           </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary" id="addNewCourseButton" ng-click="vm.saveChangesCourse()">Save Changes</button>
+        </div>
+     </div>
+ </div>
+</div>
+
 <div class="modal fade" id="uploadFilesModal" role="dialog">
  <div class="modal-dialog modal-lg">
      <div class="modal-content">
@@ -352,9 +402,9 @@
            <form role="role" class="form-horizontal">
              <table class="table table-striped">
 				<tr>
-					<td class="col-md-1"></td>
-					<td class="col-md-4"><b>Course</b></td>
-					<td class="col-md-7"><b>File</b></td>
+					<td class="col-md-1"><b>Add File</b></td>
+					<td class="col-md-3"><b>Course</b></td>
+					<td class="col-md-4"><b>File</b></td>
 				</tr>
 				<tr ng-repeat="courseFile in vm.courseFiles">
 					<td>
@@ -381,6 +431,43 @@
 						<input type="file" accept=".xls" value="fileUpload" id="courseFileInput"></label>
 					</td>
 				</tr>
+			 </table>
+			 <table class="table table-striped" ng-show="showAddCourse">
+				<tr>
+					<td class="col-md-1"><b>Add Course</b></td>
+					<td class="col-md-1"><b>Subject</b></td>
+					<td class="col-md-1"><b>Number</b></td>
+					<td class="col-md-1"><b>Section</b></td>
+					<td class="col-md-2"><b>Title</b></td>
+					<td class="col-md-2"><b>Semester</b></td>
+				</tr>
+				<tr>
+					<td>
+						<button id="addCourseButton2" type="button" class="btn btn-info" ng-click="vm.addCourse2()">
+							<i class="fa fa-plus" aria-hidden="true"></i>
+						</button>
+					</td>
+					<td>
+						<input id="addNewCourseInputSubject2" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
+						       maxlength="3" ng-model="addNewCourseInputSubject2"/>
+					</td>
+					<td>
+						<input id="addNewCourseInputNumber2" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
+						       ng-model="addNewCourseInputNumber2" />
+					</td>
+					<td>
+						<input id="addNewCourseInputSection2" class="form-control" type="text" ng-model="addNewCourseInputSection2" />
+					</td>
+					<td>
+						<input id="addNewCourseInputTitle2" class="form-control" type="text" ng-model="addNewCourseInputTitle2" />
+					</td>
+					<td>
+						<select class="form-control" id="addCourseTerm2" ng-model="addCourseTerm2"
+								ng-options="terms as terms.name for terms in vm.terms">
+							<option value=""></option>
+						</select>
+					</td>
+				</td>
 			 </table>
            </form>
         </div>
@@ -490,6 +577,7 @@
                 <tr id="headerLabels">
              <th></th>
                     <th></th>
+                    <th></th>
              <th></th>
                     <th>First Name</th>
                     <th>Last Name</th>
@@ -514,6 +602,7 @@
                 <tr id="headerInputs">
 					<th></th>
                     <th></th>
+					<th></th>
 					<th></th>
                     <th><input class="form-control" type="text" ng-model="query1"/></th>
                     <th><input type="text" class="form-control" ng-model="query2"/></th>
@@ -577,7 +666,14 @@
                        <i class="fa fa-user-times" aria-hidden="true"></i>
                         </button>
                     </td>
-
+                    <td>
+                       <button ng-model="approveUser" class="btn btn-primary" ng-click="vm.approveUser(user._id)" ng-disabled="user.piApproval" ng-show="!user.piApproval">
+							<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+						</button>
+                       <button ng-model="unapproveUser" class="btn btn-danger" ng-click="vm.unapproveUser(user._id)" ng-disabled="!user.piApproval" ng-show="user.piApproval">
+							<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+					   </button>
+                    </td>
                     <td>{{user.firstName}}</td>
                     <td>{{user.lastName}}</td>
                     <td>{{user.email}}</td>
@@ -670,7 +766,7 @@
                        <option value=""></option>
                     </select>
                  </div>
-				 <div class="col-sm-3">
+				     <div class="col-sm-3">
                     <label>Semester</label>
                     <select class="form-control" ng-model="addUserTerm" id="ddTermA"
                           ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' | filter: addUserCourse? {name: addUserCourse.semester}:'' ">
@@ -934,7 +1030,7 @@
           </tr>
       </table>
     </div>
-    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-click="vm.msc()" class="btn btn-success btn-block">Confirm
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(selectedTerm)" ng-click="vm.msc()" class="btn btn-success btn-block">Confirm
     </button>
   </div>
 
@@ -987,11 +1083,11 @@
         </tr>
       </table>
     </div>
-    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-click="vm.ds()" class="btn btn-success btn-block">Delete
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(selectedTerm)" ng-click="vm.ds()" class="btn btn-success btn-block">Delete
     </button>
   </div>
   <div class="col-md-3 panel panel-default">
-    <h3 align="left">Set Default Semester</h3>
+    <h3 align="center">Set Default Semester</h3>
 
     <div class="form-group">
       <table class="table">
@@ -1004,7 +1100,7 @@
         </tr>
       </table>
     </div>
-    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-click="vm.sds()" class="btn btn-success btn-block">Confirm
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(selectedTerm)" ng-click="vm.sds()" class="btn btn-success btn-block">Confirm
     </button>
 
   </div>
@@ -1282,14 +1378,16 @@
    		<div class="modal-dialog">
    			<div class="modal-content">
    				<div class="modal-header">
-   					<label>Add/Remove Students from Project</label>
+   					<label>Add/Remove Users from Project</label>
    				</div>
    				<div class="modal-body">
    					<form role="role" class="form-horizontal">
+						<label>Project Members</label>
    						<div class="form-group">
    							<table class="table table-striped">
    								<tr>
    									<td>
+										<label> Filter: </label>
    									</td>
    									<td>
    										<input id="studentQuery" type="text" class="form-control" ng-model="studentQuery"/>
@@ -1303,17 +1401,17 @@
    									</td>
    									<td>
    										<select id="addPUser" class="form-control" ng-model="addPUser"
-   												ng-options="user as user.firstName + ' ' + user.lastName for user in vm.allusers | filter: {userType: 'Student'} | filter: studentQuery? studentQuery:'' ">
+   												ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.allusers | filter: {userType: 'Student'} | filter: studentQuery? studentQuery:'' | filter: vm.editingProject.semester? {semester: vm.editingProject.semester}:'' ">
    											<option value=""></option>
    										</select>
    									</td>
    								</tr>
-   								<tr ng-repeat="student in vm.editingProject.members_detailed">
+   								<tr ng-repeat="student in vm.editingProject.members_detailed_copy">
    									<td>
-   										<button id="removePUserButton" class="btn btn-danger" ng-click="vm.removeStudentProject(student)">
+   										<button id="removePUserButton" class="btn btn-danger" ng-click="vm.removeStudentProject(student.name)">
    											<i class="fa fa-user-times" aria-hidden="true"></i>
    										</button>
-                                 <button ng-model="approveStud" class="btn btn-primary" ng-click="vm.approveStudentProject(student.id)" ng-disabled="student.approved"> Approve </button>
+                                 <button ng-model="approveStud" class="btn btn-primary" ng-click="vm.approveStudentProject(student.id)" ng-disabled="student.approved"> <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> </button>
    									</td>
    									<td>{{student.name}}</td>
    								</tr>
@@ -1331,6 +1429,78 @@
                            </tr>
                         </table>
                      </div> -->
+   					</form>
+					<form role="role" class="form-horizontal">
+						<label>Faculty Members</label>
+   						<div class="form-group">
+   							<table class="table table-striped">
+   								<tr>
+   									<td>
+										<label> Filter: </label>
+   									</td>
+   									<td>
+   										<input id="facultyQuery" type="text" class="form-control" ng-model="facultyQuery"/>
+   									</td>
+   								</tr>
+   								<tr>
+   									<td>
+   										<button id="addPFacultyButton" type="button" class="btn btn-primary" ng-click="vm.addFacultyProject()">
+   											<i class="fa fa-user-plus" aria-hidden="true"></i>
+   										</button>
+   									</td>
+   									<td>
+   										<select id="addPFaculty" class="form-control" ng-model="addPFaculty"
+   												ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.allusers | filter: {userType: '!Student'} | filter: facultyQuery? facultyQuery:'' ">
+   											<option value=""></option>
+   										</select>
+   									</td>
+   								</tr>
+   								<tr ng-repeat="faculty in vm.editingProject.faculty">
+   									<td>
+   										<button id="removePFacultyButton" class="btn btn-danger" ng-click="vm.removeFacultyProject(faculty)">
+   											<i class="fa fa-user-times" aria-hidden="true"></i>
+   										</button>
+   									</td>
+   									<td>{{faculty.name}}</td>
+   								</tr>
+   							</table>
+   						</div>
+   					</form>
+					<form role="role" class="form-horizontal">
+						<label>Mentors</label>
+   						<div class="form-group">
+   							<table class="table table-striped">
+   								<tr>
+   									<td>
+										<label> Filter: </label>
+   									</td>
+   									<td>
+   										<input id="mentorQuery" type="text" class="form-control" ng-model="mentorQuery"/>
+   									</td>
+   								</tr>
+   								<tr>
+   									<td>
+   										<button id="addPMentorButton" type="button" class="btn btn-primary" ng-click="vm.addMentorProject()">
+   											<i class="fa fa-user-plus" aria-hidden="true"></i>
+   										</button>
+   									</td>
+   									<td>
+   										<select id="addPMentor" class="form-control" ng-model="addPMentor"
+   												ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.allusers | filter: {userType: 'Student'} | filter: mentorQuery? mentorQuery:'' ">
+   											<option value=""></option>
+   										</select>
+   									</td>
+   								</tr>
+   								<tr ng-repeat="mentor in vm.editingProject.mentor">
+   									<td>
+   										<button id="removePMentorButton" class="btn btn-danger" ng-click="vm.removeMentorProject(mentor)">
+   											<i class="fa fa-user-times" aria-hidden="true"></i>
+   										</button>
+   									</td>
+   									<td>{{mentor.name}}</td>
+   								</tr>
+   							</table>
+   						</div>
    					</form>
    				</div>
    				<div class="modal-footer">

@@ -24,6 +24,7 @@
 <div style="width:100%;">
    <nav>
        <div class="container-fluid">
+
            <div class="navbar-header">
                 <a class="navbar-brand" style="color:#333333;">Admin Panel</a>
            </div>
@@ -59,6 +60,9 @@
                    </button>
               </li>
            </ul>
+           <div class="navbar-header">
+             <a class="navbar-brand" style="color:#333333;" ng-show="vm.defaultSemester">Default: {{vm.defaultSemester}}</a>
+           </div>
        </div>
    </nav>
 
@@ -664,7 +668,7 @@
                         <button id="deleteUserStart" class="btn btn-danger" ng-hide="user.userType == 'Pi/CoPi'" ng-click="vm.selectDeleteUser(user)"
                                 data-toggle="modal" data-target="#deleteModal">
                        <i class="fa fa-user-times" aria-hidden="true"></i>
-                        </button>
+                     </button>
                     </td>
                     <td>
                        <button ng-model="approveUser" class="btn btn-primary" ng-click="vm.approveUser(user._id)" ng-disabled="user.piApproval" ng-show="!user.piApproval">
@@ -965,14 +969,92 @@
 
 <div ng-show="showSemesterMaint">
 
-  <div class="col-md-12 panel panel-default">
-    <h4 ng-controller="adminController" align="center">Current Semester: <span ng-bind="vm.currentSemesterName"></span></h4>
-  </div>
+<div class="table" style="overflow: scroll; overflow-y: hidden;">
+  <table class="table table-striped">
+    <thead id="header" style="background-color:#ABB2B9;">
+      <tr id="headerLabels">
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>Semester</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Current Semester</th>
+        <th>Viewable</th>
+        <th>Proposable</th>
+        <th>Applicable</th>
+      </tr>
+      <tr id="headerInputs">
+        <th></th>
+        <th></th>
+        <th></th>
+        <th><input class="form-control" type="text" ng-model="queryS1"/></th>
+        <th><input class="form-control" placeholder="YYYY-MM-DD" type="text" ng-model="queryS2"/></th>
+        <th><input class="form-control" placeholder="YYYY-MM-DD" type="text" ng-model="queryS3"/></th>
+        <th><input class="form-control" type="text" ng-model="queryS4"/></th>
+        <th><input class="form-control" type="text" ng-model="queryS5"/></th>
+        <th><input class="form-control" type="text" ng-model="queryS6"/></th>
+        <th><input class="form-control" type="text" ng-model="queryS7"/></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <button id="addNewSemesterStart" class="btn btn-info btn-block" ng-hide="user.userType == 'Pi/CoPi'"
+                  data-toggle="modal" data-target="#addSemesterModal">
+          <i class="fa fa-plus" aria-hidden="true"></i>
+          </button>
+        </td>
+      </tr>
+      <tr dir-paginate="semester in vm.terms | filter: queryS1?{name:queryS1} : '' |
+                                               filter: queryS2?{start:queryS2} : '' |
+                                               filter: queryS3?{end:queryS3} : '' |
+                                               itemsPerPage: 10" pagination-id="semestersPage">
+
+        <td>
+          <button id="defaultSemester" class="btn btn-info btn-block" ng-click="vm.sds(semester)"
+                  ng-hide="user.userType == 'Pi/CoPi'"
+                  >
+          <i class="fa fa-eye" aria-hidden="true"></i>
+          </button>
+        </td>
+        <td>
+          <button id="editSemester" class="btn btn-info" ng-click="vm.editProject()"
+                  data-toggle="modal" data-target="#editSemesterModal">
+          <i class="fa fa-pencil" aria-hidden="true"></i>
+          </button>
+        </td>
+        <td>
+          <button id="deleteSemester" class="btn btn-danger" ng-click="vm.selectDeleteProject()"
+                  data-toggle="modal" data-target="#deleteSModal">
+          <i class="fa fa-times" aria-hidden="true"></i>
+          </button>
+        </td>
+        <td>{{semester.name}}</td>
+        <td>{{semester.start | dateFilter |  date: MM-dd-yyyy}}</td>
+        <td>{{semester.end | dateFilter | date: MM-dd-yyyy}}</td>
+        <td>
+          <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.currentSemester"></i>
+          <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.currentSemester"></i>
+        </td>
+        <td>
+          <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.viewable"></i>
+          <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.viewable"></i>
+        </td>
+        <td>
+          <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForProposal"></i>
+          <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForProposal"></i></td>
+        <td>
+          <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForApply"></i>
+          <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForApply"></i></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
   <div class="col-md-3 panel panel-default">
     <h3 align="center">Semester Options</h3>
 
-
-    <!-- <span ng-repeat="sem in vm.currentSemesterName">{{sem}}<span ng-if="!$last">, </span></span> TODO Remove if not needed-->
     <div class="form-group">
       <table class="table">
         <tr>
@@ -1040,7 +1122,6 @@
       <table class="table" style="height: 1px;">
         <tr>
           <th>
-            <!-- Semester Name: -->
             <label>
              Semester Name:
              <input type="text" name="semName" ng-model="semName" required>
@@ -1104,6 +1185,7 @@
     </button>
 
   </div>
+
 </div>
 
 

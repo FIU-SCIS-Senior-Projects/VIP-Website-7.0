@@ -3,6 +3,11 @@
 
     angular
         .module('admin',['ui.bootstrap','angularUtils.directives.dirPagination','ui.toggle', 'mp.datePicker'])
+        .filter("dateFilter", function() {
+          return function(newDate) {
+            return new Date(newDate);
+          }
+        })
         .controller('adminController', adminCtrl)
     function adminCtrl($location, $window, $state,$timeout, $scope, $stateParams, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService, DateTimeService) {
         var vm = this;
@@ -101,6 +106,7 @@ function selectedItemChange(item) {
                 if(profile.selectedSemester) {
                   reviewStudentAppService.getTerm(profile.selectedSemester).then(function(term) {
                     updateSelectedSemesterQueries(term.name);
+                    vm.defaultSemester = term.name;
                   })
                 }
             }
@@ -2398,7 +2404,7 @@ function selectedItemChange(item) {
         function loadTerms() {
             reviewStudentAppService.loadTerms().then(function (data) {
                 vm.terms = data;
-
+                console.log(vm.terms);
                 data.forEach(function(term) {
                   if(term.status.currentSemester == true){
                     vm.currentSem = term;
@@ -3079,7 +3085,7 @@ function selectedItemChange(item) {
             user.selectedSemester = selectedSemester;
             ProfileService.saveProfile(user);
             updateSelectedSemesterQueries(selectedSemester.name);
-
+            vm.defaultSemester = selectedSemester.name;
             defaultsemester_msg();
           }
         }

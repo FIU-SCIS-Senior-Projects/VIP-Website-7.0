@@ -257,6 +257,7 @@
                     <th>Course</th>
 					<th>Title</th>
 					<th>Semester</th>
+					<th>ID</th>
                 </tr>
 
                 <tr id="headerInputs">
@@ -265,6 +266,7 @@
                     <th><input class="form-control" type="text" ng-model="queryC1"/></th>
                     <th><input type="text" class="form-control" ng-model="queryC2"/></th>
                     <th><input type="text" class="form-control" ng-model="queryC3"/></th>
+					<th><input type="text" class="form-control" ng-model="queryC4"/></th>
                 </thead>
 
                 <tbody>
@@ -278,7 +280,8 @@
 				</tr>
 
 				<tr dir-paginate="course in (filteredCItems = ( vm.courses | filter: queryC1?{name:queryC1}:'' | filter: queryC2?{title:queryC2}:'' |
-					filter: queryC3?{semester:queryC3}:'' | filter: selectedCourseTerm? {semester: selectedCourseTerm.name}:'' )) | itemsPerPage: 10" pagination-id="coursesPage">
+					filter: queryC3?{semester:queryC3}:'' | filter: queryC4?{course_id:queryC4}:'' |
+					filter: selectedCourseTerm? {semester: selectedCourseTerm.name}:'' )) | itemsPerPage: 10" pagination-id="coursesPage">
                     <td>
                         <button id="editCourseButton" class="btn btn-primary" ng-click="vm.editCourse(course)" data-toggle="modal" data-target="#editCourseModal">
 							<i class="fa fa-pencil" aria-hidden="true"></i>
@@ -289,9 +292,10 @@
 							<i class="fa fa-times" aria-hidden="true"></i>
 						</button>
                     </td>
-                    <td class="col-md-4">{{course.name}}</td>
+                    <td class="col-md-3">{{course.name}}</td>
 					<td class="col-md-4">{{course.title}}</td>
-					<td class="col-md-4">{{course.semester}}</td>
+					<td class="col-md-3">{{course.semester}}</td>
+					<td class="col-md-2">{{course.course_id}}</td>
                 </tr>
                 </tbody>
              </table>
@@ -309,21 +313,28 @@
         <div class="modal-body">
            <form role="role" class="form-horizontal">
              <div class="form-group">
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Subject</label>
                     <input id="addNewCourseInputSubject" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
 						   maxlength="3" ng-model="addNewCourseInputSubject"/>
                  </div>
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Number</label>
                     <input id="addNewCourseInputNumber" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
 						   ng-model="addNewCourseInputNumber" />
                  </div>
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Section</label>
                     <input id="addNewCourseInputSection" class="form-control" type="text" ng-model="addNewCourseInputSection" />
                  </div>
-                 <div class="col-md-3">
+				 <div class="col-md-3">
+                    <label>ID</label>
+                    <input id="addNewCourseInputID" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+						   ng-model="addNewCourseInputID" />
+                 </div>
+			 </div>
+			 <div class="form-group">
+                 <div class="col-md-9">
                     <label>Title</label>
                     <input id="addNewCourseInputTitle" class="form-control" type="text" ng-model="addNewCourseInputTitle" />
                  </div>
@@ -355,37 +366,55 @@
         <div class="modal-body">
            <form role="role" class="form-horizontal">
              <div class="form-group">
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Subject</label>
                     <input id="editCourseInputSubject" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
 						   maxlength="3" ng-model="editCourseInputSubject"/>
                  </div>
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Number</label>
                     <input id="editCourseInputNumber" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
 						   ng-model="editCourseInputNumber" />
                  </div>
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Section</label>
                     <input id="editCourseInputSection" class="form-control" type="text" ng-model="editCourseInputSection" />
                  </div>
-                 <div class="col-md-3">
+				 <div class="col-md-3">
+                    <label>ID</label>
+                    <input id="editCourseInputID" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+						   ng-model="editCourseInputID" />
+                 </div>
+		     </div>
+			 <div class="form-group">
+                 <div class="col-md-9">
                     <label>Title</label>
                     <input id="editCourseInputTitle" class="form-control" type="text" ng-model="editCourseInputTitle" />
                  </div>
 				 <div class="col-md-3">
                     <label>Semester</label>
-                    <select class="form-control" id="editCourseTerm" ng-model="editCourseTerm"
-                            ng-options="terms as terms.name for terms in vm.terms">
-						<option value=""></option>
-					</select>
+					<input id="editCourseTerm" class="form-control" type="text" ng-model="editCourseTerm" ng-disabled="true" />
                  </div>
              </div>
            </form>
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" id="addNewCourseButton" ng-click="vm.saveChangesCourse()">Save Changes</button>          
+           <button type="button" class="btn btn-primary" id="addNewCourseButton" ng-click="vm.saveChangesCourse()" data-dismiss="modal"
+				   data-toggle="modal" data-target="#editSavedChangesCourseModal">Save Changes</button>          
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="editSavedChangesCourseModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <label id="editCourseMessage">Editing course was successful</label>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="editCourseConfirm" data-dismiss="modal">OK</button>
         </div>
      </div>
  </div>
@@ -411,7 +440,7 @@
 							<i class="fa fa-times" aria-hidden="true"></i>
 						</button>
 					</td>
-					<td>{{courseFile.course.name}}</td>
+					<td>{{courseFile.course.fullName}}</td>
 					<td>{{courseFile.file}}</td>
 				</tr>
 				<tr>
@@ -422,7 +451,7 @@
 					</td>
 					<td>
 						<select class="form-control" ng-model="syncCourseSelect" id="syncCourseSelect"
-								ng-options="course as course.name+' '+course.semester for course in vm.courses">
+								ng-options="course as course.fullName for course in vm.courses">
 							<option value=""></option>
 						</select>
 					</td>
@@ -437,8 +466,9 @@
 					<td class="col-md-1"><b>Subject</b></td>
 					<td class="col-md-1"><b>Number</b></td>
 					<td class="col-md-1"><b>Section</b></td>
+					<td class="col-md-1"><b>ID</b></td>
 					<td class="col-md-2"><b>Title</b></td>
-					<td class="col-md-2"><b>Semester</b></td>
+					<td class="col-md-1"><b>Semester</b></td>
 				</tr>
 				<tr>
 					<td>
@@ -456,6 +486,10 @@
 					</td>
 					<td>
 						<input id="addNewCourseInputSection2" class="form-control" type="text" ng-model="addNewCourseInputSection2" />
+					</td>
+					<td>
+						<input id="addNewCourseInputID2" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+							   ng-model="addNewCourseInputID2" />
 					</td>
 					<td>
 						<input id="addNewCourseInputTitle2" class="form-control" type="text" ng-model="addNewCourseInputTitle2" />
@@ -784,7 +818,7 @@
 				 <div class="col-sm-3">
                     <label>Course</label>
                     <select class="form-control" ng-model="addUserCourse" id="ddCourseA"
-                          ng-options="course as course.name+' '+course.semester for course in vm.courses | filter: addUserTerm? {semester: addUserTerm.name}:'' | filter: addUserProject? {semester: addUserProject.semester}:'' ">
+                          ng-options="course as course.fullName for course in vm.courses | filter: addUserTerm? {semester: addUserTerm.name}:'' | filter: addUserProject? {semester: addUserProject.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
@@ -904,7 +938,7 @@
 				 <div class="col-sm-4">
                     <label>Course</label>
                     <select class="form-control" ng-model="editUserCourse" id="ddCourse"
-                          ng-options="course as course.name+' '+course.semester for course in vm.courses | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserProject? {semester: editUserProject.semester}:'' ">
+                          ng-options="course as course.fullName for course in vm.courses | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserProject? {semester: editUserProject.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>

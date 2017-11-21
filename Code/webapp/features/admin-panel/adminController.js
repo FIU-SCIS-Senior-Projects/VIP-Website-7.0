@@ -221,10 +221,11 @@ function selectedItemChange(item) {
         };
 
 		// User Story 1345
+		
 		// Add a course
 		vm.addCourse = function() {
-			if (!$scope.addNewCourseInputSubject || !$scope.addNewCourseInputNumber || !$scope.addNewCourseInputSection || !$scope.addCourseTerm ||
-				$scope.addNewCourseInputSubject.length < 3 || $scope.addNewCourseInputNumber.length < 4) {
+			if (!$scope.addNewCourseInputSubject || !$scope.addNewCourseInputNumber || !$scope.addNewCourseInputSection || !$scope.addNewCourseInputID ||
+			    !$scope.addCourseTerm || $scope.addNewCourseInputSubject.length < 3 || $scope.addNewCourseInputNumber.length < 4) {
 				var errMsg = "";
 				if (!$scope.addNewCourseInputSubject)
 					errMsg += "\tSubject Missing\n";
@@ -236,6 +237,8 @@ function selectedItemChange(item) {
 					errMsg += "\tNumber is not 4 Digit Number\n";
 				if (!$scope.addNewCourseInputSection)
 					errMsg += "\tSection Missing\n";
+				if (!$scope.addNewCourseInputID)
+					errMsg += "\tID Missing\n";
 				if (!$scope.addCourseTerm)
 					errMsg += "\tSemester Missing\n";
 
@@ -252,10 +255,11 @@ function selectedItemChange(item) {
 
 			else {
 				// test if duplicate exists
-				var courseName = $scope.addNewCourseInputSubject + ' ' + $scope.addNewCourseInputNumber + "-" + $scope.addNewCourseInputSection;
+				var courseName = $scope.addNewCourseInputSubject + ' ' + $scope.addNewCourseInputNumber + " - " + $scope.addNewCourseInputSection;
+				var courseFullName = courseName + ' ' + $scope.addCourseTerm.name + ' (' + $scope.addNewCourseInputID + ')';
 				var found = false;
 				vm.courses.forEach(function (course) {
-					if (course.name == courseName && course.semester == $scope.addCourseTerm.name)
+					if (course.fullName == courseFullName)
 						found = true;
                 });
 				if (!found) { // Create the new course and save it
@@ -264,8 +268,9 @@ function selectedItemChange(item) {
 						subject: $scope.addNewCourseInputSubject,
 						number: $scope.addNewCourseInputNumber,
 						section: $scope.addNewCourseInputSection,
+						course_id: $scope.addNewCourseInputID,
 						semester: $scope.addCourseTerm.name,
-						fullName: courseName + ' ' + $scope.addCourseTerm.name
+						fullName: courseFullName
 					};
 
 					if($scope.addNewCourseInputTitle != "")
@@ -277,7 +282,7 @@ function selectedItemChange(item) {
 						// Notify User of Added Course
 						swal({
 							title: "Success",
-							text: "Course " + courseName + " has been added to the database",
+							text: "Course " + courseFullName + " has been added to the database",
 							type: "success",
 							confirmButtonText: "Continue",
 							allowOutsideClick: true,
@@ -289,6 +294,7 @@ function selectedItemChange(item) {
 					$scope.addNewCourseInputSubject = "";
 					$scope.addNewCourseInputNumber = "";
 					$scope.addNewCourseInputSection = "";
+					$scope.addNewCourseInputID = "";
 					$scope.addNewCourseInputTitle = "";
 					$scope.addCourseTerm = "";
 				}
@@ -297,19 +303,19 @@ function selectedItemChange(item) {
 
 		// Remove a course
 		vm.removeCourse = function(removingCourse) {
-			var courseName = removingCourse.fullName;
+			var courseFullName = removingCourse.fullName;
 
 			adminService.deleteCourse(removingCourse._id).then(function (data) {
 				if (data.message == "successfully deleted!") { // http delete request was successful
 					// Remove from courses list
 					vm.courses.forEach(function (course, index) {
-						if (course.name == courseName)
+						if (course.fullName == courseFullName)
 							vm.courses.splice(index, 1);
 					});
 
 					// Go through users and remove them from the deleted course
 					vm.allusers.forEach(function (user, index) {
-						if (user.course == courseName) {
+						if (user.course == courseFullName) {
 							user.course = null;
 							User.update({user: user});
 						}
@@ -324,7 +330,7 @@ function selectedItemChange(item) {
 					// Notify User of Deleted Course
 					swal({
 						title: "Success",
-						text: "Course " + courseName + " has been deleted from the database",
+						text: "Course " + courseFullName + " has been deleted from the database",
 						type: "success",
 						confirmButtonText: "Continue",
 						allowOutsideClick: true,
@@ -343,171 +349,88 @@ function selectedItemChange(item) {
 			vm.editingCourseOrig = {
 				name: course.name,
 				fullName: course.fullName,
-				semester: course.semester
 			};
 
 			// Set initial values of input to be current course values
 			$scope.editCourseInputSubject = vm.editingCourse.subject;
 			$scope.editCourseInputNumber = vm.editingCourse.number;
 			$scope.editCourseInputSection = vm.editingCourse.section;
+			$scope.editCourseInputID = vm.editingCourse.course_id;
 			$scope.editCourseInputTitle = vm.editingCourse.title;
-
-			// Search for indexes for references to course's term (if they exist)
-			var termIndex = findIndexTerm(vm.editingCourse.semester);
-
-			// Assign to drop down box if term index was found (the value existed)
-			// Otherwise reset selected term index of drop down box
-
-			if (termIndex != -1)
-				$scope.editCourseTerm = vm.terms[termIndex];
-			else
-				document.getElementById("editCourseTerm").selectedIndex = -1;
-
+			$scope.editCourseTerm = vm.editingCourse.semester;
         };
 		
 		// Update the editing course with new information
 		vm.saveChangesCourse = function() {
 			// Check if required information is missing
-			if ($scope.editCourseInputSubject && $scope.editCourseInputNumber && $scope.editCourseInputSection && $scope.editCourseTerm) {
+			if ($scope.editCourseInputSubject && $scope.editCourseInputNumber && $scope.editCourseInputSection && $scope.editCourseInputID) {
 				// Confirm that the changed course does not become a copy of an existing course
-				var newFullName = $scope.editCourseInputSubject + ' ' + $scope.editCourseInputNumber + '-' + $scope.editCourseInputSection + ' ' + $scope.editCourseTerm.name;
+				var newFullName = $scope.editCourseInputSubject + ' ' + $scope.editCourseInputNumber + ' - ' + $scope.editCourseInputSection + ' ' + 
+								  $scope.editCourseTerm.name + ' (' + $scope.editCourseInputID + ')';
 				var found = false;
 				vm.courses.forEach(function (course) {
 					if (course.fullName == newFullName)
 						found = true;
                 });
 				if (!found) {
-					// Check for conflicts
-					var conflicts = false;
-					if ($scope.editCourseTerm.name != vm.editingCourseOrig.semester) {
-						vm.allusers.forEach(function (user) {
-							if (user.course == vm.editingCourseOrig.fullName && user.project) {
-								conflicts = true;
-							}
-						});
-					}
-					if (conflicts) {	
-						// Ask for confirmation if there are conflicts available
-						swal({
-							title: "Alert",
-							text: "There are users that conflict with the new course information, do you wish to remove the users from this course?",
-							type: "warning",
-							confirmButtonText: "Yes",
-							showCancelButton: true,
-							cancelButtonText: 'Cancel',
-							allowOutsideClick: true,
-							timer: 10000, 
-						}, function () {
-							updateCourse(true);
-						});
-					}
-					else 
-						updateCourse(false);
+					updateCourse();
 				}
 				else {
-					swal({
-						title: 'Error',
-						text: 'Course: ' + newFullName + ' already exists',
-						type: "error",
-						confirmButtonText: "Continue",
-						allowOutsideClick: true,
-						timer: 10000,
-						}, function () {}
-					);
+					document.getElementById('editCourseMessage').innerHTML = 'Error: Course: ' + newFullName + ' already exists';
 				}
 			}
 			else {
-				swal({
-					title: 'Error',
-					text: 'Missing required information',
-					type: "error",
-					confirmButtonText: "Continue",
-					allowOutsideClick: true,
-					timer: 10000,
-					}, function () {}
-				);
+				document.getElementById('editCourseMessage').innerHTML = 'Error: Missing required information';
 			}
 		}
 		
 		// Updates the course
-		function updateCourse(removeUsers) {
+		function updateCourse() {
 			// Update editingCourse
 			vm.editingCourse.subject = $scope.editCourseInputSubject;
 			vm.editingCourse.number = $scope.editCourseInputNumber;
 			vm.editingCourse.section = $scope.editCourseInputSection;
+			vm.editingCourse.course_id = $scope.editCourseInputID;
 			if (vm.editingCourse.title)
 				vm.editingCourse.title = $scope.editCourseInputTitle;
 			else
 				vm.editingCourse['title'] = $scope.editCourseInputTitle;
 
-			vm.editingCourse.semester = $scope.editCourseTerm.name;
-			vm.editingCourse.name = vm.editingCourse.subject + ' ' + vm.editingCourse.number + '-' + vm.editingCourse.section;
-			vm.editingCourse.fullName = vm.editingCourse.name + ' ' + vm.editingCourse.semester;
+			vm.editingCourse.name = vm.editingCourse.subject + ' ' + vm.editingCourse.number + ' - ' + vm.editingCourse.section;
+			vm.editingCourse.fullName = vm.editingCourse.name + ' ' + vm.editingCourse.semester + ' (' + vm.editingCourse.course_id + ')';
 		
 			// Send PUT request
 			adminService.updateCourse(vm.editingCourse, vm.editingCourse._id).then(function(data) {
 				if (data) {
 					if (data.success) {
+						document.getElementById('editCourseMessage').innerHTML = 'Editing course was successful';
 						// Update the users that are associated with the given course
-						if (!removeUsers && vm.editingCourseOrig.fullName != vm.editingCourse.fullName)
-							updateCourseUsers(removeUsers);
-						else if (removeUsers)
-							updateCourseUsers(removeUsers);
-						
-						swal({
-							title: 'Success',
-							text: 'Editing course was successful',
-							type: "success",
-							confirmButtonText: "Continue",
-							allowOutsideClick: true,
-							timer: 10000,
-							}, function () {}
-						);
+						if (vm.editingCourseOrig.fullName != vm.editingCourse.fullName)
+							updateCourseUsers();
 					}
 					else {
+						document.getElementById('editCourseMessage').innerHTML = 'Error: HTTP request failed';
 						// Refresh course panel
 						vm.courses = eval(vm.courses);
-						
-						swal({
-							title: 'Error',
-							text: 'HTTP request failed',
-							type: "error",
-							confirmButtonText: "Continue",
-							allowOutsideClick: true,
-							timer: 10000,
-							}, function () {}
-						);
 					}
 				} else { // http error
+					document.getElementById('editCourseMessage').innerHTML = 'Error: HTTP response not received';
 					// Refresh course panel
 					vm.courses = eval(vm.courses);
-					
-					swal({
-						title: 'Error',
-						text: 'HTTP response not received',
-						type: "error",
-						confirmButtonText: "Continue",
-						allowOutsideClick: true,
-						timer: 10000,
-						}, function () {}
-					);
 				}
 			});
 		};
 		
 		// Update the course value for users in the editing course
-		function updateCourseUsers(removeUsers) {
+		function updateCourseUsers() {
 			vm.allusers.forEach(function (user) {
+				//console.log(user.course, vm.editingCourseOrig.fullName);
 				if (user.course == vm.editingCourseOrig.fullName) {
-					if (!removeUsers) {
-						user.course = vm.editingCourse.fullName;
-					}
-					else {
-						user.course = null;
-						user.isEnrolled = false;
-					}
+					user.course = vm.editingCourse.fullName;
 					// Update the user
+					//console.log(user.course);
 					User.update({user: user});
+					//console.log('updated');
 				}
 			});
 			// Refresh user panel
@@ -554,13 +477,15 @@ function selectedItemChange(item) {
 				// Hide add course table
 				$scope.showAddCourse = false;
 				$scope.$digest();
-
+				
+				//console.log("courseMatch:", file, file.match(/[A-Z]{3}\s+[0-9]{4}\s+-\s+[A-Z0-9]+\s+([0-9]+)/));
 				// Try to match a segment of the file name with a course from a current semester
 				var found = false;
 				vm.courses.forEach(function (course, index) {
 					currentTerms.forEach(function (cTerm) {
 						if (course.semester == cTerm) {
-							if (file.match(course.name)) {
+							if (file.match('(' + course.course_id + ')')) {
+								console.log("course found");
 								// Update course selection box
 								$scope.syncCourseSelect = vm.courses[index];
 								document.getElementById('syncCourseSelect').selectedIndex = index+1;
@@ -571,21 +496,26 @@ function selectedItemChange(item) {
 				});
 				// Create a course object that would represent this course File
 				if (!found) {
+					console.log("course not found");
 					// Try to find a pattern match for a complete course name
-					var courseMatch = file.match(/[A-Z]{3}\s[0-9]{4}-[A-Z0-9]+/);
-					//console.log("courseMatch:", file.match(/[A-Z]{3}\s[0-9]{4}-[A-Z0-9]+/));
+					var courseMatch = file.match(/[A-Z]{3}\s+[0-9]{4}\s+-\s+[A-Z0-9]+\s+\([0-9]+\)/);
+					console.log("courseMatch:", file, file.match(/[A-Z]{3}\s+[0-9]{4}\s+-\s+[A-Z0-9]+\s+\([0-9]+\)/));
 					if (courseMatch) {
+						var newCourseTokens = courseMatch[0].split(/\s+/);
 						var newCourseData = {
-							subject: courseMatch[0].substr(0, 3),
-							number: courseMatch[0].substr(4, 4),
-							section: courseMatch[0].substr(9)
+							subject: newCourseTokens[0],
+							number: newCourseTokens[1],
+							section: newCourseTokens[3],
+							course_id: newCourseTokens[4].replace(/[()]/g, "")
 						};
+						var newCourseName = newCourseData.subject + ' ' + newCourseData.number + ' - ' + newCourseData.section 
 						// Show add course table
 						$scope.showAddCourse = true;
 						// Populate the add course fields with matched data
 						$scope.addNewCourseInputSubject2 = newCourseData.subject;
 						$scope.addNewCourseInputNumber2 = newCourseData.number;
 						$scope.addNewCourseInputSection2 = newCourseData.section;
+						$scope.addNewCourseInputID2 = newCourseData.course_id;
 						$scope.addCourseTerm2 = vm.terms[currentTermIndex];
 						document.getElementById('addCourseTerm2').selectedIndex = currentTermIndex+1;
 						$scope.$digest();
@@ -593,7 +523,7 @@ function selectedItemChange(item) {
 						// Prompt User to Comfirm course match
 						swal({
 							title: "Notice",
-							text: "Confirm the creation of new course '" + courseMatch[0] + "' for " + currentTerms[0],
+							text: "Confirm the creation of new course '" + newCourseName + "' for " + currentTerms[0],
 							type: "info",
 							confirmButtonText: "Continue",
 							allowOutsideClick: false,
@@ -608,6 +538,7 @@ function selectedItemChange(item) {
 						$scope.addNewCourseInputSubject2 = "";
 						$scope.addNewCourseInputNumber2 = "";
 						$scope.addNewCourseInputSection2 = "";
+						$scope.addNewCourseInputID2 = "";
 						$scope.addCourseTerm2 = vm.terms[currentTermIndex];
 						document.getElementById('addCourseTerm2').selectedIndex = currentTermIndex+1;
 						$scope.$digest();
@@ -638,22 +569,46 @@ function selectedItemChange(item) {
 					if (courseFile.course.fullName == courseName)
 						found = true;
 				});
-				if (!found) { // Create the new courseFile and add it to the list
-					var newCourseFile = {
-						course: $scope.syncCourseSelect,
-						file: vm.addCourseFileName,
-						data: vm.addCourseData
-					};
+				if (!found) { 
+					// Test whether file data was successfully pulled from xls file
+					if (vm.addCourseData != null) {
+						// Create the new courseFile and add it to the list
+						var newCourseFile = {
+							course: $scope.syncCourseSelect,
+							file: vm.addCourseFileName,
+							data: vm.addCourseData
+						};
 
-					vm.courseFiles.push(newCourseFile);
-					// Clear Data and UI
-					$scope.syncCourseSelect = "";
-					document.getElementById('syncCourseSelect').selectedIndex = -1;
-					document.getElementById('courseFileInput').value = null;
-					vm.addCourseFileName = null;
-					vm.addCourseData = null;
-					// Hide add course table
-					$scope.showAddCourse = false;
+						vm.courseFiles.push(newCourseFile);
+						// Clear Data and UI
+						$scope.syncCourseSelect = "";
+						document.getElementById('syncCourseSelect').selectedIndex = -1;
+						document.getElementById('courseFileInput').value = null;
+						vm.addCourseFileName = null;
+						vm.addCourseData = null;
+						// Hide add course table
+						$scope.showAddCourse = false;
+					}
+					else {
+						// Clear Data and UI
+						$scope.syncCourseSelect = "";
+						document.getElementById('syncCourseSelect').selectedIndex = -1;
+						document.getElementById('courseFileInput').value = null;
+						vm.addCourseFileName = null;
+						vm.addCourseData = null;
+						// Hide add course table
+						$scope.showAddCourse = false;
+						
+						swal({
+							title: "Error",
+							text: "Course data is missing, cannot load course file. Please check file to make sure the user's Email, Panther ID and Name are all present",
+							type: "error",
+							confirmButtonText: "Continue",
+							allowOutsideClick: true,
+							timer: 10000,
+							}, function () {}
+						);
+					}
 				}
 				else {
 					swal({
@@ -671,7 +626,8 @@ function selectedItemChange(item) {
 
 		// Add a course within the course file modal
 		vm.addCourse2 = function() {
-			if (!$scope.addNewCourseInputSubject2 || !$scope.addNewCourseInputNumber2 || !$scope.addNewCourseInputSection2 || !$scope.addCourseTerm2 ||
+			if (!$scope.addNewCourseInputSubject2 || !$scope.addNewCourseInputNumber2 || !$scope.addNewCourseInputSection2 || 
+				!$scope.addNewCourseInputID2 || !$scope.addCourseTerm2 ||
 				$scope.addNewCourseInputSubject2.length < 3 || $scope.addNewCourseInputNumber2.length < 4) {
 				var errMsg = "";
 				if (!$scope.addNewCourseInputSubject2)
@@ -684,6 +640,8 @@ function selectedItemChange(item) {
 					errMsg += "\tNumber is not 4 Digit Number\n";
 				if (!$scope.addNewCourseInputSection2)
 					errMsg += "\tSection Missing\n";
+				if (!$scope.addNewCourseInputID2)
+					errMsg += "\ID Missing\n";
 				if (!$scope.addCourseTerm2)
 					errMsg += "\tSemester Missing\n";
 
@@ -700,10 +658,12 @@ function selectedItemChange(item) {
 
 			else {
 				// test if duplicate exists
-				var courseName = $scope.addNewCourseInputSubject2 + ' ' + $scope.addNewCourseInputNumber2 + "-" + $scope.addNewCourseInputSection2;
+				var courseName = $scope.addNewCourseInputSubject2 + ' ' + $scope.addNewCourseInputNumber2 + " - " + $scope.addNewCourseInputSection2;
+				var courseFullName = courseName + ' ' + $scope.addCourseTerm2.name + ' (' + $scope.addNewCourseInputID2 + ')';
+				
 				var found = false;
 				vm.courses.forEach(function (course) {
-					if (course.name == courseName && course.semester == $scope.addCourseTerm2.name)
+					if (course.fullName == courseFullName)
 						found = true;
                 });
 				if (!found) { // Create the new course and save it
@@ -712,8 +672,9 @@ function selectedItemChange(item) {
 						subject: $scope.addNewCourseInputSubject2,
 						number: $scope.addNewCourseInputNumber2,
 						section: $scope.addNewCourseInputSection2,
+						course_id: $scope.addNewCourseInputID2,
 						semester: $scope.addCourseTerm2.name,
-						fullName: courseName + ' ' + $scope.addCourseTerm2.name
+						fullName: courseFullName
 					};
 
 					if($scope.addNewCourseInputTitle2 != "")
@@ -727,7 +688,7 @@ function selectedItemChange(item) {
 						// Notify User of Added Course
 						swal({
 							title: "Success",
-							text: "Course " + courseName + " has been added to the database",
+							text: "Course " + courseFullName + " has been added to the database",
 							type: "success",
 							confirmButtonText: "Continue",
 							allowOutsideClick: true,
@@ -742,6 +703,7 @@ function selectedItemChange(item) {
 					$scope.addNewCourseInputSubject2 = "";
 					$scope.addNewCourseInputNumber2 = "";
 					$scope.addNewCourseInputSection2 = "";
+					$scope.addNewCourseInputID2 = "";
 					$scope.addNewCourseInputTitle2 = "";
 					$scope.addCourseTerm2 = "";
 				}
@@ -750,27 +712,51 @@ function selectedItemChange(item) {
 
 		// Parse XLS file into readable data
 		function parseXLS(file) {
-			var entries = file.split('<tr>');
+			var entries = file.split(/<\s*tr\s*>/);
+			//console.log('entries:', entries);
 			var users = [];
-			for (var i=2; i<entries.length; i++) {
-				var entryData = entries[i].split('<td>');
-				try {
-					var pid = entryData[3].split('</td>');
-					var email = entryData[4].split('</td>');
-					var name = entryData[5].split('</td>');
-					var nameTokens = name[0].split(',');
-					var firstAndMidName = nameTokens[1].split(' ');
-					var newUser = {
-						pantherID: pid[0],
-						email: email[0],
-						firstName: firstAndMidName[0],
-						lastName: nameTokens[0]
-					};
-					users.push(newUser);
-				}
-				catch (err) { /* Don't push data that cannot be parsed */ }
+			// Determine which column contains which information
+			var columns = entries[1].split(/<\s*th\s*>/);
+			var indexes = {
+				pid: -1, email: -1, name: -1
+			};
+			for (var i=1; i<columns.length; i++) {
+				if (columns[i].match(/ID/))
+					indexes.pid = i;
+				if (columns[i].match(/Email/))
+					indexes.email = i;
+				if (columns[i].match(/Name/))
+					indexes.name = i;
 			}
-            return users;
+			//console.log('indexes:', indexes);
+			if (indexes.pid == -1 || indexes.email == -1 || indexes.name == -1) {
+				// Missing indexes, return null as a flag that parsing failed
+				return null;
+			}
+			else {
+				for (var i=2; i<entries.length; i++) {
+					try {
+						var entryData = entries[i].split(/<\s*td\s*>/);
+						//console.log('entryData:', entryData);
+					
+						var pid = entryData[indexes.pid].split(/<\s*\/\s*td\s*>/);
+						var email = entryData[indexes.email].split(/<\s*\/\s*td\s*>/);
+						var name = entryData[indexes.name].split(/<\s*\/\s*td\s*>/);
+						var nameTokens = name[0].split(',');
+						var firstAndMidName = nameTokens[1].split(' ');
+						var newUser = {
+							pantherID: pid[0],
+							email: email[0],
+							firstName: firstAndMidName[0],
+							lastName: nameTokens[0]
+						};
+						//console.log('newUser:', newUser);
+						users.push(newUser);
+					}
+					catch (err) { /* Don't push data that cannot be parsed */ }
+				}
+				return users;
+			}
 		};
 
 		// Removes a course file from course file list
@@ -878,6 +864,7 @@ function selectedItemChange(item) {
 			$scope.addNewCourseInputSubject2 = "";
 			$scope.addNewCourseInputNumber2 = "";
 			$scope.addNewCourseInputSection2 = "";
+			$scope.addNewCourseInputID2 = "";
 			$scope.addNewCourseInputTitle2 = "";
 			$scope.addCourseTerm2 = "";
 		};
@@ -2436,7 +2423,7 @@ function selectedItemChange(item) {
 
 		vm.uncheckc = function () {
 			// userstory #1346
-			for (var i = 1; i <= 3; i++) {
+			for (var i = 1; i <= 4; i++) {
                 $scope['queryc' + i] = '';
             }
 			$scope.selectedCourseTerm = '';

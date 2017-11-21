@@ -8,6 +8,7 @@ var CourseSchema = new Schema({
 	subject: {type: String, required: true},
 	number: {type: Number, required: true},
 	section: {type: String, required: true},
+	course_id: {type: Number, required: true},
 	semester: {type: String, required: true}
 });
 

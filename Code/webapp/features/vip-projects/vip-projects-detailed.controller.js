@@ -26,8 +26,17 @@
         vm.leaveProject = leaveProject;
         //vm.findProfile = findProfile;
         vm.already_joined = null;
+        $scope.personLimit = 5;
         vm.not_signed_in = false;
         $scope.iFrameURL = null;
+        vm.toggleLimit = function (url) {
+            if ($scope.personLimit == 5) {
+                $scope.personLimit = 256;
+            }
+            else {
+                $scope.personLimit = 5;
+            }
+        }
         vm.setVideo = function (url) {
 
             $scope.iFrameURL = $sce.trustAsResourceUrl(url);

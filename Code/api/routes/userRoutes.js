@@ -2,8 +2,10 @@ var passport = require('passport');
 var nodemailer = require('nodemailer');
 var emailService = require('../services/EmailService');
 var User = require('../models/users');
+var Project = require('../models/projects');
 var ImpersonationLog = require('../models/impersonationLog');
 var authProvider = require('../services/AuthorizationProvider');
+var Key = require('../config/key');
 
 module.exports = function (app, express) {
 
@@ -484,6 +486,68 @@ module.exports = function (app, express) {
                     }
                 });
             });
+
+
+             //User story 1356 - API endpoint for consumption by Mobile Judge
+             userRouter.route('/api/getAll/:token')
+             .get(authProvider.authorizeAll,
+
+                 function(req, res) {
+                     //simple token authentication - see config
+                     if(Key.key === req.params.token) {
+                    //get the enrolled list
+                    User.find({ isEnrolled: true, course: { $ne: null } },
+                    'email pantherID firstName lastName project course',
+                                function(err, users) {
+                                    if (err) {
+                                        return res.send(err);
+                                    } else if (users) {
+                                        var userPromises = [];
+                                        users.map(function(user){    
+                                            userPromises.push(  new Promise(function(resolve, reject){
+                                                Project.findOne({ title: user.project }, function(err, proj){
+                                                  
+                                                    if(err){
+                                                        reject('')
+                                                    }
+                                                    
+                                                        //map to custom object for MJ
+                                                        var tempObj = {
+                                                            email : user.email,
+                                                            id : user.pantherID,
+                                                            firstName: user.firstName,
+                                                            lastName: user.lastName,
+                                                            middle: null,
+                                                            valid: true,
+                                                            projectTitle: user.project,
+                                                            projectId:  proj ? proj._id : null,
+                                                            course: user.course                                             
+                                                        }
+
+                                                        console.log(tempObj)
+                                                        resolve(tempObj)
+
+                                                    
+                                                    
+                                                })
+                                            })
+                                         )
+                                    })
+                                    //async wait and set
+                                    Promise.all(userPromises).then(function(results){
+                                        res.json(results)
+                                    }).catch(function(err){
+                                        res.send(err)
+                                    })
+                                }
+                            })
+ 
+                     
+                    
+                    } else {
+                        return  res.json( {msg: "Token not authorized, please see your admin"})
+                    }
+                 });
 
     return userRouter;
 };

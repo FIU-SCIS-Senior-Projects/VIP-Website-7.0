@@ -12,7 +12,7 @@ var UsersSchema = new Schema({
     rank: {type: String, required: false},
     pantherID: {type: String, required: false},
     gender: {type: String, required: false},
-    project:    String,
+    project: String,
     piApproval: Boolean,
     isSuperUser: Boolean,
     piDenial: Boolean,

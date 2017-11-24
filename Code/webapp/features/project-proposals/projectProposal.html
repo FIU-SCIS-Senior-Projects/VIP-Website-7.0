@@ -179,6 +179,37 @@
     </div>
 
     <div class="form-group">
+    <label>Upload Previous Deliverables related to this project</label>
+    <table class="table table-striped">
+        <tr>
+            <td>
+                <input onchange="uploadProposalClass.uploadDeliverable()" id="project.projDeliverable" accept=".pdf" type="file" class="form-control" />
+                <small>Upload a file here. Allowed file types: PDF</small>
+                <progress id="pDv" class="form-horizontal" style="visibility: hidden; width: 20%; border: none;"/>
+            </td>
+            <td>
+                <input id="project.deliverableTitle" type="text" ng-model="project.deliverableTitle"/>
+                <small><i><br />Name your document</i></small>
+            </td>
+            <td>
+                <button id="addDeliverableButton" type="button" class="btn btn-primary" ng-click="addDeliverableToProject()">Add Document</button>
+            </td>
+        </tr>
+    </table>
+    </div>
+
+    <div class="form-group">
+        <table class="table table-striped">
+            <tr ng-repeat="deliverdocument in project.deliverables_attached">
+                <td>{{deliverdocument.name}}</td>
+                <td>
+                    <button id="rmDeliverableButton" class="btn btn-danger" ng-click="removeDeliverableFromProject(doc)">Remove Document</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="form-group">
     <skills label="*Required Skills and Knowledge:" skills="project.reqskillItem"></skills>
     </div>
 

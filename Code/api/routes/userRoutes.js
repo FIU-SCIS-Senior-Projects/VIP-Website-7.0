@@ -488,15 +488,15 @@ module.exports = function (app, express) {
             });
 
 
-             //User story 1356 - API endpoints for consumption by Mobile Judge et. al.
+             //User story 1356 - API endpoint for consumption by Mobile Judge
              userRouter.route('/api/getAll/:token')
              .get(authProvider.authorizeAll,
 
                  function(req, res) {
-                     
+                     //simple token authentication - see config
                      if(Key.key === req.params.token) {
-                    
-                    User.find({},
+                    //get the enrolled list
+                    User.find({ isEnrolled: true, course: { $ne: null } },
                     'email pantherID firstName lastName project course',
                                 function(err, users) {
                                     if (err) {
@@ -511,7 +511,7 @@ module.exports = function (app, express) {
                                                         reject('')
                                                     }
                                                     
-
+                                                        //map to custom object for MJ
                                                         var tempObj = {
                                                             email : user.email,
                                                             id : user.pantherID,
@@ -520,7 +520,8 @@ module.exports = function (app, express) {
                                                             middle: null,
                                                             valid: true,
                                                             projectTitle: user.project,
-                                                            projectId:  proj ? proj._id : null                                             
+                                                            projectId:  proj ? proj._id : null,
+                                                            course: user.course                                             
                                                         }
 
                                                         console.log(tempObj)
@@ -532,6 +533,7 @@ module.exports = function (app, express) {
                                             })
                                          )
                                     })
+                                    //async wait and set
                                     Promise.all(userPromises).then(function(results){
                                         res.json(results)
                                     }).catch(function(err){

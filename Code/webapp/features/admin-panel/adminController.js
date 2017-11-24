@@ -24,6 +24,11 @@
         vm.simulateQuery = false;
         vm.isDisabled    = false;
 
+        //Column sorting
+        $scope.orderByFieldApp = ''
+        $scope.reverseSortApp = false;
+        $scope.orderByFieldProj = ''
+        $scope.reverseSortProj = false;
       // list of `state` value/display objects
       vm.querySearch   = querySearch;
       vm.selectedItemChange = selectedItemChange;
@@ -1797,7 +1802,7 @@ function selectedItemChange(item) {
                   approved: true
                });
 					vm.editingProject.members.push(addStudent.email);
-               vm.editingProject.members_detailed.push(addStudent.email);
+               vm.editingProject.members_detailed.push(name);
 				}
 			}
          console.log(vm.editingProject.members_detailed_copy)

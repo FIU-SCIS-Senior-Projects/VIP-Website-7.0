@@ -592,24 +592,78 @@
                     <th></th>
                     <th></th>
              <th></th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Panther ID</th>
-                    <th>User Type</th>
-                    <th ng-show="simple">College</th>
-					<th>Course</th>
-                    <th>Project</th>
-                    <th ng-show="simple">Gender</th>
-                    <th ng-show="simple">Joined Project</th>
-                    <th ng-show="simple">Rank</th>
-                    <th ng-show="simple">Mentor</th>
-                    <th ng-show="simple">Pi Approval</th>
-					<th>Semester</th>
-                    <th ng-show="simple">Multiple Project</th>
-                    <th ng-show="simple">Proj App Date</th>
-                    <th ng-show="simple">User Reg Date</th>
-                    <th ng-show="simple">First Login Date</th>
+                    <th ng-click="orderByFieldApp='firstName'; reverseSortApp = !reverseSortApp">First Name
+                       <span ng-show="orderByFieldApp == 'firstName' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'firstName' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='lastName'; reverseSortApp = !reverseSortApp">Last Name
+                       <span ng-show="orderByFieldApp == 'lastName' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'lastName' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='email'; reverseSortApp = !reverseSortApp">Email
+                       <span ng-show="orderByFieldApp == 'email' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'email' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='pantherID'; reverseSortApp = !reverseSortApp">Panther ID
+                       <span ng-show="orderByFieldApp == 'pantherID' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'pantherID' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='userType'; reverseSortApp = !reverseSortApp">User Type
+                       <span ng-show="orderByFieldApp == 'userType' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'userType' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='college'; reverseSortApp = !reverseSortApp" ng-show="simple">College
+                       <span ng-show="orderByFieldApp == 'college' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'college' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='course'; reverseSortApp = !reverseSortApp">Course
+                  <span ng-show="orderByFieldApp == 'course' && !reverseSortApp" class="fa fa-caret-down"></span>
+                  <span ng-show="orderByFieldApp == 'course' && reverseSortApp" class="fa fa-caret-up"></span>
+               </th>
+                    <th ng-click="orderByFieldApp='project'; reverseSortApp = !reverseSortApp">Project
+                       <span ng-show="orderByFieldApp == 'project' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'project' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='gender'; reverseSortApp = !reverseSortApp" ng-show="simple">Gender
+                       <span ng-show="orderByFieldApp == 'gender' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'gender' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='joined_project'; reverseSortApp = !reverseSortApp" ng-show="simple">Joined Project
+                       <span ng-show="orderByFieldApp == 'joined_project' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'joined_project' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='rank'; reverseSortApp = !reverseSortApp" ng-show="simple">Rank
+                       <span ng-show="orderByFieldApp == 'rank' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'rank' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='mentor'; reverseSortApp = !reverseSortApp" ng-show="simple">Mentor
+                       <span ng-show="orderByFieldApp == 'mentor' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'mentor' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='piApproval'; reverseSortApp = !reverseSortApp" ng-show="simple">Pi Approval
+                       <span ng-show="orderByFieldApp == 'piApproval' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'piApproval' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='semester'; reverseSortApp = !reverseSortApp">Semester
+                  <span ng-show="orderByFieldApp == 'semester' && !reverseSortApp" class="fa fa-caret-down"></span>
+                  <span ng-show="orderByFieldApp == 'semester' && reverseSortApp" class="fa fa-caret-up"></span>
+               </th>
+                    <th ng-click="orderByFieldApp='multipleproject'; reverseSortApp = !reverseSortApp" ng-show="simple">Multiple Project
+                       <span ng-show="orderByFieldApp == 'multipleproject' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'multipleproject' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='appliedDate'; reverseSortApp = !reverseSortApp" ng-show="simple">Proj App Date
+                       <span ng-show="orderByFieldApp == 'appliedDate' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'appliedDate' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='RegDate'; reverseSortApp = !reverseSortApp" ng-show="simple">User Reg Date
+                       <span ng-show="orderByFieldApp == 'RegDate' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'RegDate' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='firstlogin_date'; reverseSortApp = !reverseSortApp" ng-show="simple">First Login Date
+                       <span ng-show="orderByFieldApp == 'firstlogin_date' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'firstlogin_date' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
                 </tr>
 
                 <tr id="headerInputs">
@@ -658,7 +712,7 @@
 					filter: selectedusertype? {userType: selectedusertype.name}:'' | filter: selecteduserrank? {rank: selecteduserrank}:'' |
 					filter: selecteduserproject? {project: selecteduserproject.title}:'' | filter: selectedGoogle? {email: 'fiu.edu' || 'gmail.com'}:'' |
 					filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' |
-					filter: selectedCouse? {course: selectedCouse.name}:'' | filter: selectedIsEnrolled? {isEnrolled: true}:'' )) |
+					filter: selectedCouse? {course: selectedCouse.name}:'' | filter: selectedIsEnrolled? {isEnrolled: true}:'' )) | orderBy:orderByFieldApp:reverseSortApp |
 					itemsPerPage: 10" pagination-id="usersPage">
 
                     <td>
@@ -693,7 +747,7 @@
                     <td class="center">{{user.pantherID}}</td>
                     <td>{{user.userType}}</td>
                     <td ng-show="simple">{{user.college}}</td>
-					<td>{{user.course}}</td>
+					     <td>{{user.course}}</td>
                     <td>{{user.project}}</td>
                     <td class="center" ng-show="simple">{{user.gender}}</td>
                     <td ng-show="simple">{{user.joined_project}}</td>
@@ -1117,18 +1171,18 @@
 					 <th></th>
 					 <th></th>
 					 <th></th>
-					 <th>Title</th>
-					 <th>Owner</th>
-					 <th ng-show="simpleP">Owner Rank</th>
-					 <th>Owner Email</th>
-					 <th>Semester</th>
-					 <th>Status</th>
-					 <th ng-show="simpleP">Mentor</th>
-					 <th ng-show="simpleP">Faculty</th>
-					 <th>Students</th>
-					 <th ng-show="simpleP">Description</th>
-					 <th ng-show="simpleP">Max Students</th>
-					 <th ng-show="simpleP">Video URL</th>
+					 <th ng-click="orderByFieldProj='title'; reverseSortProj = !reverseSortProj">Title</th>
+					 <th ng-click="orderByFieldProj='owner_name'; reverseSortProj = !reverseSortProj">Owner</th>
+					 <th ng-show="simpleP" ng-click="orderByFieldProj='owner_rank'; reverseSortProj = !reverseSortProj">Owner Rank</th>
+					 <th ng-click="orderByFieldProj='owner_email'; reverseSortProj = !reverseSortProj">Owner Email</th>
+					 <th ng-click="orderByFieldProj='semester'; reverseSortProj = !reverseSortProj">Semester</th>
+					 <th ng-click="orderByFieldProj='status'; reverseSortProj = !reverseSortProj">Status</th>
+					 <th ng-click="orderByFieldProj='mentor'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Mentor</th>
+					 <th ng-click="orderByFieldProj='faculty.name'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Faculty</th>
+					 <th ng-click="orderByFieldProj='member'; reverseSortProj = !reverseSortProj">Students</th>
+					 <th ng-click="orderByFieldProj='description'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Description</th>
+					 <th ng-click="orderByFieldProj='maxStudents'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Max Students</th>
+					 <th ng-click="orderByFieldProj='vidurl'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Video URL</th>
                    </tr>
 
                    <tr id="headerInputs">
@@ -1157,7 +1211,7 @@
 					filter: queryp1?{title:queryp1}:'' | filter: queryp2?{owner_name:queryp2}:'' | filter: queryp3?{owner_rank:queryp3}:'' |
 					filter: queryp4?{owner_email:queryp4}:'' | filter: queryp5?{semester:queryp5}:'' | filter: queryp6?{status:queryp6}:'' |
 					filter: queryp7?{mentor:queryp7}:'' | filter: queryp8?{faculty:queryp8}:'' | filter: queryp9?{members:queryp9}:'' |
-					filter: queryp10?{description:queryp10}:'' | filter: queryp11?{maxStudents:queryp11}:'' | filter: queryp12?{video_url:queryp12}:'')) |
+					filter: queryp10?{description:queryp10}:'' | filter: queryp11?{maxStudents:queryp11}:'' | filter: queryp12?{video_url:queryp12}:'')) | orderBy:orderByFieldProj:reverseSortProj |
 					itemsPerPage: 10" pagination-id="projectsPage">
 						<td>
                             <button id="editProjectStart" class="btn btn-info" ng-click="vm.editProject(project)"

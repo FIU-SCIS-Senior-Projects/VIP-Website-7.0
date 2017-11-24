@@ -160,6 +160,7 @@ function selectedItemChange(item) {
 		vm.editingProjNewTitle;
 		// User story #1346
 		vm.courseFiles;
+    vm.semesterToBeDeleted;
 
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
@@ -210,7 +211,13 @@ function selectedItemChange(item) {
         vm.msc = makeSemesterChanges;
         vm.cns = createNewSemester;
         vm.ds = deleteSemester;
-        vm.sds = setDefaultSemester;
+        vm.defsb = setDefaultSemester;
+        vm.dsb = delSemButton;
+        vm.esb = editSemButton;
+
+        function editSemButton (semester) {
+          console.log(semester);
+        }
 
 
 
@@ -3062,8 +3069,13 @@ function selectedItemChange(item) {
         $scope.selectedTerm = termData;
       }
 
-        function deleteSemester() {
-          var term = vm.cterm;
+      function delSemButton (semester) {
+        vm.semesterToBeDeleted = semester;
+        console.log(vm.semesterToBeDeleted);
+      }
+
+      function deleteSemester() {
+        var term = vm.semesterToBeDeleted;
 
         if ( term ) {
           ProjectService.deleteTerm( term._id ).then( function( success ) {
@@ -3075,62 +3087,61 @@ function selectedItemChange(item) {
         }
       }
 
-        function setDefaultSemester() {
-          var term = vm.cterm;
-          var user = vm.cuser;
+      function setDefaultSemester (semester) {
+        var term = semester;
+        var user = vm.cuser;
 
-          if ( term && user ) {
-            var selectedSemester = $scope.selectedTerm;
+        if ( term && user ) {
 
-            user.selectedSemester = selectedSemester;
-            ProfileService.saveProfile(user);
-            updateSelectedSemesterQueries(selectedSemester.name);
-            vm.defaultSemester = selectedSemester.name;
-            defaultsemester_msg();
-          }
+          user.selectedSemester = term;
+          ProfileService.saveProfile(user);
+          updateSelectedSemesterQueries(term.name);
+          vm.defaultSemester = term.name;
+          defaultsemester_msg();
         }
+      }
 
-        //Remove a user from a project
-        function ClearProject() {
-            var user = vm.cuser;
-            if (user) {
-                var formerProject;
-                var name = user.firstName + " " + user.lastName;
-                var email = user.email;
+      //Remove a user from a project
+      function ClearProject() {
+          var user = vm.cuser;
+          if (user) {
+              var formerProject;
+              var name = user.firstName + " " + user.lastName;
+              var email = user.email;
 
-                for (i = 0; i < vm.projects.length; i++) {
-                    if (vm.projects[i].members.includes(email)) {
-                        formerProject = vm.projects[i];
-                    }
-                }
+              for (i = 0; i < vm.projects.length; i++) {
+                  if (vm.projects[i].members.includes(email)) {
+                      formerProject = vm.projects[i];
+                  }
+              }
 
-                var email_msg =
-                    {
-                        recipient: email,
-                        text: "Your current project has been cleared. For more information, please contact a PI.",
-                        subject: "Project Cleared",
-                        recipient2: vm.adminSettings.current_email,
-                        text2: name + " has been successfully removed from project '" + (formerProject ? formerProject : 'unknown') + "'.",
-                        subject2: "Removed user from project"
-                    };
-                User.nodeEmail(email_msg);
+              var email_msg =
+                  {
+                      recipient: email,
+                      text: "Your current project has been cleared. For more information, please contact a PI.",
+                      subject: "Project Cleared",
+                      recipient2: vm.adminSettings.current_email,
+                      text2: name + " has been successfully removed from project '" + (formerProject ? formerProject : 'unknown') + "'.",
+                      subject2: "Removed user from project"
+                  };
+              User.nodeEmail(email_msg);
 
-                if (formerProject) {
-                    for (i = 0; i < formerProject.members_detailed.length; i++) {
-                        if (formerProject.members_detailed[i] == name) {
-                            formerProject.members_detailed.splice(i, 1);
-                        }
-                    }
-                    for (i = 0; i < formerProject.members.length; i++) {
-                        if (formerProject.members[i] == email) {
-                            formerProject.members.splice(i, 1);
-                        }
-                    }
-                    ProjectService.editProject(formerProject, formerProject._id);
-                }
-                changeclear_msg();
-            }
-        };
+              if (formerProject) {
+                  for (i = 0; i < formerProject.members_detailed.length; i++) {
+                      if (formerProject.members_detailed[i] == name) {
+                          formerProject.members_detailed.splice(i, 1);
+                      }
+                  }
+                  for (i = 0; i < formerProject.members.length; i++) {
+                      if (formerProject.members[i] == email) {
+                          formerProject.members.splice(i, 1);
+                      }
+                  }
+                  ProjectService.editProject(formerProject, formerProject._id);
+              }
+              changeclear_msg();
+          }
+      };
 
     }
 })();

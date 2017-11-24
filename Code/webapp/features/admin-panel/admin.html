@@ -969,87 +969,230 @@
 
 <div ng-show="showSemesterMaint">
 
-<div class="table" style="overflow: scroll; overflow-y: hidden;">
-  <table class="table table-striped">
-    <thead id="header" style="background-color:#ABB2B9;">
-      <tr id="headerLabels">
-        <th></th>
-        <th></th>
-        <th></th>
-        <th>Semester</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th>Current Semester</th>
-        <th>Viewable</th>
-        <th>Proposable</th>
-        <th>Applicable</th>
-      </tr>
-      <tr id="headerInputs">
-        <th></th>
-        <th></th>
-        <th></th>
-        <th><input class="form-control" type="text" ng-model="queryS1"/></th>
-        <th><input class="form-control" placeholder="YYYY-MM-DD" type="text" ng-model="queryS2"/></th>
-        <th><input class="form-control" placeholder="YYYY-MM-DD" type="text" ng-model="queryS3"/></th>
-        <th><input class="form-control" type="text" ng-model="queryS4"/></th>
-        <th><input class="form-control" type="text" ng-model="queryS5"/></th>
-        <th><input class="form-control" type="text" ng-model="queryS6"/></th>
-        <th><input class="form-control" type="text" ng-model="queryS7"/></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>
-          <button id="addNewSemesterStart" class="btn btn-info btn-block" ng-hide="user.userType == 'Pi/CoPi'"
-                  data-toggle="modal" data-target="#addSemesterModal">
-          <i class="fa fa-plus" aria-hidden="true"></i>
-          </button>
-        </td>
-      </tr>
-      <tr dir-paginate="semester in vm.terms | filter: queryS1?{name:queryS1} : '' |
-                                               filter: queryS2?{start:queryS2} : '' |
-                                               filter: queryS3?{end:queryS3} : '' |
-                                               itemsPerPage: 10" pagination-id="semestersPage">
+  <div>
+  <div class="panel panel-default" style="width:100%;">
+    <nav>
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" style="color:#333333;">Admin Panel - Semester's List</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
 
-        <td>
-          <button id="defaultSemester" class="btn btn-info btn-block" ng-click="vm.sds(semester)"
-                  ng-hide="user.userType == 'Pi/CoPi'"
-                  ng-style="{'background-color': semester.name == vm.defaultSemester ? 'green' : ''}">
-          <i class="fa fa-eye" aria-hidden="true"></i>
-          </button>
-        </td>
-        <td>
-          <button id="editSemester" class="btn btn-info" ng-click="vm.editProject()"
-                  data-toggle="modal" data-target="#editSemesterModal">
-          <i class="fa fa-pencil" aria-hidden="true"></i>
-          </button>
-        </td>
-        <td>
-          <button id="deleteSemester" class="btn btn-danger" ng-click="vm.selectDeleteProject()"
-                  data-toggle="modal" data-target="#deleteSModal">
-          <i class="fa fa-times" aria-hidden="true"></i>
-          </button>
-        </td>
-        <td>{{semester.name}}</td>
-        <td>{{semester.start | dateFilter |  date: MM-dd-yyyy}}</td>
-        <td>{{semester.end | dateFilter | date: MM-dd-yyyy}}</td>
-        <td>
-          <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.currentSemester"></i>
-          <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.currentSemester"></i>
-        </td>
-        <td>
-          <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.viewable"></i>
-          <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.viewable"></i>
-        </td>
-        <td>
-          <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForProposal"></i>
-          <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForProposal"></i></td>
-        <td>
-          <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForApply"></i>
-          <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForApply"></i></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table" style="overflow: scroll; overflow-y: hidden;">
+    <table class="table table-striped">
+      <thead id="header" style="background-color:#ABB2B9;">
+        <tr id="headerLabels">
+          <th></th>
+          <th></th>
+          <th></th>
+          <th>Semester</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Current Semester</th>
+          <th>Viewable</th>
+          <th>Proposable</th>
+          <th>Applicable</th>
+        </tr>
+        <tr id="headerInputs">
+          <th></th>
+          <th></th>
+          <th></th>
+          <th><input class="form-control" type="text" ng-model="queryS1"/></th>
+          <th><input class="form-control" placeholder="YYYY-MM-DD" type="text" ng-model="queryS2"/></th>
+          <th><input class="form-control" placeholder="YYYY-MM-DD" type="text" ng-model="queryS3"/></th>
+          <th><input class="form-control" type="text" ng-model="queryS4"/></th>
+          <th><input class="form-control" type="text" ng-model="queryS5"/></th>
+          <th><input class="form-control" type="text" ng-model="queryS6"/></th>
+          <th><input class="form-control" type="text" ng-model="queryS7"/></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <button id="addNewSemesterStart" class="btn btn-info btn-block" ng-hide="user.userType == 'Pi/CoPi'"
+                    data-toggle="modal" data-target="#addSemesterModal">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            </button>
+          </td>
+        </tr>
+        <tr dir-paginate="semester in vm.terms | filter: queryS1?{name:queryS1} : '' |
+                                                 filter: queryS2?{start:queryS2} : '' |
+                                                 filter: queryS3?{end:queryS3} : '' |
+                                                 itemsPerPage: 10" pagination-id="semestersPage">
+
+          <td>
+            <button id="defaultSemester" class="btn btn-info btn-block" ng-click="vm.defsb(semester)"
+                    ng-hide="user.userType == 'Pi/CoPi'"
+                    ng-style="{'background-color': semester.name == vm.defaultSemester ? 'green' : ''}">
+            <i class="fa fa-eye" aria-hidden="true"></i>
+            </button>
+          </td>
+          <td>
+            <button id="editSemester" class="btn btn-info" ng-click="vm.esb(semester)"
+                    data-toggle="modal" data-target="#editSemesterModal">
+            <i class="fa fa-pencil" aria-hidden="true"></i>
+            </button>
+          </td>
+          <td>
+            <button id="deleteSemester" class="btn btn-danger" ng-click="vm.dsb(semester)"
+                    data-toggle="modal" data-target="#deleteSemesterModal">
+            <i class="fa fa-times" aria-hidden="true"></i>
+            </button>
+          </td>
+          <td>{{semester.name}}</td>
+          <td>{{semester.start | dateFilter |  date: MM-dd-yyyy}}</td>
+          <td>{{semester.end | dateFilter | date: MM-dd-yyyy}}</td>
+          <td>
+            <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.currentSemester"></i>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.currentSemester"></i>
+          </td>
+          <td>
+            <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.viewable"></i>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.viewable"></i>
+          </td>
+          <td>
+            <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForProposal"></i>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForProposal"></i></td>
+          <td>
+            <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForApply"></i>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForApply"></i></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+<div class="modal fade" id="addSemesterModal" role="dialog">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 align="center">Add New Semester</h3>
+      </div>
+      <div class="modal-body">
+        <form role="role" class="form-horizontal">
+          <div class="form-group">
+            <table class="table" style="height: 1px;">
+              <tr>
+                <div class="col-md-4" style="margin-bottom:15px">
+                  <label>Semester Name:</label>
+                  <input type="text" class="form-control" name="semName" ng-model="semName" required>
+                </div>
+              </tr>
+              <!-- <div class="col-lg-12 panel panel-default"> -->
+                <tr>
+                  <th align="center">
+                    <p align="center" style="font-weight:bold">Start Date: {{startDate}}</p>
+                  </th>
+                  <th align="center">
+                    <p align="center" style="font-weight:bold">End Date: {{endDate}}</p>
+                  </th>
+                </tr>
+                <tr>
+                  <td align="center">
+                    <date-picker ng-model="startDate">
+                    </date-picker>
+                  </td>
+                  <td align="center">
+                    <date-picker ng-model="endDate">
+                    </date-picker>
+                  </td>
+                </tr>
+              <!-- </div> -->
+              <tr>
+                <th>
+                  Current Semester ({{cStatus}})
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value="true">On</input>
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Proposable by Faculty ({{pStatus}})
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="vm.pStatus" value="true">On</input>
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="!(vm.pStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Viewable by Students ({{vStatus}})
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="vm.vStatus" value="true">On</input>
+                    <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="!(vm.vStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Applicable by Students ({{aStatus}})
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="vm.aStatus" value="true">On</input>
+                    <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="!(vm.aStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+            </table>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <button type="button" class="btn btn-primary" id="addNewSemester" data-dismiss="modal" data-toggle="modal" data-target="#addedSemesterModal"
+               ng-click="vm.as()">Add Semester</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editSemesterModal" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 align="center">Edit Semester</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteSemesterModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Are you sure you wish to delete this semester?</h3>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="deleteSemester" data-dismiss="modal" ng-click="vm.ds()"
+                 data-toggle="modal" data-target="#deletedModal">Yes</button>
+           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="deletedSemesterModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <label id=""></label>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="deleteSemesterConfirm" data-dismiss="modal" ng-click="">OK</button>
+        </div>
+     </div>
+ </div>
 </div>
 
   <!-- <div class="col-md-3 panel panel-default">
@@ -1114,9 +1257,9 @@
     </div>
     <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(selectedTerm)" ng-click="vm.msc()" class="btn btn-success btn-block">Confirm
     </button>
-  </div>
+  </div> -->
 
-  <div class="col-md-6 panel panel-default">
+  <!-- <div class="col-md-6 panel panel-default">
     <h3 align="center">Create New Semester</h3>
     <div class="form-class">
       <table class="table" style="height: 1px;">
@@ -1150,8 +1293,9 @@
     </div>
     <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(semName && startDate && endDate)" ng-click="vm.cns(semName, startDate, endDate)" class="btn btn-success btn-block">Create
     </button>
-  </div>
-  <div class="col-md-3 panel panel-default">
+  </div> -->
+
+  <!-- <div class="col-md-3 panel panel-default">
     <h3 align="center">Delete a Semester</h3>
     <div class="form-group">
       <table class="table">
@@ -1166,8 +1310,9 @@
     </div>
     <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(selectedTerm)" ng-click="vm.ds()" class="btn btn-success btn-block">Delete
     </button>
-  </div>
-  <div class="col-md-3 panel panel-default">
+  </div> -->
+
+  <!-- <div class="col-md-3 panel panel-default">
     <h3 align="center">Set Default Semester</h3>
 
     <div class="form-group">

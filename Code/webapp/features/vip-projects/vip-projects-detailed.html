@@ -53,7 +53,7 @@
                                 <td style="vertical-align:middle;"><a ng-click="vm.openPDF(doc.url)" target="_blank">{{doc.name}}</a></td>
                             </tr>
                         </table>
-                        <div ng-show="vm.data.attachments[0] && vm.data.attachments[3]">
+                        <div ng-show="vm.data.attachments[3]">
                             <button type="button" ng-show="attachLimit == 3" class="btn btn-link" ng-click="attachLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
                             <button type="button" ng-show="attachLimit == 256" class="btn btn-link" ng-click="attachLimit = 3" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
                         </div>
@@ -94,7 +94,7 @@
                             </td>
                         </tr>
                     </table>
-                    <div ng-show="vm.productOwner[0] && vm.productOwner[5]">
+                    <div ng-show="vm.productOwner[5]">
                         <button type="button" ng-show="ownerLimit == 5" class="btn btn-link" ng-click="ownerLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
                         <button type="button" ng-show="ownerLimit == 256" class="btn btn-link" ng-click="ownerLimit = 5" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
                     </div>
@@ -111,7 +111,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <div ng-show="vm.data.faculty[0] && vm.data.faculty[5]">
+                        <div ng-show="vm.data.faculty[5]">
                             <button type="button" ng-show="facultyLimit == 5" class="btn btn-link" ng-click="facultyLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
                             <button type="button" ng-show="facultyLimit == 256" class="btn btn-link" ng-click="facultyLimit = 5" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
                         </div>
@@ -128,7 +128,7 @@
                             </td>
                         </tr>
                     </table>
-                    <div ng-show="vm.data.mentor[0] && vm.data.mentor[5]">
+                    <div ng-show="vm.data.mentor[5]">
                         <button type="button" ng-show="mentorLimit == 5" class="btn btn-link" ng-click="mentorLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
                         <button type="button" ng-show="mentorLimit == 256" class="btn btn-link" ng-click="mentorLimit = 5" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
                     </div>
@@ -153,7 +153,7 @@
                             </td>
                         </tr>
                     </table>
-                    <div ng-show="vm.data.members_detailed[0] && vm.data.members_detailed[5]">
+                    <div ng-show="vm.data.members_detailed[5]">
                         <button type="button" ng-show="personLimit == 5" class="btn btn-link" ng-click="personLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
                         <button type="button" ng-show="personLimit == 256" class="btn btn-link" ng-click="personLimit = 5" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
                     </div>
@@ -169,7 +169,7 @@
                             <td style="vertical-align:middle;"><a ng-click="vm.openPDF(deliverable.url)" target="_blank">{{deliverable.name}}</a></td>
                         </tr>
                     </table>
-                    <div ng-show="vm.data.deliverables_attached[0] && vm.data.deliverables_attached[3]">
+                    <div ng-show="vm.data.deliverables_attached[3]">
                         <button type="button" ng-show="deliverableLimit == 3" class="btn btn-link" ng-click="deliverableLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
                         <button type="button" ng-show="deliverableLimit == 256" class="btn btn-link" ng-click="deliverableLimit = 3" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
                     </div>

@@ -1719,7 +1719,7 @@ function selectedItemChange(item) {
 				else if ($scope.editPMaxStudents < vm.editingProject.members.length) {
 					document.getElementById('editProjectMessage').innerHTML = 'Error: Max Students should not be less than currently enlisted member count';
 				}
-				else if ($scope.editPStatus.type == 'Active' && vm.terms[findIndexTerm($scope.editPTerm.name)].status != 'Active') {
+				else if ($scope.editPStatus.type == 'Active' && !(vm.terms[findIndexTerm($scope.editPTerm.name)].status.currentSemester)) {
 					document.getElementById('editProjectMessage').innerHTML = 'Error: Cannot set project to Active status in a non-active semester';
 				}
 				else { // Update editingProject

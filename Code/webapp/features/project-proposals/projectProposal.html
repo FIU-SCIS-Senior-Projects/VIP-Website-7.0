@@ -22,7 +22,8 @@
     <!-- User Story #1175 -->
     <label>*Semester:</label>
 
-    <select ng-model="project.semester" ng-options="semester for semester in project.semesters" class="form-control" value="selectedTerm" required> <option></option>
+    <select ng-model="project.semester" ng-options="term as terms.name for terms in vm.terms" class="form-control" required> 
+	<option value=""></option>
     </select>
 
 </div>

@@ -1757,14 +1757,12 @@ function selectedItemChange(item) {
 					ProjectService.editProject(vm.editingProject, vm.editingProject._id).then(function(data) {
 						if (data) {
 							if (data.data.message == 'Updated!') {
-                                document.getElementById('editProjectMessage').innerHTML = 'Editing project was successful';
 								if (vm.editingProject.status == 'Disabled') {
-									console.log("Status is Disabled " + vm.editingProject.status)
-									for (i = 0; i < vm.editingProject.members.length; i++) {
-										var email_address;
-										email_address = vm.editingProject.members[i];
-										sendDeactivationEmail(email_address);
-									}
+									sendDeactivationEmail();
+									document.getElementById('editProjectMessage').innerHTML = 'Editing project was successful. The page will reload because a project was disabled.';
+								}
+								else {
+									document.getElementById('editProjectMessage').innerHTML = 'Editing project was successful';
 								}
 								// Update users associated with this project if project title has changed
 								if (vm.editingProjOrigTitle != vm.editingProjNewTitle)
@@ -1790,6 +1788,18 @@ function selectedItemChange(item) {
 			}
 
 		};
+
+		vm.reloadDeactivate = function() {
+			if (vm.editingProject.status == 'Disabled') {
+				$window.location.reload();
+				$timeout(function() {
+				// We must reevaluate the value in case it was changed by a subsequent
+				// watch handler in the digest.
+	
+				$scope.$digest()
+			  }, 0, false);
+			}
+		}
 
 		// User story #1238 - Update users associated with this project if project title has changed
 		function updateUsers() {
@@ -1833,31 +1843,37 @@ function selectedItemChange(item) {
 			});
 		};
 
-		function sendDeactivationEmail(email) {
-			console.log("Sending to " + email);
-			var email_msg =
-			{
-				recipient: email,
-				text: "Your current project '" + vm.editingProject.title + "' has been disabled. For more information, please contact a PI.",
-				subject: "Project No Longer Available"
-			};
-			User.nodeEmail(email_msg);
-			// removeUserFromProject(vm.editProjectUsers[i], vm.editingProject, false);
-			// vm.tabledata = JSON.stringify(vm.filteredusers);
-			// vm.tabledata = eval(vm.tabledata);
-			//vm.editingProject.status = null;
-			var admin_email_msg =
-			{
-				recipient: vm.adminSettings.current_email,
-				text: "The project '" + vm.editingProject.title + "' has been disabled. All students who were in the project have been notified and asked to contact a PI for further instruction.",
-				subject: "Project Deactivated"
-			};
-			console.log("Sending to admin " + vm.adminSettings.current_email);
-			User.nodeEmail(admin_email_msg);
-			//vm.editingProject.status = null;
-			// removeUserFromProject(vm.editProjectUsers[i], vm.editingProject, false);
-			// vm.tabledata = JSON.stringify(vm.filteredusers);
-			// vm.tabledata = eval(vm.tabledata);
+		function sendDeactivationEmail() {
+			var email;
+			if (vm.editingProject.status == 'Disabled') {
+				for (i = 0; i < vm.editingProject.members.length; i++) {
+					email = vm.editingProject.members[i];
+					console.log("Sending to " + email);
+					var email_msg =
+					{
+						recipient: email,
+						text: "Your current project '" + vm.editingProject.title + "' has been disabled. For more information, please contact a PI.",
+						subject: "Project No Longer Available"
+					};
+					User.nodeEmail(email_msg);
+					// removeUserFromProject(vm.editProjectUsers[i], vm.editingProject, false);
+					// vm.tabledata = JSON.stringify(vm.filteredusers);
+					// vm.tabledata = eval(vm.tabledata);
+				}
+				//vm.editingProject.status = null;
+				var admin_email_msg =
+				{
+					recipient: vm.adminSettings.current_email,
+					text: "The project '" + vm.editingProject.title + "' has been disabled. All students who were in the project have been notified and asked to contact a PI for further instruction.",
+					subject: "Project Deactivated"
+				};
+				console.log("Sending to admin " + vm.adminSettings.current_email);
+				User.nodeEmail(admin_email_msg);
+				//vm.editingProject.status = null;
+				// removeUserFromProject(vm.editProjectUsers[i], vm.editingProject, false);
+				// vm.tabledata = JSON.stringify(vm.filteredusers);
+				// vm.tabledata = eval(vm.tabledata);
+			}
 		}
 
 		function ProcessVideoURL(VideoURL) {

@@ -37,7 +37,7 @@ module.exports = function (app, express) {
     ];
 
     var findActiveTerm = function () {
-        Term.findOne({active: true}, function (err, term) {
+        Term.findOne({'status.currentSemester': true}, function (err, term) {
             if (err) {
                 throw "Failed to find the active term."
             }

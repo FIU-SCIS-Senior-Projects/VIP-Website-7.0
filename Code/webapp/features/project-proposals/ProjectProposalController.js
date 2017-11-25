@@ -392,6 +392,7 @@ var uploadProposalClass = {
                 reviewStudentAppService.loadTerms().then(function (data) {
                     console.log("in loadTerms()");
                     vm.terms = data;
+                    $scope.terms = data;
                     console.log(vm.terms);
                 });
             }

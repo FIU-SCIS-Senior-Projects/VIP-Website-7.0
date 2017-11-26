@@ -1013,7 +1013,7 @@
         <tr>
           <td>
             <button id="addNewSemesterStart" class="btn btn-info btn-block" ng-hide="user.userType == 'Pi/CoPi'"
-                    data-toggle="modal" data-target="#addSemesterModal">
+                    data-toggle="modal" data-target="#addSemesterModal" ng-click="vm.rss()">
             <i class="fa fa-plus" aria-hidden="true"></i>
             </button>
           </td>
@@ -1080,13 +1080,12 @@
                   <input type="text" class="form-control" name="semName" ng-model="semName" required>
                 </div>
               </tr>
-              <!-- <div class="col-lg-12 panel panel-default"> -->
                 <tr>
                   <th align="center">
-                    <p align="center" style="font-weight:bold">Start Date: {{startDate}}</p>
+                    <p align="center" style="font-weight:bold">Start Date: {{startDate | date:'M/d/yyyy'}}</p>
                   </th>
                   <th align="center">
-                    <p align="center" style="font-weight:bold">End Date: {{endDate}}</p>
+                    <p align="center" style="font-weight:bold">End Date: {{endDate | date:'M/d/yyyy'}}</p>
                   </th>
                 </tr>
                 <tr>
@@ -1099,21 +1098,20 @@
                     </date-picker>
                   </td>
                 </tr>
-              <!-- </div> -->
               <tr>
                 <th>
-                  Current Semester ({{cStatus}})
+                  Current Semester
                 </th>
                 <th>
                   <form action="">
-                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value="true">On</input>
-                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value="false">Off</input>
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value=true>On</input>
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value=false>Off</input>
                   </form>
                 </th>
               </tr>
               <tr>
                 <th>
-                  Proposable by Faculty ({{pStatus}})
+                  Proposable by Faculty
                 </th>
                 <th>
                   <form action="">
@@ -1124,7 +1122,7 @@
               </tr>
               <tr>
                 <th>
-                  Viewable by Students ({{vStatus}})
+                  Viewable by Students
                 </th>
                 <th>
                   <form action="">
@@ -1135,7 +1133,7 @@
               </tr>
               <tr>
                 <th>
-                  Applicable by Students ({{aStatus}})
+                  Applicable by Students
                 </th>
                 <th>
                   <form action="">
@@ -1150,18 +1148,100 @@
       </div>
       <div class="modal-footer">
          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-         <button type="button" class="btn btn-primary" id="addNewSemester" data-dismiss="modal" data-toggle="modal" data-target="#addedSemesterModal"
-               ng-click="vm.as()">Add Semester</button>
+         <!-- data-toggle="modal" data-target="#addedSemesterModal" -->
+         <button type="button" class="btn btn-primary" id="addNewSemester" data-dismiss="modal"
+               ng-click="vm.cns(semName, startDate, endDate)" ng-disabled="!(semName && startDate && endDate)">Add Semester</button>
       </div>
     </div>
   </div>
 </div>
 
 <div class="modal fade" id="editSemesterModal" role="dialog">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-md">
     <div class="modal-content">
       <div class="modal-header">
         <h3 align="center">Edit Semester</h3>
+      </div>
+      <div class="modal-body">
+        <form role="role" class="form-horizontal">
+          <div class="form-group">
+            <table class="table" style="height: 1px;">
+              <tr>
+                <div class="col-md-4" style="margin-bottom:15px">
+                  <label>Semester Name:</label>
+                  <input type="text" class="form-control" name="semName" ng-model="semName" required>
+                </div>
+              </tr>
+                <tr>
+                  <th align="center">
+                    <p align="center" style="font-weight:bold">Start Date: {{startDate | date:'M/d/yyyy'}}</p>
+                  </th>
+                  <th align="center">
+                    <p align="center" style="font-weight:bold">End Date: {{endDate | date:'M/d/yyyy'}}</p>
+                  </th>
+                </tr>
+                <tr>
+                  <td align="center">
+                    <date-picker ng-model="startDate">
+                    </date-picker>
+                  </td>
+                  <td align="center">
+                    <date-picker ng-model="endDate">
+                    </date-picker>
+                  </td>
+                </tr>
+              <tr>
+                <th>
+                  Current Semester
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value="true">On</input>
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Viewable by Students
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="vm.vStatus" value="true">On</input>
+                    <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="!(vm.vStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Proposable by Faculty
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="vm.pStatus" value="true">On</input>
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="!(vm.pStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Applicable by Students
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="vm.aStatus" value="true">On</input>
+                    <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="!(vm.aStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+            </table>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <button type="button" class="btn btn-primary" id="editNewSemester"
+               ng-click="vm.msc()" data-dismiss="modal">Edit Semester</button>
       </div>
     </div>
   </div>
@@ -1174,8 +1254,8 @@
            <h3>Are you sure you wish to delete this semester?</h3>
         </div>
         <div class="modal-body">
-           <button type="button" class="btn btn-primary" id="deleteSemester" data-dismiss="modal" ng-click="vm.ds()"
-                 data-toggle="modal" data-target="#deletedModal">Yes</button>
+           <button type="button" class="btn btn-primary" id="deleteSemester"
+                   data-dismiss="modal" ng-click="vm.ds()">Yes</button>
            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
         </div>
      </div>

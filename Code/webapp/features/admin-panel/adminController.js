@@ -214,12 +214,7 @@ function selectedItemChange(item) {
         vm.defsb = setDefaultSemester;
         vm.dsb = delSemButton;
         vm.esb = editSemButton;
-
-        function editSemButton (semester) {
-          console.log(semester);
-        }
-
-
+        vm.rss = resetSemSettings;
 
         vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
         //Joe's User Story
@@ -1026,18 +1021,22 @@ function selectedItemChange(item) {
             ];
 
     function currentSwitch(e) {
+      console.log(typeof e);
       vm.currentSwitchStatus = e;
     }
 
     function viewableSwitch(e) {
+      console.log(typeof e);
       vm.viewableSwitchStatus = e;
     }
 
     function proposableSwitch(e) {
+      console.log(typeof e);
       vm.proposableSwitchStatus = e;
     }
 
     function applicableSwitch(e) {
+      console.log(typeof e);
       vm.applicableSwitchStatus = e;
     }
 
@@ -3031,42 +3030,80 @@ function selectedItemChange(item) {
             changestat_msg();
         }
 
-        function makeSemesterChanges() {
-          var term = vm.cterm;
-          if(term) {
-            var selectedSemester = $scope.selectedTerm;
-            selectedSemester.status.currentSemester = vm.currentSwitchStatus;
-            selectedSemester.status.openForApply = vm.applicableSwitchStatus;
-            selectedSemester.status.openForProposal = vm.proposableSwitchStatus;
-            selectedSemester.status.viewable = vm.viewableSwitchStatus;
-            ProjectService.editTerm(selectedSemester, selectedSemester._id);
-            vm.currentSem = selectedSemester;
-            vm.currentSemesterName = vm.currentSem.name;
-          }
-        semesterchange_msg();
-      }
-
       function createNewSemester( n, s, e ) {
+
+        if( vm.currentSwitchStatus == null ) { vm.currentSwitchStatus = false; }
+        if( vm.viewableSwitchStatus == null ) { vm.viewableSwitchStatus = false; }
+        if( vm.applicableSwitchStatus == null ) { vm.applicableSwitchStatus = false; }
+        if( vm.proposableSwitchStatus == null ) { vm.proposableSwitchStatus = false; }
+
         var termData = {
           name: n,
           start: new Date( s ),
           end: new Date( e ),
           active: true,
           status: {
-            currentSemester: false,
-            viewable: false,
-            openForProposal: false,
-            openForApply: false
+            currentSemester: vm.currentSwitchStatus,
+            viewable: vm.viewableSwitchStatus,
+            openForProposal: vm.proposableSwitchStatus,
+            openForApply: vm.applicableSwitchStatus
           }
         };
         ProjectService.createTerm( termData ).then( function( success ) {
           loadTerms();
-          delete $scope.semName;
-          delete $scope.startDate;
-          delete $scope.endDate;
+          resetSemSettings();
           semestercreate_msg();
         }, function( error ) {} );
         $scope.selectedTerm = termData;
+      }
+
+      function setDefaultSemester (semester) {
+        var term = semester;
+        var user = vm.cuser;
+
+        if ( term && user ) {
+
+          user.selectedSemester = term;
+          ProfileService.saveProfile(user);
+          updateSelectedSemesterQueries(term.name);
+          vm.defaultSemester = term.name;
+          defaultsemester_msg();
+        }
+      }
+
+      function editSemButton (semester) {
+        vm.semesterToBeEdited = semester;
+        if(semester) {
+          $scope.semName = semester.name;
+          $scope.startDate = semester.start;
+          $scope.endDate = semester.end;
+          vm.cStatus = semester.status.currentSemester;
+          vm.vStatus = semester.status.viewable;
+          vm.pStatus = semester.status.openForProposal;
+          vm.aStatus = semester.status.openForApply;
+          if(vm.currentSwitchStatus == null) { vm.currentSwitchStatus = semester.status.currentSemester; }
+          if(vm.viewableSwitchStatus == null) { vm.viewableSwitchStatus = semester.status.viewable; }
+          if(vm.proposableSwitchStatus == null) { vm.proposableSwitchStatus = semester.status.openForProposal; }
+          if(vm.applicableSwitchStatus == null) { vm.applicableSwitchStatus = semester.status.openForApply; }
+        }
+      }
+
+      function makeSemesterChanges() {
+        var semester = vm.semesterToBeEdited;
+        if ( semester ) {
+          semester.name = $scope.semName;
+          semester.start = $scope.startDate;
+          semester.end = $scope.endDate;
+          semester.status.currentSemester = vm.currentSwitchStatus == 'true' ? true : false;
+          semester.status.openForApply = vm.applicableSwitchStatus == 'true' ? true : false;
+          semester.status.openForProposal = vm.proposableSwitchStatus == 'true' ? true : false;
+          semester.status.viewable = vm.viewableSwitchStatus == 'true' ? true : false;
+          ProjectService.editTerm( semester, semester._id );
+          // vm.currentSem = selectedSemester;
+          // vm.currentSemesterName = vm.currentSem.name;
+        }
+        semesterchange_msg();
+        resetSemSettings();
       }
 
       function delSemButton (semester) {
@@ -3087,18 +3124,22 @@ function selectedItemChange(item) {
         }
       }
 
-      function setDefaultSemester (semester) {
-        var term = semester;
-        var user = vm.cuser;
-
-        if ( term && user ) {
-
-          user.selectedSemester = term;
-          ProfileService.saveProfile(user);
-          updateSelectedSemesterQueries(term.name);
-          vm.defaultSemester = term.name;
-          defaultsemester_msg();
-        }
+      function resetSemSettings() {
+          delete $scope.semName;
+          delete $scope.startDate;
+          delete $scope.endDate;
+          delete $scope.cStatus;
+          delete $scope.vStatus;
+          delete $scope.pStatus;
+          delete $scope.aStatus;
+          // delete vm.cStatus;
+          // delete vm.vStatus;
+          // delete vm.pStatus;
+          // delete vm.aStatus;
+          delete vm.currentSwitchStatus;
+          delete vm.viewableSwitchStatus;
+          delete vm.proposableSwitchStatus;
+          delete vm.applicableSwitchStatus;
       }
 
       //Remove a user from a project

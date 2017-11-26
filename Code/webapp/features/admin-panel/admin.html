@@ -262,6 +262,7 @@
                     <th>Course</th>
 					<th>Title</th>
 					<th>Semester</th>
+					<th>ID</th>
                 </tr>
 
                 <tr id="headerInputs">
@@ -270,6 +271,7 @@
                     <th><input class="form-control" type="text" ng-model="queryC1"/></th>
                     <th><input type="text" class="form-control" ng-model="queryC2"/></th>
                     <th><input type="text" class="form-control" ng-model="queryC3"/></th>
+					<th><input type="text" class="form-control" ng-model="queryC4"/></th>
                 </thead>
 
                 <tbody>
@@ -283,7 +285,8 @@
 				</tr>
 
 				<tr dir-paginate="course in (filteredCItems = ( vm.courses | filter: queryC1?{name:queryC1}:'' | filter: queryC2?{title:queryC2}:'' |
-					filter: queryC3?{semester:queryC3}:'' | filter: selectedCourseTerm? {semester: selectedCourseTerm.name}:'' )) | itemsPerPage: 10" pagination-id="coursesPage">
+					filter: queryC3?{semester:queryC3}:'' | filter: queryC4?{course_id:queryC4}:'' |
+					filter: selectedCourseTerm? {semester: selectedCourseTerm.name}:'' )) | itemsPerPage: 10" pagination-id="coursesPage">
                     <td>
                         <button id="editCourseButton" class="btn btn-primary" ng-click="vm.editCourse(course)" data-toggle="modal" data-target="#editCourseModal">
 							<i class="fa fa-pencil" aria-hidden="true"></i>
@@ -294,9 +297,10 @@
 							<i class="fa fa-times" aria-hidden="true"></i>
 						</button>
                     </td>
-                    <td class="col-md-4">{{course.name}}</td>
+                    <td class="col-md-3">{{course.name}}</td>
 					<td class="col-md-4">{{course.title}}</td>
-					<td class="col-md-4">{{course.semester}}</td>
+					<td class="col-md-3">{{course.semester}}</td>
+					<td class="col-md-2">{{course.course_id}}</td>
                 </tr>
                 </tbody>
              </table>
@@ -314,21 +318,28 @@
         <div class="modal-body">
            <form role="role" class="form-horizontal">
              <div class="form-group">
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Subject</label>
                     <input id="addNewCourseInputSubject" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
 						   maxlength="3" ng-model="addNewCourseInputSubject"/>
                  </div>
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Number</label>
                     <input id="addNewCourseInputNumber" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
 						   ng-model="addNewCourseInputNumber" />
                  </div>
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Section</label>
                     <input id="addNewCourseInputSection" class="form-control" type="text" ng-model="addNewCourseInputSection" />
                  </div>
-                 <div class="col-md-3">
+				 <div class="col-md-3">
+                    <label>ID</label>
+                    <input id="addNewCourseInputID" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+						   ng-model="addNewCourseInputID" />
+                 </div>
+			 </div>
+			 <div class="form-group">
+                 <div class="col-md-9">
                     <label>Title</label>
                     <input id="addNewCourseInputTitle" class="form-control" type="text" ng-model="addNewCourseInputTitle" />
                  </div>
@@ -360,37 +371,55 @@
         <div class="modal-body">
            <form role="role" class="form-horizontal">
              <div class="form-group">
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Subject</label>
                     <input id="editCourseInputSubject" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
 						   maxlength="3" ng-model="editCourseInputSubject"/>
                  </div>
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Number</label>
                     <input id="editCourseInputNumber" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
 						   ng-model="editCourseInputNumber" />
                  </div>
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <label>Section</label>
                     <input id="editCourseInputSection" class="form-control" type="text" ng-model="editCourseInputSection" />
                  </div>
-                 <div class="col-md-3">
+				 <div class="col-md-3">
+                    <label>ID</label>
+                    <input id="editCourseInputID" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+						   ng-model="editCourseInputID" />
+                 </div>
+		     </div>
+			 <div class="form-group">
+                 <div class="col-md-9">
                     <label>Title</label>
                     <input id="editCourseInputTitle" class="form-control" type="text" ng-model="editCourseInputTitle" />
                  </div>
 				 <div class="col-md-3">
                     <label>Semester</label>
-                    <select class="form-control" id="editCourseTerm" ng-model="editCourseTerm"
-                            ng-options="terms as terms.name for terms in vm.terms">
-						<option value=""></option>
-					</select>
+					<input id="editCourseTerm" class="form-control" type="text" ng-model="editCourseTerm" ng-disabled="true" />
                  </div>
              </div>
            </form>
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" id="addNewCourseButton" ng-click="vm.saveChangesCourse()">Save Changes</button>
+           <button type="button" class="btn btn-primary" id="addNewCourseButton" ng-click="vm.saveChangesCourse()" data-dismiss="modal"
+				   data-toggle="modal" data-target="#editSavedChangesCourseModal">Save Changes</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="editSavedChangesCourseModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <label id="editCourseMessage">Editing course was successful</label>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="editCourseConfirm" data-dismiss="modal">OK</button>
         </div>
      </div>
  </div>
@@ -416,7 +445,7 @@
 							<i class="fa fa-times" aria-hidden="true"></i>
 						</button>
 					</td>
-					<td>{{courseFile.course.name}}</td>
+					<td>{{courseFile.course.fullName}}</td>
 					<td>{{courseFile.file}}</td>
 				</tr>
 				<tr>
@@ -427,7 +456,7 @@
 					</td>
 					<td>
 						<select class="form-control" ng-model="syncCourseSelect" id="syncCourseSelect"
-								ng-options="course as course.name+' '+course.semester for course in vm.courses">
+								ng-options="course as course.fullName for course in vm.courses">
 							<option value=""></option>
 						</select>
 					</td>
@@ -442,8 +471,9 @@
 					<td class="col-md-1"><b>Subject</b></td>
 					<td class="col-md-1"><b>Number</b></td>
 					<td class="col-md-1"><b>Section</b></td>
+					<td class="col-md-1"><b>ID</b></td>
 					<td class="col-md-2"><b>Title</b></td>
-					<td class="col-md-2"><b>Semester</b></td>
+					<td class="col-md-1"><b>Semester</b></td>
 				</tr>
 				<tr>
 					<td>
@@ -461,6 +491,10 @@
 					</td>
 					<td>
 						<input id="addNewCourseInputSection2" class="form-control" type="text" ng-model="addNewCourseInputSection2" />
+					</td>
+					<td>
+						<input id="addNewCourseInputID2" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+							   ng-model="addNewCourseInputID2" />
 					</td>
 					<td>
 						<input id="addNewCourseInputTitle2" class="form-control" type="text" ng-model="addNewCourseInputTitle2" />
@@ -583,24 +617,78 @@
                     <th></th>
                     <th></th>
              <th></th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Panther ID</th>
-                    <th>User Type</th>
-                    <th ng-show="simple">College</th>
-					<th>Course</th>
-                    <th>Project</th>
-                    <th ng-show="simple">Gender</th>
-                    <th ng-show="simple">Joined Project</th>
-                    <th ng-show="simple">Rank</th>
-                    <th ng-show="simple">Mentor</th>
-                    <th ng-show="simple">Pi Approval</th>
-					<th>Semester</th>
-                    <th ng-show="simple">Multiple Project</th>
-                    <th ng-show="simple">Proj App Date</th>
-                    <th ng-show="simple">User Reg Date</th>
-                    <th ng-show="simple">First Login Date</th>
+                    <th ng-click="orderByFieldApp='firstName'; reverseSortApp = !reverseSortApp">First Name
+                       <span ng-show="orderByFieldApp == 'firstName' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'firstName' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='lastName'; reverseSortApp = !reverseSortApp">Last Name
+                       <span ng-show="orderByFieldApp == 'lastName' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'lastName' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='email'; reverseSortApp = !reverseSortApp">Email
+                       <span ng-show="orderByFieldApp == 'email' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'email' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='pantherID'; reverseSortApp = !reverseSortApp">Panther ID
+                       <span ng-show="orderByFieldApp == 'pantherID' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'pantherID' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='userType'; reverseSortApp = !reverseSortApp">User Type
+                       <span ng-show="orderByFieldApp == 'userType' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'userType' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='college'; reverseSortApp = !reverseSortApp" ng-show="simple">College
+                       <span ng-show="orderByFieldApp == 'college' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'college' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='course'; reverseSortApp = !reverseSortApp">Course
+                  <span ng-show="orderByFieldApp == 'course' && !reverseSortApp" class="fa fa-caret-down"></span>
+                  <span ng-show="orderByFieldApp == 'course' && reverseSortApp" class="fa fa-caret-up"></span>
+               </th>
+                    <th ng-click="orderByFieldApp='project'; reverseSortApp = !reverseSortApp">Project
+                       <span ng-show="orderByFieldApp == 'project' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'project' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='gender'; reverseSortApp = !reverseSortApp" ng-show="simple">Gender
+                       <span ng-show="orderByFieldApp == 'gender' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'gender' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='joined_project'; reverseSortApp = !reverseSortApp" ng-show="simple">Joined Project
+                       <span ng-show="orderByFieldApp == 'joined_project' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'joined_project' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='rank'; reverseSortApp = !reverseSortApp" ng-show="simple">Rank
+                       <span ng-show="orderByFieldApp == 'rank' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'rank' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='mentor'; reverseSortApp = !reverseSortApp" ng-show="simple">Mentor
+                       <span ng-show="orderByFieldApp == 'mentor' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'mentor' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='piApproval'; reverseSortApp = !reverseSortApp" ng-show="simple">Pi Approval
+                       <span ng-show="orderByFieldApp == 'piApproval' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'piApproval' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='semester'; reverseSortApp = !reverseSortApp">Semester
+                  <span ng-show="orderByFieldApp == 'semester' && !reverseSortApp" class="fa fa-caret-down"></span>
+                  <span ng-show="orderByFieldApp == 'semester' && reverseSortApp" class="fa fa-caret-up"></span>
+               </th>
+                    <th ng-click="orderByFieldApp='multipleproject'; reverseSortApp = !reverseSortApp" ng-show="simple">Multiple Project
+                       <span ng-show="orderByFieldApp == 'multipleproject' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'multipleproject' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='appliedDate'; reverseSortApp = !reverseSortApp" ng-show="simple">Proj App Date
+                       <span ng-show="orderByFieldApp == 'appliedDate' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'appliedDate' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='RegDate'; reverseSortApp = !reverseSortApp" ng-show="simple">User Reg Date
+                       <span ng-show="orderByFieldApp == 'RegDate' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'RegDate' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='firstlogin_date'; reverseSortApp = !reverseSortApp" ng-show="simple">First Login Date
+                       <span ng-show="orderByFieldApp == 'firstlogin_date' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'firstlogin_date' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
                 </tr>
 
                 <tr id="headerInputs">
@@ -649,7 +737,7 @@
 					filter: selectedusertype? {userType: selectedusertype.name}:'' | filter: selecteduserrank? {rank: selecteduserrank}:'' |
 					filter: selecteduserproject? {project: selecteduserproject.title}:'' | filter: selectedGoogle? {email: 'fiu.edu' || 'gmail.com'}:'' |
 					filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' |
-					filter: selectedCouse? {course: selectedCouse.name}:'' | filter: selectedIsEnrolled? {isEnrolled: true}:'' )) |
+					filter: selectedCouse? {course: selectedCouse.name}:'' | filter: selectedIsEnrolled? {isEnrolled: true}:'' )) | orderBy:orderByFieldApp:reverseSortApp |
 					itemsPerPage: 10" pagination-id="usersPage">
 
                     <td>
@@ -684,7 +772,7 @@
                     <td class="center">{{user.pantherID}}</td>
                     <td>{{user.userType}}</td>
                     <td ng-show="simple">{{user.college}}</td>
-					<td>{{user.course}}</td>
+					     <td>{{user.course}}</td>
                     <td>{{user.project}}</td>
                     <td class="center" ng-show="simple">{{user.gender}}</td>
                     <td ng-show="simple">{{user.joined_project}}</td>
@@ -789,7 +877,7 @@
 				 <div class="col-sm-3">
                     <label>Course</label>
                     <select class="form-control" ng-model="addUserCourse" id="ddCourseA"
-                          ng-options="course as course.name+' '+course.semester for course in vm.courses | filter: addUserTerm? {semester: addUserTerm.name}:'' | filter: addUserProject? {semester: addUserProject.semester}:'' ">
+                          ng-options="course as course.fullName for course in vm.courses | filter: addUserTerm? {semester: addUserTerm.name}:'' | filter: addUserProject? {semester: addUserProject.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
@@ -909,7 +997,7 @@
 				 <div class="col-sm-4">
                     <label>Course</label>
                     <select class="form-control" ng-model="editUserCourse" id="ddCourse"
-                          ng-options="course as course.name+' '+course.semester for course in vm.courses | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserProject? {semester: editUserProject.semester}:'' ">
+                          ng-options="course as course.fullName for course in vm.courses | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserProject? {semester: editUserProject.semester}:'' ">
                        <option value=""></option>
                     </select>
                  </div>
@@ -1104,19 +1192,8 @@
                 </th>
                 <th>
                   <form action="">
-                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value=true>On</input>
-                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value=false>Off</input>
-                  </form>
-                </th>
-              </tr>
-              <tr>
-                <th>
-                  Proposable by Faculty
-                </th>
-                <th>
-                  <form action="">
-                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="vm.pStatus" value="true">On</input>
-                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="!(vm.pStatus)" value="false">Off</input>
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value="true">On</input>
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value="false">Off</input>
                   </form>
                 </th>
               </tr>
@@ -1128,6 +1205,17 @@
                   <form action="">
                     <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="vm.vStatus" value="true">On</input>
                     <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="!(vm.vStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Proposable by Faculty
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="vm.pStatus" value="true">On</input>
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="!(vm.pStatus)" value="false">Off</input>
                   </form>
                 </th>
               </tr>
@@ -1452,9 +1540,9 @@
       <td class="col-md-3">
                  Owner:
                  <select class="form-control" id="powner" ng-model="selectedPOwner"
-                        ng-options="owners as owners.owner_name for owners in vm.allprojects">
-             <option value=""></option>
-          </select>
+                        	ng-options="owner as project.owner_name for project in vm.allprojects | filter:{owner_name: ''}">
+             		<option value=""></option>
+          	</select>
              </td>
              <td class="col-md-3">
                  Semester:
@@ -1484,18 +1572,18 @@
 					 <th></th>
 					 <th></th>
 					 <th></th>
-					 <th>Title</th>
-					 <th>Owner</th>
-					 <th ng-show="simpleP">Owner Rank</th>
-					 <th>Owner Email</th>
-					 <th>Semester</th>
-					 <th>Status</th>
-					 <th ng-show="simpleP">Mentor</th>
-					 <th ng-show="simpleP">Faculty</th>
-					 <th>Students</th>
-					 <th ng-show="simpleP">Description</th>
-					 <th ng-show="simpleP">Max Students</th>
-					 <th ng-show="simpleP">Video URL</th>
+					 <th ng-click="orderByFieldProj='title'; reverseSortProj = !reverseSortProj">Title</th>
+					 <th ng-click="orderByFieldProj='owner_name'; reverseSortProj = !reverseSortProj">Owner</th>
+					 <th ng-show="simpleP" ng-click="orderByFieldProj='owner_rank'; reverseSortProj = !reverseSortProj">Owner Rank</th>
+					 <th ng-click="orderByFieldProj='owner_email'; reverseSortProj = !reverseSortProj">Owner Email</th>
+					 <th ng-click="orderByFieldProj='semester'; reverseSortProj = !reverseSortProj">Semester</th>
+					 <th ng-click="orderByFieldProj='status'; reverseSortProj = !reverseSortProj">Status</th>
+					 <th ng-click="orderByFieldProj='mentor'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Mentor</th>
+					 <th ng-click="orderByFieldProj='faculty.name'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Faculty</th>
+					 <th ng-click="orderByFieldProj='member'; reverseSortProj = !reverseSortProj">Students</th>
+					 <th ng-click="orderByFieldProj='description'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Description</th>
+					 <th ng-click="orderByFieldProj='maxStudents'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Max Students</th>
+					 <th ng-click="orderByFieldProj='vidurl'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Video URL</th>
                    </tr>
 
                    <tr id="headerInputs">
@@ -1524,7 +1612,7 @@
 					filter: queryp1?{title:queryp1}:'' | filter: queryp2?{owner_name:queryp2}:'' | filter: queryp3?{owner_rank:queryp3}:'' |
 					filter: queryp4?{owner_email:queryp4}:'' | filter: queryp5?{semester:queryp5}:'' | filter: queryp6?{status:queryp6}:'' |
 					filter: queryp7?{mentor:queryp7}:'' | filter: queryp8?{faculty:queryp8}:'' | filter: queryp9?{members:queryp9}:'' |
-					filter: queryp10?{description:queryp10}:'' | filter: queryp11?{maxStudents:queryp11}:'' | filter: queryp12?{video_url:queryp12}:'')) |
+					filter: queryp10?{description:queryp10}:'' | filter: queryp11?{maxStudents:queryp11}:'' | filter: queryp12?{video_url:queryp12}:'')) | orderBy:orderByFieldProj:reverseSortProj |
 					itemsPerPage: 10" pagination-id="projectsPage">
 						<td>
                             <button id="editProjectStart" class="btn btn-info" ng-click="vm.editProject(project)"
@@ -1826,7 +1914,7 @@
    					<label id="editProjectMessage">Editing project was successful</label>
    				</div>
    				<div class="modal-body">
-   					<button type="button" class="btn btn-primary" id="editProjectConfirm" data-dismiss="modal">OK</button>
+   					<button type="button" class="btn btn-primary" id="editProjectConfirm" data-dismiss="modal" ng-click="vm.reloadDeactivate()">OK</button>
    				</div>
    			</div>
    		</div>

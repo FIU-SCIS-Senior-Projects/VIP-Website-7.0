@@ -215,6 +215,19 @@ function selectedItemChange(item) {
         vm.dsb = delSemButton;
         vm.esb = editSemButton;
         vm.rss = resetSemSettings;
+        vm.pi = printInfo;
+
+        function printInfo() {
+          console.log("vm.cStatus: " + vm.cStatus);
+          console.log("vm.vStatus: " + vm.vStatus);
+          console.log("vm.pStatus: " + vm.pStatus);
+          console.log("vm.aStatus: " + vm.aStatus);
+
+          console.log("$scope.cStatus: " + $scope.cStatus);
+          console.log("$scope.vStatus: " + $scope.vStatus);
+          console.log("$scope.pStatus: " + $scope.pStatus);
+          console.log("$scope.aStatus: " + $scope.aStatus);
+        }
 
         vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
         //Joe's User Story
@@ -1021,23 +1034,19 @@ function selectedItemChange(item) {
             ];
 
     function currentSwitch(e) {
-      console.log(typeof e);
-      vm.currentSwitchStatus = e;
+      vm.currentSwitchStatus = e == 'true' ? true : false;
     }
 
     function viewableSwitch(e) {
-      console.log(typeof e);
-      vm.viewableSwitchStatus = e;
+      vm.viewableSwitchStatus = e == 'true' ? true : false;
     }
 
     function proposableSwitch(e) {
-      console.log(typeof e);
-      vm.proposableSwitchStatus = e;
+      vm.proposableSwitchStatus = e == 'true' ? true : false;
     }
 
     function applicableSwitch(e) {
-      console.log(typeof e);
-      vm.applicableSwitchStatus = e;
+      vm.applicableSwitchStatus = e == 'true' ? true : false;
     }
 
 		function validateEmail(email) {
@@ -2410,7 +2419,6 @@ function selectedItemChange(item) {
         function loadTerms() {
             reviewStudentAppService.loadTerms().then(function (data) {
                 vm.terms = data;
-                console.log(vm.terms);
                 data.forEach(function(term) {
                   if(term.status.currentSemester == true){
                     vm.currentSem = term;
@@ -3054,20 +3062,20 @@ function selectedItemChange(item) {
           resetSemSettings();
           semestercreate_msg();
         }, function( error ) {} );
-        $scope.selectedTerm = termData;
+        // $scope.selectedTerm = termData;
       }
 
-      function setDefaultSemester (semester) {
+      function setDefaultSemester( semester ) {
         var term = semester;
         var user = vm.cuser;
 
         if ( term && user ) {
-
           user.selectedSemester = term;
-          ProfileService.saveProfile(user);
-          updateSelectedSemesterQueries(term.name);
-          vm.defaultSemester = term.name;
-          defaultsemester_msg();
+          ProfileService.saveProfile(user).then( function( success ) {
+            updateSelectedSemesterQueries(term.name);
+            vm.defaultSemester = term.name;
+            defaultsemester_msg();
+          }, function( error ) {} );
         }
       }
 
@@ -3081,34 +3089,40 @@ function selectedItemChange(item) {
           vm.vStatus = semester.status.viewable;
           vm.pStatus = semester.status.openForProposal;
           vm.aStatus = semester.status.openForApply;
-          if(vm.currentSwitchStatus == null) { vm.currentSwitchStatus = semester.status.currentSemester; }
-          if(vm.viewableSwitchStatus == null) { vm.viewableSwitchStatus = semester.status.viewable; }
-          if(vm.proposableSwitchStatus == null) { vm.proposableSwitchStatus = semester.status.openForProposal; }
-          if(vm.applicableSwitchStatus == null) { vm.applicableSwitchStatus = semester.status.openForApply; }
+          vm.currentSwitchStatus = vm.cStatus;
+          vm.viewableSwitchStatus = vm.vStatus;
+          vm.proposableSwitchStatus = vm.pStatus;
+          vm.applicableSwitchStatus = vm.aStatus;
         }
       }
 
       function makeSemesterChanges() {
         var semester = vm.semesterToBeEdited;
+
+        var status = {
+          currentSemester: vm.currentSwitchStatus,
+          viewable: vm.viewableSwitchStatus,
+          openForProposal: vm.proposableSwitchStatus,
+          openForApply: vm.applicableSwitchStatus
+        }
+
         if ( semester ) {
           semester.name = $scope.semName;
           semester.start = $scope.startDate;
           semester.end = $scope.endDate;
-          semester.status.currentSemester = vm.currentSwitchStatus == 'true' ? true : false;
-          semester.status.openForApply = vm.applicableSwitchStatus == 'true' ? true : false;
-          semester.status.openForProposal = vm.proposableSwitchStatus == 'true' ? true : false;
-          semester.status.viewable = vm.viewableSwitchStatus == 'true' ? true : false;
-          ProjectService.editTerm( semester, semester._id );
-          // vm.currentSem = selectedSemester;
-          // vm.currentSemesterName = vm.currentSem.name;
+          semester.status = status;
+
+          ProjectService.editTerm( semester, semester._id ).then( function( success ) {
+            console.log( "Successfully Edited Semester" );
+            semesterchange_msg();
+            resetSemSettings();
+          }, function( error ) {} );
         }
-        semesterchange_msg();
-        resetSemSettings();
+
       }
 
       function delSemButton (semester) {
         vm.semesterToBeDeleted = semester;
-        console.log(vm.semesterToBeDeleted);
       }
 
       function deleteSemester() {
@@ -3128,14 +3142,14 @@ function selectedItemChange(item) {
           delete $scope.semName;
           delete $scope.startDate;
           delete $scope.endDate;
-          delete $scope.cStatus;
-          delete $scope.vStatus;
-          delete $scope.pStatus;
-          delete $scope.aStatus;
-          // delete vm.cStatus;
-          // delete vm.vStatus;
-          // delete vm.pStatus;
-          // delete vm.aStatus;
+          delete vm.cStatus;
+          delete vm.vStatus;
+          delete vm.pStatus;
+          delete vm.aStatus;
+          $scope.cStatus = false;
+          $scope.vStatus = false;
+          $scope.pStatus = false;
+          $scope.aStatus = false;
           delete vm.currentSwitchStatus;
           delete vm.viewableSwitchStatus;
           delete vm.proposableSwitchStatus;

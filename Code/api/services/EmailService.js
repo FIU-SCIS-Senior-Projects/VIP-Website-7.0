@@ -20,7 +20,7 @@ var sendEmail = function (recipient, text, subject, errorHandler, successHandler
                 errorHandler(error);
             }
         } else if (successHandler) {
-            successHandler();
+            successHandler(info.response);
         }
     });
 };

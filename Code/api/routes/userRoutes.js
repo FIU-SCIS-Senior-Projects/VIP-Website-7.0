@@ -213,14 +213,15 @@ module.exports = function (app, express) {
                 var bccget = req.body.bcc;
 
                 recipient.split(',').concat(!bccget ? [] : bccget.split(',')).forEach(function (email) {
-                    emailService.sendEmailWithHeaderAndSignatureNoUser(email, text, subject, null, null);
+                    emailService.sendEmailWithHeaderAndSignatureNoUser(email, text, subject, function(err){}, function(success){return res.send(success)} );
                 });
 
                 var recipient2 = req.body.recipient2;
                 var text2 = req.body.text2;
                 var subject2 = req.body.subject2;
 
-                emailService.sendEmailWithHeaderAndSignatureNoUser(recipient2, text2, subject2, null, null);
+                emailService.sendEmailWithHeaderAndSignatureNoUser(recipient2, text2, subject2, function(err){}, function(success){return res.send(success)} );
+
             });
 
     userRouter.route('/users/email/:email')

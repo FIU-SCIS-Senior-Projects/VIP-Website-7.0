@@ -22,7 +22,7 @@
     <!-- User Story #1175 -->
     <label>*Semester:</label>
 
-    <select ng-model="project.semester" ng-options="term.name as term.name for term in terms" class="form-control" required> 
+    <select ng-model="project.semester" ng-options="term.name as term.name for term in terms | filter: proposeFilter" class="form-control" required> 
 	<option value=""></option>
     </select>
 

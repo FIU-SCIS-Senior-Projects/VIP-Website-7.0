@@ -966,7 +966,7 @@ var uploadProposalClass = {
                 }
                 else {
                     videoID = VideoURL.substr(VideoURL.indexOf("embed/") + 6);
-                    createdThumbURL = "http://img.youtube.com/vi/" + videoID + "/0.jpg";
+                    createdThumbURL = "https://img.youtube.com/vi/" + videoID + "/0.jpg";
                     return createdThumbURL;
                 }
             }

@@ -230,7 +230,7 @@ function selectedItemChange(item) {
 
           var projects;
           var productOwners = [];
-          var ownersEmailed = "The following Product Owners have been notified about the new semester: <br>";
+          var ownersEmailed = "The following Product Owners have been notified about the new " + vm.newestSemester + " semester: <br>";
           var testOwners = [
             {projectName: 'Test1', ownerName: 'Andres Moser', ownerEmail: 'amose001@fiu.edu'},
             {projectName: 'Test2', ownerName: 'Andres Moser', ownerEmail: 'amose001@fiu.edu'},
@@ -252,7 +252,7 @@ function selectedItemChange(item) {
             console.log(testOwners);
             console.log("Product Owners");
             console.log(productOwners);
-            testOwners.forEach(function(owner) {
+            productOwners.forEach(function(owner) {
               var email_msg =
                 {
                   recipient: owner.ownerEmail,
@@ -263,6 +263,7 @@ function selectedItemChange(item) {
                 };
 
               ownersEmailed = ownersEmailed + "- " + owner.ownerName + ", Project: " + owner.projectName + "<br>";
+              console.log(email_msg);
               User.nodeEmail(email_msg);
             })
 
@@ -272,6 +273,7 @@ function selectedItemChange(item) {
               text: ownersEmailed,
               subject: "Product Owners Emailed"
             };
+            console.log(admin_email_msg);
             User.nodeEmail(admin_email_msg);
           });
         }

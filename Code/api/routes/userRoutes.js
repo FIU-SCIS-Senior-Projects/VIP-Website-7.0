@@ -503,14 +503,14 @@ module.exports = function (app, express) {
                                         return res.send(err);
                                     } else if (users) {
                                         var userPromises = [];
-                                        users.map(function(user){    
+                                        users.map(function(user){
                                             userPromises.push(  new Promise(function(resolve, reject){
                                                 Project.findOne({ title: user.project }, function(err, proj){
-                                                  
+
                                                     if(err){
                                                         reject('')
                                                     }
-                                                    
+
                                                         //map to custom object for MJ
                                                         var tempObj = {
                                                             email : user.email,
@@ -521,14 +521,14 @@ module.exports = function (app, express) {
                                                             valid: true,
                                                             projectTitle: user.project,
                                                             projectId:  proj ? proj._id : null,
-                                                            course: user.course                                             
+                                                            course: user.course
                                                         }
 
                                                         console.log(tempObj)
                                                         resolve(tempObj)
 
-                                                    
-                                                    
+
+
                                                 })
                                             })
                                          )
@@ -541,9 +541,9 @@ module.exports = function (app, express) {
                                     })
                                 }
                             })
- 
-                     
-                    
+
+
+
                     } else {
                         return  res.json( {msg: "Token not authorized, please see your admin"})
                     }

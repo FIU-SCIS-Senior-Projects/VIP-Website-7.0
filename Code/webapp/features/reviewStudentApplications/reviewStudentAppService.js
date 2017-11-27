@@ -23,7 +23,7 @@
 		// Get projects from every semester
 		profileFactory.loadAllProjects = function () {
             return $http.get('/api/projects/findall').then(function (data) {
-                console.log(data.data);
+                // console.log(data.data);
                 var mod_data = []
                 var data_test = data.data.map(data=>{
                    var arr = []
@@ -37,7 +37,7 @@
                 // })
                 // data.data.members_detailed = mod_data
                 // console.log(data_test)
-                console.log(data.data);
+                // console.log(data.data);
                 return data.data;
             });
         };

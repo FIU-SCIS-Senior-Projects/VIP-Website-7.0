@@ -1238,10 +1238,27 @@
          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
          <!-- data-toggle="modal" data-target="#addedSemesterModal" -->
          <button type="button" class="btn btn-primary" id="addNewSemester" data-dismiss="modal"
-               ng-click="vm.cns(semName, startDate, endDate)" ng-disabled="!(semName && startDate && endDate)">Add Semester</button>
+               ng-click="vm.cns(semName, startDate, endDate)" ng-disabled="!(semName && startDate && endDate)"
+               data-toggle="modal" data-target="#newSemesterEmailModal">Add Semester</button>
       </div>
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="newSemesterEmailModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Email Update</h3>
+        </div>
+        <div class="modal-body">
+          <div>Would you like to email all Faculty/Staff about this new Semester?</div>
+           <button type="button" class="btn btn-primary" id="emailNewSemester"
+                   data-dismiss="modal" ng-click="vm.epo()">Yes</button>
+           <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        </div>
+     </div>
+ </div>
 </div>
 
 <div class="modal fade" id="editSemesterModal" role="dialog">

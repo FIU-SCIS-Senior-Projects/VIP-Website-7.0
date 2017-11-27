@@ -166,6 +166,7 @@ function selectedItemChange(item) {
 		// User story #1346
 		vm.courseFiles;
     vm.semesterToBeDeleted;
+    vm.newestSemester;
 
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
@@ -221,6 +222,57 @@ function selectedItemChange(item) {
         vm.esb = editSemButton;
         vm.rss = resetSemSettings;
         vm.pi = printInfo;
+        vm.epo = emailProductOwners;
+
+        function emailProductOwners() {
+
+          var projects;
+          var productOwners = [];
+          var ownersEmailed = "The following Product Owners have been notified about the new semester: <br>";
+          var testOwners = [
+            {projectName: 'Test1', ownerName: 'Andres Moser', ownerEmail: 'amose001@fiu.edu'},
+            {projectName: 'Test2', ownerName: 'Andres Moser', ownerEmail: 'amose001@fiu.edu'},
+            {projectName: 'Test3', ownerName: 'Andres Moser', ownerEmail: 'amose001@fiu.edu'}
+          ];
+          reviewStudentAppService.loadAllProjects().then(function (data) {
+            projects = data;
+            projects.forEach(function(project) {
+              productOwners.push(
+                {
+                  projectName: project.title,
+                  ownerName: project.owner_name,
+                  ownerEmail: project.owner_email
+                }
+              );
+            })
+
+            console.log("Test Owners: ");
+            console.log(testOwners);
+            console.log("Product Owners");
+            console.log(productOwners);
+            testOwners.forEach(function(owner) {
+              var email_msg =
+                {
+                  recipient: owner.ownerEmail,
+                  text:  "The " + vm.newestSemester +
+                         " semester has just been added, if you would like to propose " +
+                         owner.projectName + " for this semester, you can do so now.",
+                  subject: "New Semester added to FIU VIP"
+                };
+
+              ownersEmailed = ownersEmailed + "- " + owner.ownerName + ", Project: " + owner.projectName + "<br>";
+              User.nodeEmail(email_msg);
+            })
+
+            var admin_email_msg =
+            {
+              recipient: 'amose001@fiu.edu',
+              text: ownersEmailed,
+              subject: "Product Owners Emailed"
+            };
+            User.nodeEmail(admin_email_msg);
+          });
+        }
 
         function printInfo() {
           console.log("vm.cStatus: " + vm.cStatus);
@@ -3078,8 +3130,9 @@ function selectedItemChange(item) {
         };
         ProjectService.createTerm( termData ).then( function( success ) {
           loadTerms();
+          vm.newestSemester = n;
           resetSemSettings();
-          semestercreate_msg();
+          // semestercreate_msg();
         }, function( error ) {} );
         // $scope.selectedTerm = termData;
       }

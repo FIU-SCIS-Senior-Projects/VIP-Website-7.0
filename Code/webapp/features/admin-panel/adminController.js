@@ -34,6 +34,8 @@
         $scope.reverseSortApp = false;
         $scope.orderByFieldProj = ''
         $scope.reverseSortProj = false;
+        $scope.orderByFieldSem = ''
+        $scope.reverseSortSem = false;
       // list of `state` value/display objects
       vm.querySearch   = querySearch;
       vm.selectedItemChange = selectedItemChange;

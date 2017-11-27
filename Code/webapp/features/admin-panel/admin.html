@@ -1076,13 +1076,34 @@
           <th></th>
           <th></th>
           <th></th>
-          <th>Semester</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Current Semester</th>
-          <th>Viewable</th>
-          <th>Proposable</th>
-          <th>Applicable</th>
+          <th ng-click="orderByFieldSem='name'; reverseSortSem = !reverseSortSem">Semester
+             <span ng-show="orderByFieldSem == 'name' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'name' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='start'; reverseSortSem = !reverseSortSem">Start Date
+             <span ng-show="orderByFieldSem == 'start' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'start' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='end'; reverseSortSem = !reverseSortSem">End Date
+             <span ng-show="orderByFieldSem == 'end' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'end' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='status.currentSemester'; reverseSortSem = !reverseSortSem">Current Semester
+             <span ng-show="orderByFieldSem == 'status.currentSemester' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'status.currentSemester' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='status.viewable'; reverseSortSem = !reverseSortSem">Viewable
+             <span ng-show="orderByFieldSem == 'status.viewable' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'status.viewable' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='status.openForProposal'; reverseSortSem = !reverseSortSem">Proposable
+             <span ng-show="orderByFieldSem == 'status.openForProposal' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'status.openForProposal' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='status.openForApply'; reverseSortSem = !reverseSortSem">Viewable
+             <span ng-show="orderByFieldSem == 'status.openForApply' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'status.openForApply' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
         </tr>
         <tr id="headerInputs">
           <th></th>
@@ -1109,6 +1130,7 @@
         <tr dir-paginate="semester in vm.terms | filter: queryS1?{name:queryS1} : '' |
                                                  filter: queryS2?{start:queryS2} : '' |
                                                  filter: queryS3?{end:queryS3} : '' |
+                                                 orderBy:orderByFieldSem:reverseSortSem |
                                                  itemsPerPage: 10" pagination-id="semestersPage">
 
           <td>

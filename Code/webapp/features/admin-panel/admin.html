@@ -1165,10 +1165,16 @@
           </td>
           <td>
             <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForProposal"></i>
-            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForProposal"></i></td>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForProposal"></i>
+            <button id="editSemester" class="btn btn-primary" ng-click="" ng-show="semester.status.openForProposal"
+                    data-toggle="modal" data-target="#newSemesterEmailModal" style="margin-left: 15px">
+            <i class="fa fa-envelope" aria-hidden="true"></i>
+            </button>
+          </td>
           <td>
             <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForApply"></i>
-            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForApply"></i></td>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForApply"></i>
+          </td>
         </tr>
       </tbody>
     </table>

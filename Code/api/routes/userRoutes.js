@@ -206,7 +206,6 @@ module.exports = function (app, express) {
         .post(
             authProvider.authorizeAll,
             function (req, res) {
-
                 var recipient = req.body.recipient;
                 var text = req.body.text;
                 var subject = req.body.subject;
@@ -215,13 +214,14 @@ module.exports = function (app, express) {
                 recipient.split(',').concat(!bccget ? [] : bccget.split(',')).forEach(function (email) {
                     emailService.sendEmailWithHeaderAndSignatureNoUser(email, text, subject, function(err){}, function(success){return res.send(success)} );
                 });
+                
+                if(req.body.recipient2) {
+                  var recipient2 = req.body.recipient2;
+                  var text2 = req.body.text2;
+                  var subject2 = req.body.subject2;
 
-                var recipient2 = req.body.recipient2;
-                var text2 = req.body.text2;
-                var subject2 = req.body.subject2;
-
-                emailService.sendEmailWithHeaderAndSignatureNoUser(recipient2, text2, subject2, function(err){}, function(success){return res.send(success)} );
-
+                  emailService.sendEmailWithHeaderAndSignatureNoUser(recipient2, text2, subject2, function(err){}, function(success){return res.send(success)} );
+                }
             });
 
     userRouter.route('/users/email/:email')

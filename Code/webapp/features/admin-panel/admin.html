@@ -259,10 +259,22 @@
                 <tr id="headerLabels">
 					<th></th>
 					<th></th>
-                    <th>Course</th>
-					<th>Title</th>
-					<th>Semester</th>
-					<th>ID</th>
+					<th ng-click="orderByFieldApp='name'; reverseSortApp = !reverseSortApp">Course
+                       <span ng-show="orderByFieldApp == 'name' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'name' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='title'; reverseSortApp = !reverseSortApp">Title
+                       <span ng-show="orderByFieldApp == 'title' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'title' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='semester'; reverseSortApp = !reverseSortApp">Semester
+                       <span ng-show="orderByFieldApp == 'semester' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'semester' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='course_id'; reverseSortApp = !reverseSortApp">ID
+                       <span ng-show="orderByFieldApp == 'course_id' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'course_id' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
                 </tr>
 
                 <tr id="headerInputs">
@@ -286,7 +298,8 @@
 
 				<tr dir-paginate="course in (filteredCItems = ( vm.courses | filter: queryC1?{name:queryC1}:'' | filter: queryC2?{title:queryC2}:'' |
 					filter: queryC3?{semester:queryC3}:'' | filter: queryC4?{course_id:queryC4}:'' |
-					filter: selectedCourseTerm? {semester: selectedCourseTerm.name}:'' )) | itemsPerPage: 10" pagination-id="coursesPage">
+					filter: selectedCourseTerm? {semester: selectedCourseTerm.name}:'' )) | orderBy:orderByFieldApp:reverseSortApp |
+					itemsPerPage: 10" pagination-id="coursesPage">
                     <td>
                         <button id="editCourseButton" class="btn btn-primary" ng-click="vm.editCourse(course)" data-toggle="modal" data-target="#editCourseModal">
 							<i class="fa fa-pencil" aria-hidden="true"></i>
@@ -511,6 +524,10 @@
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		   <a href="../../img/Template.xls" download>
+				<button type="button" class="btn btn-primary">Download Template</button>
+		   </a>
+		   <!--<button type="submit" class="btn btn-primary" onclick="window.open('../../img/Template.xls')">Download Template</button>-->
 		   <button type="button" class="btn btn-danger" id="clearFilesButton" ng-click="vm.clearCourseFiles()">Clear List</button>
            <button type="button" class="btn btn-success" id="syncFilesButton" data-dismiss="modal"
                  ng-click="vm.syncDatabase()">Sync Database</button>
@@ -827,7 +844,7 @@
                     <input id="addUserEmail" class="form-control" type="text" ng-model="addUserEmail"/>
                  </div>
                  <div class="col-sm-4">
-                    <label>Password (required)</label>
+					<label>Password (required)</label>
                     <input id="addUserPassword" class="form-control" autocomplete="off" type="password" ng-model="addUserPassword"/>
                  </div>
                  <div class="col-sm-4">
@@ -1137,11 +1154,11 @@
             <button id="defaultSemester" class="btn btn-info btn-block" ng-click="vm.defsb(semester)"
                     ng-hide="user.userType == 'Pi/CoPi'"
                     ng-style="{'background-color': semester.name == vm.defaultSemester ? 'green' : ''}">
-            <i class="fa fa-eye" aria-hidden="true"></i>
+            <i class="fa fa-check" aria-hidden="true"></i>
             </button>
           </td>
           <td>
-            <button id="editSemester" class="btn btn-info" ng-click="vm.esb(semester)"
+            <button id="editSemester" class="btn btn-primary" ng-click="vm.esb(semester)"
                     data-toggle="modal" data-target="#editSemesterModal">
             <i class="fa fa-pencil" aria-hidden="true"></i>
             </button>

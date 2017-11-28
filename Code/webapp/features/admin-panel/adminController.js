@@ -1291,7 +1291,8 @@ function selectedItemChange(item) {
 						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Email Address';
 					}
 					else if (!validatePassword($scope.addUserPassword) || !validatePassword($scope.addUserPasswordConf)) {
-						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Password';
+						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Password<br>Passwords need to be at least 8 letters long and must contain at least one of each:' +
+						'<br>&nbsp;-&nbsp;Uppercase characters<br>&nbsp;-&nbsp;Lowercase characters<br>&nbsp;-&nbsp;Numbers<br>&nbsp;-&nbsp;Special characters: ! @ # $ % & * ( )';
 					}
 					else {
 						document.getElementById('addUserMessage').innerHTML = 'Error: Mismatched Passwords';

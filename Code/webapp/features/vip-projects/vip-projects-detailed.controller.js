@@ -175,6 +175,18 @@
                     $window.location.href = "/#/vip-projects";
                 });
             }
+            else if (vm.data.members.length >= vm.data.maxStudents) {
+                swal({
+                    title: "Project Full!",
+                    text: "This Project is full. Please apply to a different project.",
+                    type: "error",
+                    confirmButtonText: "Okay",
+                    showCancelButton: false,
+                }, function () {
+                    //alert(1);
+                    $window.location.href = "/#/vip-projects";
+                });
+            }
             // all other users are allowed
             else {
                 $state.go('studentconfirminfo', {id: vm.id});

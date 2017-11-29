@@ -57,6 +57,7 @@
         </div>
     </div>
 <div class="proj-card-skills"><label>Skills preferred:</label> {{project.reqskillItem}}</div>
+<div class="proj-card-skills"><label>Currently enrolled:</label> {{project.members.length}} student(s) &nbsp; &nbsp; &nbsp; &nbsp; <label>Max capacity:</label> {{project.maxStudents}} student(s)</div>
 </div>
 </div>
 <div class="col-md-6 project-info" ng-if="vm.done" ng-repeat="project in vm.filteredprojects | filter: { status: 'modified' }" ng-click="vm.viewDetails(project.old_project[0])">

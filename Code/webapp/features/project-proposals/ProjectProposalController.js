@@ -325,7 +325,11 @@ var uploadProposalClass = {
                   $scope.project.description = data.description
                   $scope.project.firstSemester = data.firstSemester
                   $scope.project.maxStudents = data.maxStudents
-                  $scope.skills = data.reqskillItem
+                  $scope.project.video_url = data.video_url
+                  $scope.project.youtube_url = data.youtube_url
+                  $scope.project.attachments = data.attachments
+                  $scope.project.deliverables_attached = data.deliverables_attached
+                  $scope.project.reqskillItem = data.reqskillItem
 
                })
             }

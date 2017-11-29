@@ -134,6 +134,8 @@
                     </div>
                 </div>
                     <h4>Students</h4>
+                    <p>Currently enrolled: {{vm.data.members.length}} student(s)</p>
+                    <p>Maximum capacity: {{vm.data.maxStudents}} student(s)</p>
                 <div ng-init="personLimit = 5">
                     <table class="table student-list">
                         <tr ng-repeat="student in vm.data.addedStudents | limitTo: personLimit track by $index" style="padding:2px;">

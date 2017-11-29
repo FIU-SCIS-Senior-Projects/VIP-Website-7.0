@@ -1166,7 +1166,7 @@
           <td>
             <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForProposal"></i>
             <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForProposal"></i>
-            <button id="editSemester" class="btn btn-primary" ng-click="" ng-show="semester.status.openForProposal"
+            <button id="editSemester" class="btn btn-primary" ng-click="vm.ses(semester)" ng-show="semester.status.openForProposal"
                     data-toggle="modal" data-target="#newSemesterEmailModal" style="margin-left: 15px">
             <i class="fa fa-envelope" aria-hidden="true"></i>
             </button>
@@ -1266,8 +1266,8 @@
          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
          <!-- data-toggle="modal" data-target="#addedSemesterModal" -->
          <button type="button" class="btn btn-primary" id="addNewSemester" data-dismiss="modal"
-               ng-click="vm.cns(semName, startDate, endDate)" ng-disabled="!(semName && startDate && endDate)"
-               data-toggle="modal" data-target="#newSemesterEmailModal">Add Semester</button>
+               ng-click="vm.cns(semName, startDate, endDate)" ng-disabled="!(semName && startDate && endDate)">
+               Add Semester</button>
       </div>
     </div>
   </div>
@@ -1280,7 +1280,7 @@
            <h3>Email Update</h3>
         </div>
         <div class="modal-body">
-          Would you like to email all Faculty/Staff about this new Semester?
+          Would you like to email all Faculty/Staff about this Semester?
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" id="emailNewSemester"

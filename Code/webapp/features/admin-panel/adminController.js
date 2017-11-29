@@ -168,7 +168,7 @@ function selectedItemChange(item) {
 		// User story #1346
 		vm.courseFiles;
     vm.semesterToBeDeleted;
-    vm.newestSemester;
+    vm.emailSemester;
 
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
@@ -225,45 +225,38 @@ function selectedItemChange(item) {
         vm.rss = resetSemSettings;
         vm.pi = printInfo;
         vm.epo = emailProductOwners;
+        vm.ses = function(semester) {
+          vm.emailSemester = semester.name;
+        }
 
         function emailProductOwners() {
-
-          var projects;
+          var users;
           var productOwners = [];
-          var ownersEmailed = "The following Product Owners have been notified about the new " + vm.newestSemester + " semester: <br>";
-          var testOwners = [
-            {projectName: 'Test1', ownerName: 'Andres Moser', ownerEmail: 'amose001@fiu.edu'},
-            {projectName: 'Test2', ownerName: 'Andres Moser', ownerEmail: 'amose001@fiu.edu'},
-            {projectName: 'Test3', ownerName: 'Andres Moser', ownerEmail: 'amose001@fiu.edu'}
-          ];
-          reviewStudentAppService.loadAllProjects().then(function (data) {
-            projects = data;
-            projects.forEach(function(project) {
-              productOwners.push(
-                {
-                  projectName: project.title,
-                  ownerName: project.owner_name,
-                  ownerEmail: project.owner_email
-                }
-              );
-            })
+          var ownersEmailed = "The following Product Owners have been notified about the new " + vm.emailSemester + " semester: <br>";
 
-            console.log("Test Owners: ");
-            console.log(testOwners);
-            console.log("Product Owners");
-            console.log(productOwners);
+          adminService.loadAllUsers().then(function (data) {
+            users = data;
+            users.forEach(function(user) {
+              if(user.userType == 'Staff/Faculty' || user.userType == 'Pi/CoPi') {
+                productOwners.push(
+                  {
+                    name: user.firstName + " " + user.lastName,
+                    email: user.email
+                  }
+                );
+              }
+            })
+            
             productOwners.forEach(function(owner) {
               var email_msg =
                 {
-                  recipient: owner.ownerEmail,
-                  text:  "The " + vm.newestSemester +
-                         " semester has just been added, if you would like to propose " +
-                         owner.projectName + " for this semester, you can do so now.",
+                  recipient: owner.email,
+                  text:  "The " + vm.emailSemester +
+                         " semester is now open for project proposals. If you are interested, you can do so now.",
                   subject: "New Semester added to FIU VIP"
                 };
 
-              ownersEmailed = ownersEmailed + "- " + owner.ownerName + ", Project: " + owner.projectName + "<br>";
-              console.log(email_msg);
+              ownersEmailed = ownersEmailed + "- " + owner.name + "<br>";
               User.nodeEmail(email_msg);
             })
 
@@ -273,7 +266,6 @@ function selectedItemChange(item) {
               text: ownersEmailed,
               subject: "Product Owners Emailed"
             };
-            console.log(admin_email_msg);
             User.nodeEmail(admin_email_msg);
           });
         }
@@ -3134,7 +3126,6 @@ function selectedItemChange(item) {
         };
         ProjectService.createTerm( termData ).then( function( success ) {
           loadTerms();
-          vm.newestSemester = n;
           resetSemSettings();
           // semestercreate_msg();
         }, function( error ) {} );

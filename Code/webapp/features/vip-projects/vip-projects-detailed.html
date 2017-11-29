@@ -2,7 +2,7 @@
 <div class="row team-project">
 
         <div class="video-container" ng-show="vm.data.video_url[0].vidurl">
-			
+
             <iframe width="600" height="350" ng-src="{{iFrameURL}}" id="vidframe" frameborder="0" allowfullscreen style="margin: 0 auto;"></iframe>
 
             <div class="container" style="padding-top:15px;">
@@ -16,13 +16,13 @@
             <div class="col-sm-12 detailed-project-info">
 				<center>
 					<h2 class="proj-status" ng-hide="(vm.data.status == 'Active')">
-						
+
                         <strong>This Project is Currently Inactive</strong>
                     </h2>
 				</center>
                     <h2 class="proj-title-teams-detail">
-						
-						
+
+
                         <strong>{{vm.data.title}}</strong>
                     </h2>
                     <hr>
@@ -104,7 +104,7 @@
                         <table class="table student-list">
 					        <tr ng-repeat="faculty in vm.data.faculty | limitTo: facultyLimit track by $index" style="padding:2px;">
 					            <td style="padding:2px; vertical-align: middle;"><a ng-click="vm.redirect2(faculty.email)" class="person_hover">{{faculty.name}}</a></td>
-                                <td style="width:50px;">   
+                                <td style="width:50px;">
                                     <a href="/#/sendmessage/{{faculty.email}}/0/1">
 					                <i class="fa fa-envelope-o fa-lg" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="display: inline;"></i>
 					                </a>
@@ -187,23 +187,23 @@
                 <div class="btn side-bar-button">{{discipline}}</div>
             </div> -->
 
-            <div class="btn btn-primary" ng-click="vm.applyForProject()" ng-hide=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" ng-if="!vm.already_joined"> 
+            <div class="btn btn-primary" ng-click="vm.applyForProject()" ng-hide="!vm.applicable || vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" ng-if="!vm.already_joined"> 
                 <strong>Apply</strong>
             </div>
 
-            <div class="btn btn-primary" ng-click="vm.applyForProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" ng-if="!vm.already_joined"> 
+            <div class="btn btn-primary" ng-click="vm.applyForProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" ng-if="!vm.already_joined">
                 <strong>Join</strong>
             </div>
 
-            <div ng-if="vm.already_joined" class="btn btn-primary" ng-click="vm.leaveProject()"> 
+            <div ng-if="vm.already_joined" class="btn btn-primary" ng-click="vm.leaveProject()">
                 <strong>Leave</strong>
             </div>
 
-            <div class="btn btn-primary" ng-click="vm.editProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'"> 
+            <div class="btn btn-primary" ng-click="vm.editProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'">
                 <strong>Edit</strong>
             </div>
 
-            <div class="btn btn-primary" ng-click="vm.deleteProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'"> 
+            <div class="btn btn-primary" ng-click="vm.deleteProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'">
                 <strong>Delete</strong>
             </div>
             </div>

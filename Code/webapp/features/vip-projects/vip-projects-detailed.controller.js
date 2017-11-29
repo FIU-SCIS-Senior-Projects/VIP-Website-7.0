@@ -92,7 +92,7 @@
             });
 
         });
-        //}           
+        //}
 
 
         function getProjectById() {
@@ -103,7 +103,7 @@
                     vm.own = vm.data.owner_name.split(', ');
                     vm.own.mail = vm.data.owner_email.split(', ');
                     console.log(vm.own);
-                    //vm.own_mails = 
+                    //vm.own_mails =
                 }
                 else {
                     vm.data = data;
@@ -141,6 +141,9 @@
                         vm.already_joined = false;
                         vm.not_signed_in = true;
                     }
+                });
+                reviewStudentAppService.getTerm(vm.data.term).then(function(semester) {
+                  vm.applicable = semester.status.openForApply;
                 });
             })
         }
@@ -264,23 +267,23 @@
         function b64toBlob(b64Data, contentType, sliceSize) {
             contentType = contentType || '';
             sliceSize = sliceSize || 512;
-          
+
             var byteCharacters = atob(b64Data);
             var byteArrays = [];
-          
+
             for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
               var slice = byteCharacters.slice(offset, offset + sliceSize);
-          
+
               var byteNumbers = new Array(slice.length);
               for (var i = 0; i < slice.length; i++) {
                 byteNumbers[i] = slice.charCodeAt(i);
               }
-          
+
               var byteArray = new Uint8Array(byteNumbers);
-          
+
               byteArrays.push(byteArray);
             }
-          
+
             var blob = new Blob(byteArrays, {type: contentType});
             return blob;
           }

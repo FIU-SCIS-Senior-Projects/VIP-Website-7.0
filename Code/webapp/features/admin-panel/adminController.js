@@ -2538,7 +2538,7 @@ function selectedItemChange(item) {
 		vm.uncheckc = function () {
 			// userstory #1346
 			for (var i = 1; i <= 4; i++) {
-                $scope['queryc' + i] = '';
+                $scope['queryC' + i] = '';
             }
 			$scope.selectedCourseTerm = '';
         }

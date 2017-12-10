@@ -246,7 +246,7 @@ function selectedItemChange(item) {
                 );
               }
             })
-            
+
             productOwners.forEach(function(owner) {
               var email_msg =
                 {
@@ -262,7 +262,7 @@ function selectedItemChange(item) {
 
             var admin_email_msg =
             {
-              recipient: 'amose001@fiu.edu',
+              recipient: vm.adminSettings.current_email,
               text: ownersEmailed,
               subject: "Product Owners Emailed"
             };

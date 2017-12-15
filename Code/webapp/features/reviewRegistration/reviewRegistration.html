@@ -1,13 +1,15 @@
 <!-- User Story #1140-->
 <div>
+
+     <input type="text" ng-model="searchText" placeholder="Search Keywords" class="form-control">
  <h3 align="center"> Review Faculty Registrations </h3>
             <table class="table">
             <tr>
             <td><label>Date</label></td><td><label>First Name</label></td><td><label>Last Name</label></td><td><label>Email</label></td><td><label>User Type</label></td><td><label>Rank</label></td>
             <td><label>Panther ID</label></td><td><label>Gender</label></td><td><label>College</label></td><td><label>School/Department</label></td><td><label>Approve</label></td><td><label>Reject</label></td>
             </tr>
-            <tr ng-repeat="user in vm.membs track by $index">
-            
+            <tr ng-repeat="user in vm.membs track by $index | filter:searchText">
+
             <td><a data-toggle="tooltip" data-placement="top" title={{user.RegDate}}><input type="text" class="form-control profile" value={{user.RegDate}} readonly></input></a></td>
             <td><a data-toggle="tooltip" data-placement="top" title={{user.firstName}}><input type="text" class="form-control profile" value={{user.firstName}} readonly></input></a></td>
             <td><a data-toggle="tooltip" data-placement="top" title={{user.lastName}}><input type="text" class="form-control profile" value={{user.lastName}} readonly></input></a></td>
@@ -34,7 +36,7 @@
             </td>
             </tr>
             </div>
-            
+
             </div>
 <br>
 </table>
@@ -44,8 +46,8 @@
              <td><label>Date</label></td><td><label>First Name</label></td><td><label>Last Name</label></td><td><label>Email</label></td><td><label>Type</label></td><td><label>Rank</label></td>
             <td><label>Gender</label></td><td><label>College</label></td><td><label>Department</label></td><td><label>Action</label></td><td><label>Undo</label></td><td><label>Delete</label></td>
             </tr>
-            <tr ng-repeat="log in vm.logs | filter:{ type: 'faculty' }">
-            <td><a data-toggle="tooltip" data-placement="top" title={{log.RegDate}}><input type="text" class="form-control profile" value={{log.RegDate}} readonly></input></a></td>  
+            <tr ng-repeat="log in vm.logs | filter:{ type: 'faculty' } | filter:searchText">
+            <td><a data-toggle="tooltip" data-placement="top" title={{log.RegDate}}><input type="text" class="form-control profile" value={{log.RegDate}} readonly></input></a></td>
             <td><a data-toggle="tooltip" data-placement="top" title={{log.firstName}}><input type="text" class="form-control profile" value={{log.firstName}} readonly></input></a></td>
             <td><a data-toggle="tooltip" data-placement="top" title={{log.lastName}}><input type="text" class="form-control profile" value={{log.lastName}} readonly></input></a></td>
             <td><a data-toggle="tooltip" data-placement="top" title={{log.facultyemail}}><input type="text" class="form-control profile" value={{log.facultyemail}} readonly></input></a></td>
@@ -71,7 +73,7 @@
             </td>
             </tr>
             </div>
-            
+
             </div>
 <br>
 </table>

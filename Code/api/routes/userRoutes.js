@@ -2,8 +2,10 @@ var passport = require('passport');
 var nodemailer = require('nodemailer');
 var emailService = require('../services/EmailService');
 var User = require('../models/users');
+var Project = require('../models/projects');
 var ImpersonationLog = require('../models/impersonationLog');
 var authProvider = require('../services/AuthorizationProvider');
+var Key = require('../config/key');
 
 module.exports = function (app, express) {
 
@@ -16,11 +18,34 @@ module.exports = function (app, express) {
 
     app.get('/auth/google/callback',
         authProvider.authorizeAll,
-        passport.authenticate('google',
-            {
-                successRedirect: '/#',
-                failureRedirect: '/status'
-            })
+      //   passport.authenticate('google',
+      //       {
+      //           successRedirect: '/#',
+      //           failureRedirect: '/status'
+      //       }
+      //    )
+      function(req,res,next){
+         passport.authenticate('google',function(err, user, info){
+            console.log(user)
+             if (err) {
+                return res.redirect('/status');
+             }
+             if (!user) {
+                return res.redirect('/status');
+             }
+             User.findOne({email: user.email}, function (error, usr) {
+                usr.piApproval = true
+                usr.save(function (err) {
+                   console.log(err)
+                });
+             })
+             req.login(user,function(err){
+                if (err) { return next(err); }
+                return res.redirect('/#');
+             })
+           })(req, res, next)
+      }
+
     );
 
     app.get('/status',
@@ -181,21 +206,22 @@ module.exports = function (app, express) {
         .post(
             authProvider.authorizeAll,
             function (req, res) {
-
                 var recipient = req.body.recipient;
                 var text = req.body.text;
                 var subject = req.body.subject;
                 var bccget = req.body.bcc;
 
                 recipient.split(',').concat(!bccget ? [] : bccget.split(',')).forEach(function (email) {
-                    emailService.sendEmailWithHeaderAndSignatureNoUser(email, text, subject, null, null);
+                    emailService.sendEmailWithHeaderAndSignatureNoUser(email, text, subject, function(err){}, function(success){return res.send(success)} );
                 });
+                
+                if(req.body.recipient2) {
+                  var recipient2 = req.body.recipient2;
+                  var text2 = req.body.text2;
+                  var subject2 = req.body.subject2;
 
-                var recipient2 = req.body.recipient2;
-                var text2 = req.body.text2;
-                var subject2 = req.body.subject2;
-
-                emailService.sendEmailWithHeaderAndSignatureNoUser(recipient2, text2, subject2, null, null);
+                  emailService.sendEmailWithHeaderAndSignatureNoUser(recipient2, text2, subject2, function(err){}, function(success){return res.send(success)} );
+                }
             });
 
     userRouter.route('/users/email/:email')
@@ -235,6 +261,84 @@ module.exports = function (app, express) {
                 });
             });
 
+
+	// Find User by Term
+	userRouter.route('/users/term/:term')
+        .get(
+            authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
+            function (req, res) {
+                User.find({semester: req.params.term}, function (err, users) {
+                    if (err) {
+						return res.send(err);
+                    } else if (users) {
+                        return res.json(users);
+                    }
+                });
+            });
+   userRouter.route('/usersUpdate/approveProject/:user')
+      .put(
+         authProvider.authorizeAll,
+         function (req, res) {
+            console.log('*************** HERE ****************')
+            User.findById(req.params.user, function (err, user) {
+               console.log(user)
+               user.piProjectApproval = true
+               user.save(function (err) {
+                  if (err)
+                     return res.send({success: false, error: err});
+                  else
+                     res.json({
+                        success: true,
+                        objectId: user._id,
+                        message: 'User account updated.'
+                     });
+               });
+            })
+         }
+      )
+      userRouter.route('/usersUpdate/approveUser/:user')
+         .put(
+            authProvider.authorizeAll,
+            function (req, res) {
+               console.log('*************** HERE ****************')
+               User.findById(req.params.user, function (err, user) {
+                  console.log(user)
+                  user.piApproval = true
+                  user.save(function (err) {
+                     if (err)
+                        return res.send({success: false, error: err});
+                     else
+                        res.json({
+                           success: true,
+                           objectId: user._id,
+                           message: 'User account updated.'
+                        });
+                  });
+               })
+            }
+         )
+      userRouter.route('/usersUpdate/unapproveUser/:user')
+            .put(
+               authProvider.authorizeAll,
+               function (req, res) {
+                  console.log('*************** HERE ****************')
+                  User.findById(req.params.user, function (err, user) {
+                     console.log(user)
+                     user.piApproval = false
+                     user.save(function (err) {
+                        if (err)
+                           return res.send({success: false, error: err});
+                        else
+                           res.json({
+                              success: true,
+                              objectId: user._id,
+                              message: 'User account updated.'
+                           });
+                     });
+                  })
+               }
+            )
+
     // User.create(vm.userData).success(function(data) from userRegistrationController.js calls this function
     // BUG: This function is returning success even if the user already exists in the database
     userRouter.route('/users')
@@ -255,30 +359,59 @@ module.exports = function (app, express) {
                 user.department = req.body.department;
                 user.RegDate = req.body.RegDate;  // sets the users college
                 user.allowNotifications = true;//new users opt in to notifications by default
+                user.piProjectApproval = false;
+				user.googleKey = " ";
+                user.userType = req.body.userType;
+                user.gender = req.body.gender;
+				user.semester = req.body.semester;
+				user.course = req.body.course;
+				user.isEnrolled = req.body.isEnrolled;
 
+				// Called only when user is created by admin panel (us #1300)
+				if (req.body.adminCreated) {
+					user.piApproval = req.body.piApproval;
+					if (typeof user.piApproval === 'boolean' && user.piApproval) {
+						user.piDenial = false;
+						user.verifiedEmail = true;
+						user.isDecisionMade = true;
+					}
+					else if (typeof user.piApproval === 'boolean' && !user.piApproval) {
+						user.piDenial = true;
+						user.verifiedEmail = false;
+						user.isDecisionMade = true;
+					}
+					else {
+						user.piDenial = false;
+						user.verifiedEmail = false;
+						user.isDecisionMade = false;
+					}
+
+					if (user.userType == "Pi/CoPi")
+						user.isSuperUser = true;
+					else
+						user.isSuperUser = false;
+				}
                 // mohsen says his and masouds accounts should automatically become verified as Pi
-                if (req.body.email == "mtahe006@fiu.edu" || req.body.email == "sadjadi@cs.fiu.edu") {
+                else if (req.body.email == "mtahe006@fiu.edu" || req.body.email == "sadjadi@cs.fiu.edu") {
                     // give them all perms
                     user.piApproval = true;
                     user.piDenial = false;
                     user.verifiedEmail = true;
                     user.isDecisionMade = true;
                     user.isSuperUser = true;
-                } else {
+                }
+				else {
                     // initially has to be init to false
                     user.piApproval = false;
                     user.piDenial = false;
+                    user.piProjectApproval = false;
                     user.verifiedEmail = false;
                     user.isDecisionMade = false;
                     // always set to false, until the user is approved as a PI
                     user.isSuperUser = false;
                 }
 
-                user.googleKey = " ";
-                user.userType = req.body.userType;
-                user.gender = req.body.gender;
-
-                user.save(function (err) {
+                user.save(function (err, newUser) {
                     // an error occured while trying to insert the new user
                     if (err) {
                         // duplicate entry - user exists
@@ -287,9 +420,10 @@ module.exports = function (app, express) {
                         else
                             return res.send({success: false, error: err});//todo: error code?
                     }
-                    // return the object id for validation and message for the client
+                    // return the object and object id for validation and message for the client
                     res.json({
                         success: true,
+						object: newUser,
                         objectId: user._id,
                         message: 'User account created please verify the account via the registered email.'
                     });
@@ -298,26 +432,123 @@ module.exports = function (app, express) {
         .put(
             authProvider.authorizeAuthenticatedUsers,//this can't be restricted any more because faculty/staff will use this from the review Project Page
             function (req, res) {
-                User.findOne({'email': req.body.user.email}, function (err, user) {
+                User.findById(req.body.user._id, function (err, user) {
                     if (user) {
                         user.firstName = req.body.user.firstName;  // set the users name (comes from the request)
                         user.lastName = req.body.user.lastName;  // set the users last name
                         user.pantherID = req.body.user.pantherID;     // set the users panther ID
                         user.password = req.body.user.password;  // set the users password (comes from the request)
                         user.passwordConf = req.body.user.passwordConf;
+						user.gender = req.body.user.gender;
                         user.email = req.body.user.email;   // sets the users email
                         user.project = req.body.user.project; // sets the users project
+						user.userType = req.body.user.userType;
                         user.rank = req.body.user.rank;    // set the users Rank within the program
                         user.college = req.body.user.college;   // sets the users college
                         user.department = req.body.user.department;  // sets the users college
                         user.joined_project = req.body.user.joined_project;
+						user.semester = req.body.user.semester;
+						user.piApproval = req.body.user.piApproval;
+						user.course = req.body.user.course;
+						user.isEnrolled = req.body.user.isEnrolled;
+            user.piProjectApproval = false;
+
+						if (typeof user.piApproval === 'boolean' && user.piApproval) {
+							user.piDenial = false;
+							user.verifiedEmail = true;
+							user.isDecisionMade = true;
+						}
+						else if (typeof user.piApproval === 'boolean' && !user.piApproval) {
+							user.piDenial = true;
+							user.verifiedEmail = false;
+							user.isDecisionMade = true;
+						}
+						else {
+							user.piDenial = false;
+							user.verifiedEmail = false;
+							user.isDecisionMade = false;
+						}
+
+						if (user.userType == "Pi/CoPi")
+							user.isSuperUser = true;
+						else
+							user.isSuperUser = false;
+
                         user.save(function (err) {
-                            if (err) {
-                            }
+                            if (err)
+								return res.send({success: false, error: err});
+							else
+								res.json({
+									success: true,
+									objectId: user._id,
+									message: 'User account updated.'
+								});
                         });
                     }
                 });
             });
+
+
+             //User story 1356 - API endpoint for consumption by Mobile Judge
+             userRouter.route('/api/getAll/:token')
+             .get(authProvider.authorizeAll,
+
+                 function(req, res) {
+                     //simple token authentication - see config
+                     if(Key.key === req.params.token) {
+                    //get the enrolled list
+                    User.find({ isEnrolled: true, course: { $ne: null } },
+                    'email pantherID firstName lastName project course',
+                                function(err, users) {
+                                    if (err) {
+                                        return res.send(err);
+                                    } else if (users) {
+                                        var userPromises = [];
+                                        users.map(function(user){
+                                            userPromises.push(  new Promise(function(resolve, reject){
+                                                Project.findOne({ title: user.project }, function(err, proj){
+
+                                                    if(err){
+                                                        reject('')
+                                                    }
+
+                                                        //map to custom object for MJ
+                                                        var tempObj = {
+                                                            email : user.email,
+                                                            id : user.pantherID,
+                                                            firstName: user.firstName,
+                                                            lastName: user.lastName,
+                                                            middle: null,
+                                                            valid: true,
+                                                            projectTitle: user.project,
+                                                            projectId:  proj ? proj._id : null,
+                                                            course: user.course
+                                                        }
+
+                                                        console.log(tempObj)
+                                                        resolve(tempObj)
+
+
+
+                                                })
+                                            })
+                                         )
+                                    })
+                                    //async wait and set
+                                    Promise.all(userPromises).then(function(results){
+                                        res.json(results)
+                                    }).catch(function(err){
+                                        res.send(err)
+                                    })
+                                }
+                            })
+
+
+
+                    } else {
+                        return  res.json( {msg: "Token not authorized, please see your admin"})
+                    }
+                 });
 
     return userRouter;
 };

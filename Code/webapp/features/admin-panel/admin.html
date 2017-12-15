@@ -7,154 +7,69 @@
           href="https://cdn.gitcdn.xyz/cdn/angular/bower-material/v1.0.1-master-a687bfc/angular-material.css">
     <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-blue.min.css">
     <link rel="stylesheet" type="text/css" href="adminpanel.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../lib/angular-date-picker/angular-date-picker.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
 </head>
 
 <style>
 
 </style>
+<script type="text/ng-template" id="customTemplate.html">
+  <a>
+      <span ng-bind-html="match.label | uibTypeaheadHighlight:query"></span>
+  </a>
+</script>
 <div style="width:100%;">
+   <nav>
+       <div class="container-fluid">
 
-    <div>
-        <div class="panel panel-default" style="width:100%;">
-            <nav>
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" style="color:#333333;">Admin Panel</a>
-                    </div>
-                    <ul class="nav navbar-nav navbar-right" style="padding-right: 1%">
-                        <li>
-                            <button style="float:right;" ng-click="vm.uncheck()" ng-model="refresh"
-                                    class="btn second-button btn-default navbar-btn">
-                                <span class="glyphicon glyphicon-refresh"></span>Refresh Filters
-                            </button>
-                        </li>
-                        <li>
-                            &nbsp;<button style="float:right;" ng-click="section1=!section1"
-                                          class="btn second-button btn-default navbar-btn">
-                            <span class="glyphicon glyphicon-filter"></span>Filters
-                        </button>
-                        </li>
-                        <li>
-                            &nbsp;<button style="float:right;" ng-click="vm.exportData()"
-                                          class="btn second-button btn-default navbar-btn">
-                            <span><img style="width:20px;height:18px;" src="img/Excel-icon.png"></span>Excel
-                        </button>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+           <div class="navbar-header">
+                <a class="navbar-brand" style="color:#333333;">Admin Panel</a>
+           </div>
+           <ul class="nav navbar-nav" style="padding-right: 1%">
+             <li>
+                  <button style="float:right;" ng-click="routeAdminMaint()" ng-model="routeUserMaint"
+                           class="btn second-button btn-default navbar-btn">
+                           Admin Maintenance
+                  </button>
+             </li>
+              <li>
+                   <button style="float:right;" ng-click="routeUserMaint()" ng-model="routeUserMaint"
+                           class="btn second-button btn-default navbar-btn">
+                           User Maintenance
+                   </button>
+              </li>
+              <li>
+                   <button style="float:right;" ng-click="routeProjectMaintenance()" ng-model="routeUserMaint"
+                           class="btn second-button btn-default navbar-btn">
+                           Project Maintenance
+                   </button>
+              </li>
+              <li>
+                   <button style="float:right;" ng-click="routeSemesterMaintenance()" ng-model="routeUserMaint"
+                           class="btn second-button btn-default navbar-btn">
+                           Semester Maintenance
+                   </button>
+              </li>
+			  <li>
+                   <button style="float:right;" ng-click="routeCourseMaintenance()" ng-model="routeUserMaint"
+                           class="btn second-button btn-default navbar-btn">
+                           Course Maintenance
+                   </button>
+              </li>
+           </ul>
+           <div class="navbar-header">
+             <a class="navbar-brand" style="color:#333333;" ng-show="vm.defaultSemester">Default: {{vm.defaultSemester}}</a>
+           </div>
+       </div>
+   </nav>
+
+    <div ng-show="showAdminPage">
 
 
-            <section id="section1" ng-show="section1">
-                <table class="table table-striped table-bordered">
-                    <thead style="background-color:#F2F3F4;">
-                    <tr>
-                        <td class="col-md-4">
-                            <input type="checkbox" ng-model="usertype">UserType:
-                            <select class="form-control" id="susertype" ng-model="selectedusertype"
-                                    ng-options="typerank as typerank.name for typerank in vm.typeranks"
-                                    value="{{vm.getRank(selectedusertype)}}"></select>
-                        </td>
-                        <td class="col-md-4">
-                            <input type="checkbox" ng-model="userrank">UserRank:
-                            <select class="form-control" ng-model="selecteduserrank"
-                                    ng-options="rank for rank in vm.filteredrank"></select></input>
-                        </td>
-                        <td class="col-md-4">
-                            <input type="checkbox" ng-model="userproject">Project:
-                            <select class="form-control" ng-model="selecteduserproject"
-                                    ng-options="projects as projects.title for projects in vm.projects"
-                                    value="{{vm.getStudents(SelectedProject)}}"></select>
-                        </td>
-                    </tr>
-                    <br/>
-                    <tr>
-                        <td class="col-md-3"><input type="checkbox" ng-model="piApproval">Unconfirmed Email</input></td>
-                        <td class="col-md-3"><input type="checkbox" ng-model="google">Gmail Login</input></td>
-                        <td class="col-md-3"><input type="checkbox" ng-model="mentor">Mentor</input>
-                            <input type="checkbox" ng-model="multipleproject">Multiple Projects</input> </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <div class="table" style="overflow: scroll; overflow-y: hidden;">
-                <table id="adminTable" class="table table-striped">
-                    <thead id="header" style="background-color:#ABB2B9;">
-
-                    <tr id="headerLabels">
-                        <th></th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Panther ID</th>
-                        <th>User Type</th>
-                        <th>College</th>
-                        <th>Project</th>
-                        <th>Gender</th>
-                        <th>Joined Project</th>
-                        <th>Rank</th>
-                        <th>Mentor</th>
-                        <th>Pi Approval</th>
-                        <th>Multiple Project</th>
-                        <th>Proj App Date</th>
-                        <th>User Reg Date</th>
-                        <th>First Login Date</th>
-                    </tr>
-
-                    <tr id="headerInputs">
-                        <th></th>
-                        <th><input class="form-control" type="text" ng-model="query1"/></th>
-                        <th><input type="text" class="form-control" ng-model="query2"/></th>
-                        <th><input type="text" class="form-control" ng-model="query3"/></th>
-                        <th><input type="text" class="form-control" ng-model="query4"/></th>
-                        <th><input type="text" class="form-control" ng-model="query5"/></th>
-                        <th><input type="text" class="form-control" ng-model="query6"/></th>
-                        <th><input type="text" class="form-control" ng-model="query7"/></th>
-                        <th><input type="text" class="form-control" ng-model="query8"/></th>
-                        <th><input type="text" class="form-control" ng-model="query9"/></th>
-                        <th><input type="text" class="form-control" ng-model="query10"/></th>
-                        <th><input type="text" class="form-control" ng-model="query11"/></th>
-                        <th><input type="text" class="form-control" ng-model="query12"/></th>
-                        <th><input type="text" class="form-control" ng-model="query13"/></th>
-                        <th><input type="text" class="form-control" ng-model="query14"/></th>
-                        <th><input type="text" class="form-control" ng-model="query15"/></th>
-                        <th><input type="text" class="form-control" ng-model="query16"/></th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-
-                    <tr ng-repeat="user in (filteredItems = ( vm.tabledata | filter:query1| filter:query2| filter:query3| filter:query4| filter:query5| filter:query6| filter:query7| filter:query8| filter:query9| filter:query10 | filter:query11 | filter:query12 | filter:query13 | filter: usertype? selectedusertype.name:'' | filter: userrank? selecteduserrank:'' | filter: userproject? selecteduserproject.title:'' | filter: google? google:'' | filter: mentor? mentor:'' | filter: multipleproject? multipleproject:'' | filter: piApproval? piApproval:'' | filter:query14 | filter:query15 | filter:query16 ))">
-                        <td>
-                            <button class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
-                                    ng-hide="user.userType == 'Pi/CoPi'">Impersonate
-                            </button>
-                        </td>
-                        <td>{{user.firstName}}</td>
-                        <td>{{user.lastName}}</td>
-                        <td>{{user.email}}</td>
-                        <td class="center">{{user.pantherID}}</td>
-                        <td>{{user.userType}}</td>
-                        <td>{{user.college}}</td>
-                        <td>{{user.project}}</td>
-                        <td class="center">{{user.gender}}</td>
-                        <td>{{user.joined_project}}</td>
-                        <td class="center">{{user.rank}}</td>
-                        <td>{{user.mentor}}</td>
-                        <td class="center">{{user.piApproval}}</td>
-                        <td>{{user.multipleproject}}</td>
-                        <td>{{user.appliedDate}}</td>
-                        <td>{{user.RegDate}}</td>
-                        <td>{{user.firstlogin_date}}</td>
-                    </tr>
-                    </tbody>
-                </table>
-
-            </div>
-        </div>
-    </div>
-
+	<!-- .................................................... -->
 
     <!-- .................................................... -->
     <div class="row">
@@ -163,6 +78,8 @@
             <div class="form-group">
                 <table class="table">
                     <tr>
+                       <input type="text" ng-model="selectUser" placeholder="Search for student" uib-typeahead="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers | filter:{firstName:$viewValue} | limitTo:8" class="form-control" ng-blur="vm.selectUser(selectUser)">
+
                         <select class="form-control" ng-model="Selecteduserconfirm"
                                 ng-options="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers"
                                 value="{{vm.userinUnconfirmedfunc(Selecteduserconfirm)}}"></select>
@@ -184,168 +101,14 @@
         </div>
     </div>
 
-
-    <!-- .................................................... -->
-
-    <div class="row">
-        <div class="col-md-6 panel panel-default">
-            <h3 align="center"> Change UserType </h3>
-            <div class="form-group">
-                <table class="table">
-                    <tr>
-                        <th>
-                            <b>User:</b> <select class="form-control" ng-model="Selecteduser"
-                                                 ng-options="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers"
-                                                 value="{{vm.userChange(Selecteduser)}}"></select>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <b>change usertype to: </b>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <select class="form-control" ng-model="Selectedusertype"
-                                    ng-options="usertype for usertype in vm.usertype"
-                                    value="{{vm.userTypeChange(Selectedusertype)}}"></select>
-                        </th>
-                    </tr>
-                </table>
-                <table class="table" style="height: 1px;">
-                    <tr>
-                        <th>
-                            <button style="width: 80px;" class="btn btn-success btn-block"
-                                    ng-click="vm.changeUserType()">Change
-                            </button>
-                        </th>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-
-        <div class="col-md-6 panel panel-default">
-            <h3 align="center"> Change User's Project </h3>
-            <div class="form-group">
-                <table class="table">
-                    <tr>
-                        <th>
-                            <b>User:</b> <select class="form-control" ng-model="selectedProjectMember"
-                                                 ng-options="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName + ' ' + '(' + vm.getProjectTitle(user.email) + ')' for user in vm.filteredusers"
-                                                 value="{{vm.currentUser(selectedProjectMember)}}"></select>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <b>change user's project to: </b>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <select class="form-control" ng-model="selectedProject"
-                                    ng-options="projects as projects.title for projects in vm.projects"
-                                    value="{{vm.currentProject(selectedProject)}}"></select>
-                        </th>
-                    </tr>
-                </table>
-                <table class="table" style="height: 1px;">
-                    <tr>
-                        <th>
-                            <button style="width: 80px;" ng-click="vm.sw()" class="btn btn-success btn-block">Change
-                            </button>
-                        </th>
-                        <th>
-                            <button style="width: 80px;" ng-click="vm.sc()" class="btn btn-success btn-danger">Clear
-                            </button>
-                        </th>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
-
-
     <!-- .................................................... -->
     <!--Joe's User Story -->
     <div class="row">
-        <div class="col-md-6 panel panel-default">
-            <h3 align="center"> Lock/Unlock Projects </h3>
-            <div class="form-group">
-                <table class="table">
-                    <tr>
-                        <th>
-                            <b>Project:</b> <select class="form-control" ng-model="selectedProject"
-                                                    ng-options="projects as projects.title for projects in vm.projects"
-                                                    value="{{vm.currentProject(selectedProject)}}"></select>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <b>change Project's status to: </b>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <select class="form-control" ng-model="selectedStatus"
-                                    ng-options="projects as projects for projects in vm.status"></select>
-                        </th>
-                    </tr>
-                </table>
-                <table class="table" style="height: 1px;">
-                    <tr>
-                        <th>
-                            <button style="width: 80px;" ng-click="vm.se()" class="btn btn-success btn-block">Change
-                            </button>
-                        </th>
-                        <th>
-                        </th>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <div class="col-md-6 panel panel-default">
-            <h3 align="center"> Lock/Unlock Semester </h3>
-            <div class="form-group">
-                <table class="table">
-                    <tr>
-                        <th>
-                            <b>Term:</b> <select class="form-control" ng-model="selectedTerm"
-                                                 ng-options="terms as terms.name for terms in vm.terms"
-                                                 value="{{vm.currentTerm(selectedTerm)}}"></select>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <b>change Semester's status to: </b>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <select class="form-control" ng-model="selectedTermStatus"
-                                    ng-options="terms as terms for terms in vm.active"
-                                    value="{{vm.currentTerm(selectedTerm)}}"></select>
-                        </th>
-                    </tr>
-                </table>
-                <table class="table" style="height: 1px;">
-                    <tr>
-                        <th>
-                            <button style="width: 80px;" ng-click="vm.nw()" class="btn btn-success btn-block">Change
-                            </button>
-                        </th>
-                        <th>
-                        </th>
-                    </tr>
-                </table>
-            </div>
-        </div>
         <!--
             This button is to add new terms to the terms collection in Mongo, leave commented out unless you are planning to add a new collection
             Take Note, this button allows duplicates, so be careful, or you'll have to manually remove duplicate terms from the db
-                    <button  ng-click="vm.AddTerms()">Add Terms</button>
-                    -->
+                    <button  ng-click="vm.AddTerms()">Add Terms</button> -->
+
 
 
         <!--Dafna's code-->
@@ -447,4 +210,1810 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Course Maintenace Tab ................................................................................................... -->
+
+<div ng-show="showCoursePage">
+   <div>
+    <div class="panel panel-default" style="width:100%;">
+      <div class="container-fluid">
+              <div class="navbar-header">
+                  <a class="navbar-brand" style="color:#333333;">Admin Panel - Course List</a>
+              </div>
+              <ul class="nav navbar-nav navbar-right" style="padding-right: 1%">
+				<li>
+                    <button style="float:right;" data-toggle="modal" data-target="#uploadFilesModal"
+                              class="btn second-button btn-default navbar-btn">
+						<i class="fa fa-upload" aria-hidden="true"></i> Upload Course Data
+					</button>
+                </li>
+				<li>
+                    &nbsp;<button style="float:right;" ng-click="vm.uncheckc()" ng-model="refreshc"
+                          class="btn second-button btn-default navbar-btn">
+                          <i class="fa fa-refresh" aria-hidden="true"></i> Refresh Filters
+                    </button>
+                </li>
+			  </ul>
+      </div>
+         <section id="sectionCourse1">
+             <table class="table table-striped table-bordered">
+                 <thead style="background-color:#F2F3F4;">
+                 <tr>
+					<td class="col-md-3">
+                         Semester:
+                         <select class="form-control" ng-model="selectedCourseTerm"
+                                 ng-options="terms as terms.name for terms in vm.terms">
+								 <option value=""></option>
+						 </select>
+                     </td>
+                 </tr>
+                 </tbody>
+             </table>
+         </section>
+
+         <div class="table" style="overflow: scroll; overflow-y: hidden;">
+             <table id="adminTableU" class="table table-striped">
+                <thead id="header" style="background-color:#ABB2B9;">
+
+                <tr id="headerLabels">
+					<th></th>
+					<th></th>
+					<th ng-click="orderByFieldApp='name'; reverseSortApp = !reverseSortApp">Course
+                       <span ng-show="orderByFieldApp == 'name' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'name' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='title'; reverseSortApp = !reverseSortApp">Title
+                       <span ng-show="orderByFieldApp == 'title' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'title' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='semester'; reverseSortApp = !reverseSortApp">Semester
+                       <span ng-show="orderByFieldApp == 'semester' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'semester' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='course_id'; reverseSortApp = !reverseSortApp">ID
+                       <span ng-show="orderByFieldApp == 'course_id' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'course_id' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                </tr>
+
+                <tr id="headerInputs">
+					<th></th>
+					<th></th>
+                    <th><input class="form-control" type="text" ng-model="queryC1"/></th>
+                    <th><input type="text" class="form-control" ng-model="queryC2"/></th>
+                    <th><input type="text" class="form-control" ng-model="queryC3"/></th>
+					<th><input type="text" class="form-control" ng-model="queryC4"/></th>
+                </thead>
+
+                <tbody>
+
+				<tr>
+					<td>
+                        <button id="addNewCourseButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCourseModal">
+							<i class="fa fa-plus" aria-hidden="true"></i>
+						</button>
+                    </td>
+				</tr>
+
+				<tr dir-paginate="course in (filteredCItems = ( vm.courses | filter: queryC1?{name:queryC1}:'' | filter: queryC2?{title:queryC2}:'' |
+					filter: queryC3?{semester:queryC3}:'' | filter: queryC4?{course_id:queryC4}:'' |
+					filter: selectedCourseTerm? {semester: selectedCourseTerm.name}:'' )) | orderBy:orderByFieldApp:reverseSortApp |
+					itemsPerPage: 10" pagination-id="coursesPage">
+                    <td>
+                        <button id="editCourseButton" class="btn btn-primary" ng-click="vm.editCourse(course)" data-toggle="modal" data-target="#editCourseModal">
+							<i class="fa fa-pencil" aria-hidden="true"></i>
+						</button>
+                    </td>
+					<td>
+                        <button id="removeCourseButton" class="btn btn-danger" ng-click="vm.removeCourse(course)">
+							<i class="fa fa-times" aria-hidden="true"></i>
+						</button>
+                    </td>
+                    <td class="col-md-3">{{course.name}}</td>
+					<td class="col-md-4">{{course.title}}</td>
+					<td class="col-md-3">{{course.semester}}</td>
+					<td class="col-md-2">{{course.course_id}}</td>
+                </tr>
+                </tbody>
+             </table>
+             <dir-pagination-controls pagination-id="coursesPage"></dir-pagination-controls>
+         </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addCourseModal" role="dialog">
+ <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Add New Course</h3>
+        </div>
+        <div class="modal-body">
+           <form role="role" class="form-horizontal">
+             <div class="form-group">
+                 <div class="col-md-3">
+                    <label>Subject</label>
+                    <input id="addNewCourseInputSubject" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
+						   maxlength="3" ng-model="addNewCourseInputSubject"/>
+                 </div>
+                 <div class="col-md-3">
+                    <label>Number</label>
+                    <input id="addNewCourseInputNumber" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
+						   ng-model="addNewCourseInputNumber" />
+                 </div>
+                 <div class="col-md-3">
+                    <label>Section</label>
+                    <input id="addNewCourseInputSection" class="form-control" type="text" ng-model="addNewCourseInputSection" />
+                 </div>
+				 <div class="col-md-3">
+                    <label>ID</label>
+                    <input id="addNewCourseInputID" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+						   ng-model="addNewCourseInputID" />
+                 </div>
+			 </div>
+			 <div class="form-group">
+                 <div class="col-md-9">
+                    <label>Title</label>
+                    <input id="addNewCourseInputTitle" class="form-control" type="text" ng-model="addNewCourseInputTitle" />
+                 </div>
+				 <div class="col-md-3">
+                    <label>Semester</label>
+                    <select class="form-control" id="addCourseTerm" ng-model="addCourseTerm"
+                            ng-options="terms as terms.name for terms in vm.terms">
+						<option value=""></option>
+					</select>
+                 </div>
+             </div>
+           </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary" id="CreateCourseButton" data-dismiss="modal"
+                 ng-click="vm.addCourse()">Add Course</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="editCourseModal" role="dialog">
+ <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Edit Course</h3>
+        </div>
+        <div class="modal-body">
+           <form role="role" class="form-horizontal">
+             <div class="form-group">
+                 <div class="col-md-3">
+                    <label>Subject</label>
+                    <input id="editCourseInputSubject" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
+						   maxlength="3" ng-model="editCourseInputSubject"/>
+                 </div>
+                 <div class="col-md-3">
+                    <label>Number</label>
+                    <input id="editCourseInputNumber" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
+						   ng-model="editCourseInputNumber" />
+                 </div>
+                 <div class="col-md-3">
+                    <label>Section</label>
+                    <input id="editCourseInputSection" class="form-control" type="text" ng-model="editCourseInputSection" />
+                 </div>
+				 <div class="col-md-3">
+                    <label>ID</label>
+                    <input id="editCourseInputID" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+						   ng-model="editCourseInputID" />
+                 </div>
+		     </div>
+			 <div class="form-group">
+                 <div class="col-md-9">
+                    <label>Title</label>
+                    <input id="editCourseInputTitle" class="form-control" type="text" ng-model="editCourseInputTitle" />
+                 </div>
+				 <div class="col-md-3">
+                    <label>Semester</label>
+					<input id="editCourseTerm" class="form-control" type="text" ng-model="editCourseTerm" ng-disabled="true" />
+                 </div>
+             </div>
+           </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary" id="ChangeCourseButton" ng-click="vm.saveChangesCourse()" data-dismiss="modal"
+				   data-toggle="modal" data-target="#editSavedChangesCourseModal">Save Changes</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="editSavedChangesCourseModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <label id="editCourseMessage">Editing course was successful</label>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="editCourseConfirm" data-dismiss="modal">OK</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="uploadFilesModal" role="dialog">
+ <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Upload Course File Data and Synchronize Users Database</h3>
+        </div>
+        <div class="modal-body">
+           <form role="role" class="form-horizontal">
+             <table class="table table-striped">
+				<tr>
+					<td class="col-md-1"><b>Add File</b></td>
+					<td class="col-md-3"><b>Course</b></td>
+					<td class="col-md-4"><b>File</b></td>
+				</tr>
+				<tr ng-repeat="courseFile in vm.courseFiles">
+					<td>
+						<button id="removeCourseFileButton" class="btn btn-danger" ng-click="vm.removeCourseFile(courseFile)">
+							<i class="fa fa-times" aria-hidden="true"></i>
+						</button>
+					</td>
+					<td>{{courseFile.course.fullName}}</td>
+					<td>{{courseFile.file}}</td>
+				</tr>
+				<tr>
+					<td>
+						<button id="addCourseFileButton" type="button" class="btn btn-primary" ng-click="vm.addCourseFile()">
+							<i class="fa fa-plus" aria-hidden="true"></i>
+						</button>
+					</td>
+					<td>
+						<select class="form-control" ng-model="syncCourseSelect" id="syncCourseSelect"
+								ng-options="course as course.fullName for course in vm.courses">
+							<option value=""></option>
+						</select>
+					</td>
+					<td>
+						<input type="file" accept=".xls" value="fileUpload" id="courseFileInput"></label>
+					</td>
+				</tr>
+			 </table>
+			 <table class="table table-striped" ng-show="showAddCourse">
+				<tr>
+					<td class="col-md-1"><b>Add Course</b></td>
+					<td class="col-md-1"><b>Subject</b></td>
+					<td class="col-md-1"><b>Number</b></td>
+					<td class="col-md-1"><b>Section</b></td>
+					<td class="col-md-1"><b>ID</b></td>
+					<td class="col-md-2"><b>Title</b></td>
+					<td class="col-md-1"><b>Semester</b></td>
+				</tr>
+				<tr>
+					<td>
+						<button id="addCourseButton2" type="button" class="btn btn-info" ng-click="vm.addCourse2()">
+							<i class="fa fa-plus" aria-hidden="true"></i>
+						</button>
+					</td>
+					<td>
+						<input id="addNewCourseInputSubject2" class="form-control" type="text" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
+						       maxlength="3" ng-model="addNewCourseInputSubject2"/>
+					</td>
+					<td>
+						<input id="addNewCourseInputNumber2" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4"
+						       ng-model="addNewCourseInputNumber2" />
+					</td>
+					<td>
+						<input id="addNewCourseInputSection2" class="form-control" type="text" ng-model="addNewCourseInputSection2" />
+					</td>
+					<td>
+						<input id="addNewCourseInputID2" class="form-control" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+							   ng-model="addNewCourseInputID2" />
+					</td>
+					<td>
+						<input id="addNewCourseInputTitle2" class="form-control" type="text" ng-model="addNewCourseInputTitle2" />
+					</td>
+					<td>
+						<select class="form-control" id="addCourseTerm2" ng-model="addCourseTerm2"
+								ng-options="terms as terms.name for terms in vm.terms">
+							<option value=""></option>
+						</select>
+					</td>
+				</td>
+			 </table>
+           </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		   <a href="../../img/Template.xls" download>
+				<button type="button" class="btn btn-primary">Download Template</button>
+		   </a>
+		   <!--<button type="submit" class="btn btn-primary" onclick="window.open('../../img/Template.xls')">Download Template</button>-->
+		   <button type="button" class="btn btn-danger" id="clearFilesButton" ng-click="vm.clearCourseFiles()">Clear List</button>
+           <button type="button" class="btn btn-success" id="syncFilesButton" data-dismiss="modal"
+                 ng-click="vm.syncDatabase()">Sync Database</button>
+        </div>
+     </div>
+ </div>
+</div>
+</div>
+
+<!-- User Maintenace Tab ................................................................................................... -->
+
+<div ng-show="showUserMaint">
+   <div>
+    <div class="panel panel-default" style="width:100%;">
+      <div class="container-fluid">
+              <div class="navbar-header">
+                  <a class="navbar-brand" style="color:#333333;">Admin Panel - User List</a>
+              </div>
+              <ul class="nav navbar-nav navbar-right" style="padding-right: 1%">
+				<li>
+                      <button style="float:right;" ng-click="simple=false"
+                              class="btn second-button btn-default navbar-btn">
+                  <i class="fa fa-minus" aria-hidden="true"></i> Simple Layout
+					  </button>
+                  </li>
+					<li>
+                      &nbsp;<button style="float:right;" ng-click="simple=true"
+                              class="btn second-button btn-default navbar-btn">
+							<i class="fa fa-plus" aria-hidden="true"></i> Complex Layout
+						</button>
+                  </li>
+                  <li>
+                      &nbsp;<button style="float:right;" ng-click="vm.uncheck()" ng-model="refresh"
+                          class="btn second-button btn-default navbar-btn">
+                          <i class="fa fa-refresh" aria-hidden="true"></i> Refresh Filters
+                      </button>
+                  </li>
+                  <li>
+                      &nbsp;<button style="float:right;" ng-click="vm.exportData()"
+                                    class="btn second-button btn-default navbar-btn">
+                      <span><img style="width:20px;height:18px;" src="img/Excel-icon.png"></span> Excel
+                  </button>
+                  </li>
+              </ul>
+          </div>
+         <section id="section1">
+             <table class="table table-striped table-bordered">
+                 <thead style="background-color:#F2F3F4;">
+                 <tr>
+                     <td class="col-md-3">
+                         UserType:
+                         <select class="form-control" id="susertype" ng-model="selectedusertype"
+                                 ng-options="typerank as typerank.name for typerank in vm.typeranks"
+                                 value="{{vm.getRank(selectedusertype)}}">
+								 <option value=""></option>
+						 </select>
+                     </td>
+                     <td class="col-md-3">
+                         Project:
+                         <select class="form-control" ng-model="selecteduserproject"
+                                 ng-options="projects as projects.title for projects in vm.allprojects"
+                                 value="{{vm.getStudents(SelectedProject)}}">
+								 <option value=""></option>
+						 </select>
+                     </td>
+					 <td class="col-md-3">
+                         Course:
+                         <select class="form-control" id="sCourse" ng-model="selectedCouse"
+                                 ng-options="course as course.fullName for course in vm.courses">
+								 <option value=""></option>
+						 </select>
+                     </td>
+					 <td class="col-md-3">
+                         Semester:
+                         <select class="form-control" ng-model="selectedTerm"
+                                 ng-options="terms as terms.name for terms in vm.terms">
+								 <option value=""></option>
+						 </select>
+                     </td>
+                 </tr>
+                 <br/>
+                 <tr>
+					<td class="col-md-3" ng-show="simple">
+                         UserRank:
+                         <select class="form-control" ng-model="selecteduserrank"
+                                 ng-options="rank for rank in vm.filteredrank">
+								 <option value=""></option>
+						 </select>
+                     </td>
+					 <td class="col-md-3" ng-show="simple"><p></p><input type="checkbox" ng-model="selectedPiApproval">Unconfirmed Users</input></td>
+					 <td class="col-md-3" ng-show="simple"><p></p><input type="checkbox" ng-model="selectedIsEnrolled">Confirmed Enrolled Users</input></td>
+                     <td class="col-md-3" ng-show="simple"><p></p><input type="checkbox" ng-model="selectedGoogle">Gmail Login</input></td>
+                 </tr>
+                 </tbody>
+             </table>
+         </section>
+
+         <div class="table" style="overflow: scroll; overflow-y: hidden;">
+             <table id="adminTableU" class="table table-striped">
+                <thead id="header" style="background-color:#ABB2B9;">
+
+                <tr id="headerLabels">
+             <th></th>
+                    <th></th>
+                    <th></th>
+             <th></th>
+                    <th ng-click="orderByFieldApp='firstName'; reverseSortApp = !reverseSortApp">First Name
+                       <span ng-show="orderByFieldApp == 'firstName' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'firstName' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='lastName'; reverseSortApp = !reverseSortApp">Last Name
+                       <span ng-show="orderByFieldApp == 'lastName' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'lastName' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='email'; reverseSortApp = !reverseSortApp">Email
+                       <span ng-show="orderByFieldApp == 'email' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'email' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='pantherID'; reverseSortApp = !reverseSortApp">Panther ID
+                       <span ng-show="orderByFieldApp == 'pantherID' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'pantherID' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='userType'; reverseSortApp = !reverseSortApp">User Type
+                       <span ng-show="orderByFieldApp == 'userType' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'userType' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='college'; reverseSortApp = !reverseSortApp" ng-show="simple">College
+                       <span ng-show="orderByFieldApp == 'college' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'college' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='course'; reverseSortApp = !reverseSortApp">Course
+                  <span ng-show="orderByFieldApp == 'course' && !reverseSortApp" class="fa fa-caret-down"></span>
+                  <span ng-show="orderByFieldApp == 'course' && reverseSortApp" class="fa fa-caret-up"></span>
+               </th>
+                    <th ng-click="orderByFieldApp='project'; reverseSortApp = !reverseSortApp">Project
+                       <span ng-show="orderByFieldApp == 'project' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'project' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='gender'; reverseSortApp = !reverseSortApp" ng-show="simple">Gender
+                       <span ng-show="orderByFieldApp == 'gender' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'gender' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='joined_project'; reverseSortApp = !reverseSortApp" ng-show="simple">Joined Project
+                       <span ng-show="orderByFieldApp == 'joined_project' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'joined_project' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='rank'; reverseSortApp = !reverseSortApp" ng-show="simple">Rank
+                       <span ng-show="orderByFieldApp == 'rank' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'rank' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='mentor'; reverseSortApp = !reverseSortApp" ng-show="simple">Mentor
+                       <span ng-show="orderByFieldApp == 'mentor' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'mentor' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='piApproval'; reverseSortApp = !reverseSortApp" ng-show="simple">Pi Approval
+                       <span ng-show="orderByFieldApp == 'piApproval' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'piApproval' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+					<th ng-click="orderByFieldApp='semester'; reverseSortApp = !reverseSortApp">Semester
+                  <span ng-show="orderByFieldApp == 'semester' && !reverseSortApp" class="fa fa-caret-down"></span>
+                  <span ng-show="orderByFieldApp == 'semester' && reverseSortApp" class="fa fa-caret-up"></span>
+               </th>
+                    <th ng-click="orderByFieldApp='multipleproject'; reverseSortApp = !reverseSortApp" ng-show="simple">Multiple Project
+                       <span ng-show="orderByFieldApp == 'multipleproject' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'multipleproject' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='appliedDate'; reverseSortApp = !reverseSortApp" ng-show="simple">Proj App Date
+                       <span ng-show="orderByFieldApp == 'appliedDate' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'appliedDate' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='RegDate'; reverseSortApp = !reverseSortApp" ng-show="simple">User Reg Date
+                       <span ng-show="orderByFieldApp == 'RegDate' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'RegDate' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                    <th ng-click="orderByFieldApp='firstlogin_date'; reverseSortApp = !reverseSortApp" ng-show="simple">First Login Date
+                       <span ng-show="orderByFieldApp == 'firstlogin_date' && !reverseSortApp" class="fa fa-caret-down"></span>
+                       <span ng-show="orderByFieldApp == 'firstlogin_date' && reverseSortApp" class="fa fa-caret-up"></span>
+                    </th>
+                </tr>
+
+                <tr id="headerInputs">
+					<th></th>
+                    <th></th>
+					<th></th>
+					<th></th>
+                    <th><input class="form-control" type="text" ng-model="query1"/></th>
+                    <th><input type="text" class="form-control" ng-model="query2"/></th>
+                    <th><input type="text" class="form-control" ng-model="query3"/></th>
+                    <th><input type="text" class="form-control" ng-model="query4"/></th>
+                    <th><input type="text" class="form-control" ng-model="query5"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query6"/></th>
+					<th><input type="text" class="form-control" ng-model="query7"/></th>
+                    <th><input type="text" class="form-control" ng-model="query8"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query9"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query10"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query11"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query12"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query13"/></th>
+					<th><input type="text" class="form-control" ng-model="query14"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query15"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query16"/></th>
+                    <th ng-show="simple"><input type="text" class="form-control" ng-model="query17"/></th>
+					<th ng-show="simple"><input type="text" class="form-control" ng-model="query18"/></th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+				<tr>
+					<td>
+                        <button id="addNewUserStart" class="btn btn-info btn-block" ng-hide="user.userType == 'Pi/CoPi'"
+							data-toggle="modal" data-target="#addUserModal">
+							<i class="fa fa-user-plus" aria-hidden="true"></i>
+                        </button>
+                    </td>
+				</tr>
+
+				<tr dir-paginate="user in (filteredItems = ( vm.tabledata | filter: query1?{firstName:query1}:'' | filter: query2?{lastName:query2}:'' |
+					filter: query3?{email:query3}:'' | filter: query4?{pantherID:query4}:'' | filter: query5?{userType:query5}:'' |
+					filter: query6?{college:query6}:'' | filter: query7?{course:query7}:'' | filter: query8?{project:query8}:'' |
+					filter: query9?{project:gender}:'' | filter: query10?{joined_project:query10}:'' | filter: query11?{rank:query11}:'' |
+					filter: query12?{mentor:query12}:'' | filter: query13?{piApproval:query13}:'' | filter: query14?{semester:query14}:'' |
+					filter: query15?{multipleproject:query15}:'' | filter: query16?{appliedDate:query16}:'' | filter: query17?{RegDate:query17}:'' | filter: query18?{firstlogin_date:query18}:'' |
+					filter: selectedusertype? {userType: selectedusertype.name}:'' | filter: selecteduserrank? {rank: selecteduserrank}:'' |
+					filter: selecteduserproject? {project: selecteduserproject.title}:'' | filter: selectedGoogle? {email: 'fiu.edu' || 'gmail.com'}:'' |
+					filter: selectedPiApproval? {piApproval: false}:'' | filter: selectedTerm? {semester: selectedTerm.name}:'' |
+					filter: selectedCouse? {course: selectedCouse.name}:'' | filter: selectedIsEnrolled? {isEnrolled: true}:'' )) | orderBy:orderByFieldApp:reverseSortApp |
+					itemsPerPage: 10" pagination-id="usersPage">
+
+                    <td>
+                        <button id="impersonateUser" class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
+                                ng-hide="user.userType == 'Pi/CoPi'">
+                       <i class="fa fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <button id="editUserStart" class="btn btn-primary" ng-hide="user.userType == 'Pi/CoPi'" ng-click="vm.editUser(user)"
+                       data-toggle="modal" data-target="#editUserModal">
+                       <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <button id="deleteUserStart" class="btn btn-danger" ng-hide="user.userType == 'Pi/CoPi'" ng-click="vm.selectDeleteUser(user)"
+                                data-toggle="modal" data-target="#deleteModal">
+                       <i class="fa fa-user-times" aria-hidden="true"></i>
+                     </button>
+                    </td>
+                    <td>
+                       <button ng-model="approveUser" class="btn btn-primary" ng-click="vm.approveUser(user._id)" ng-disabled="user.piApproval" ng-show="!user.piApproval">
+							<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+						</button>
+                       <button ng-model="unapproveUser" class="btn btn-danger" ng-click="vm.unapproveUser(user._id)" ng-disabled="!user.piApproval" ng-show="user.piApproval">
+							<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+					   </button>
+                    </td>
+                    <td>{{user.firstName}}</td>
+                    <td>{{user.lastName}}</td>
+                    <td>{{user.email}}</td>
+                    <td class="center">{{user.pantherID}}</td>
+                    <td>{{user.userType}}</td>
+                    <td ng-show="simple">{{user.college}}</td>
+					     <td>{{user.course}}</td>
+                    <td>{{user.project}}</td>
+                    <td class="center" ng-show="simple">{{user.gender}}</td>
+                    <td ng-show="simple">{{user.joined_project}}</td>
+                    <td class="center" ng-show="simple">{{user.rank}}</td>
+                    <td ng-show="simple">{{user.mentor}}</td>
+                    <td class="center" ng-show="simple">{{user.piApproval}}</td>
+                    <td>{{user.semester}}</td>
+                    <td ng-show="simple">{{user.multipleproject}}</td>
+                    <td ng-show="simple">{{user.appliedDate}}</td>
+                    <td ng-show="simple">{{user.RegDate}}</td>
+                    <td ng-show="simple">{{user.firstlogin_date}}</td>
+                </tr>
+                </tbody>
+             </table>
+             <dir-pagination-controls pagination-id="usersPage"></dir-pagination-controls>
+         </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addUserModal" role="dialog">
+ <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Add New User</h3>
+        </div>
+        <div class="modal-body">
+           <form role="role" class="form-horizontal">
+             <div class="form-group">
+                 <div class="col-sm-3">
+                    <label>First Name (required)</label>
+                    <input id="addUserFirstName" class="form-control" type="text" ng-model="addUserFirstName"/>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>Last Name (required)</label>
+                    <input id="addUserLastName" class="form-control" type="text" ng-model="addUserLastName"/>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>Panther ID</label>
+                    <input id="addUserPID" class="form-control" type="text" ng-model="addUserPID"/>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>Gender</label>
+                    <select class="form-control" ng-model="addUserGender" id="ddGenderA"
+                          ng-options="gender.type for gender in vm.genderOptions">
+                       <option value=""></option>
+                    </select>
+                 </div>
+             </div>
+             <div class="form-group">
+                 <div class="col-sm-4">
+                    <label>Email (required)</label>
+                    <input id="addUserEmail" class="form-control" type="text" ng-model="addUserEmail"/>
+                 </div>
+                 <div class="col-sm-4">
+					<label>Password (required)</label>
+                    <input id="addUserPassword" class="form-control" autocomplete="off" type="password" ng-model="addUserPassword"/>
+                 </div>
+                 <div class="col-sm-4">
+                    <label>Password Confirmation (required)</label>
+                    <input id="addUserPasswordConf" class="form-control" autocomplete="off" type="password" ng-model="addUserPasswordConf"/>
+                 </div>
+             </div>
+             <div class="form-group">
+                 <div class="col-sm-3">
+                    <label>User Type</label>
+                    <select class="form-control" ng-model="addUserType" id="ddUserTypeA"
+                                ng-options="typerank as typerank.name for typerank in vm.typeranks"
+                       ng-change="vm.getAddRanks(addUserType)">
+                       <option value=""></option>
+                    </select>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>User Rank</label>
+                    <select class="form-control" ng-model="addUserRank" id="ddRankA"
+                                ng-options="rank for rank in vm.addRanks">
+                       <option value=""></option>
+                    </select>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>PI Approval</label>
+                    <select class="form-control" ng-model="addUserPIApproval" id="ddPIApprovalA"
+                          ng-options="approval.type for approval in vm.booleanOptions">
+                       <option value=""></option>
+                    </select>
+                 </div>
+				     <div class="col-sm-3">
+                    <label>Semester</label>
+                    <select class="form-control" ng-model="addUserTerm" id="ddTermA"
+                          ng-options="terms as terms.name for terms in vm.terms | filter: addUserProject? {name: addUserProject.semester}:'' | filter: addUserCourse? {name: addUserCourse.semester}:'' ">
+                       <option value=""></option>
+                    </select>
+                 </div>
+             </div>
+             <div class="form-group">
+                 <div class="col-sm-6">
+                    <label>Project</label>
+                    <select class="form-control" ng-model="addUserProject" id="ddProjectA"
+                          ng-options="projects as projects.title for projects in vm.allprojects | filter: addUserTerm? {semester: addUserTerm.name}:'' | filter: addUserCourse? {semester: addUserCourse.semester}:'' ">
+                       <option value=""></option>
+                    </select>
+                 </div>
+				 <div class="col-sm-3">
+                    <label>Course</label>
+                    <select class="form-control" ng-model="addUserCourse" id="ddCourseA"
+                          ng-options="course as course.fullName for course in vm.courses | filter: addUserTerm? {semester: addUserTerm.name}:'' | filter: addUserProject? {semester: addUserProject.semester}:'' ">
+                       <option value=""></option>
+                    </select>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>College</label>
+                    <select class="form-control" ng-model="addUserCollege" id="ddCollegeA"
+                          ng-options="college as college.name for college in vm.colleges">
+                       <option value=""></option>
+                    </select>
+                 </div>
+             </div>
+           </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary" id="addNewUser" data-dismiss="modal" data-toggle="modal" data-target="#addedUserModal"
+                 ng-click="vm.addUser()">Add User</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="addedUserModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <label id="addUserMessage"></label>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="addUserConfirm" data-dismiss="modal" ng-click="vm.updateTableAdd()">OK</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="editUserModal" role="dialog">
+ <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Edit User</h3>
+        </div>
+        <div class="modal-body">
+           <form role="role" class="form-horizontal">
+             <div class="form-group">
+                 <div class="col-sm-3">
+                    <label>First Name (required)</label>
+                    <input id="editUserFirstName" class="form-control" type="text" ng-model="editUserFirstName"/>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>Last Name (required)</label>
+                    <input id="editUserLastName" class="form-control" type="text" ng-model="editUserLastName"/>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>Panther ID</label>
+                    <input id="editUserPID" class="form-control" type="text" ng-model="editUserPID"/>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>Gender</label>
+                    <select class="form-control" ng-model="editUserGender" id="ddGender"
+                          ng-options="gender.type for gender in vm.genderOptions">
+                       <option value=""></option>
+                    </select>
+                 </div>
+             </div>
+             <div class="form-group">
+                 <div class="col-sm-6">
+                    <label>Email (required)</label>
+                    <input id="editUserEmail" class="form-control" type="text" ng-model="editUserEmail"/>
+                 </div>
+                 <div class="col-sm-6">
+                    <label>College</label>
+                    <select class="form-control" ng-model="editUserCollege" id="ddCollege"
+                          ng-options="college as college.name for college in vm.colleges">
+                       <option value=""></option>
+                    </select>
+                 </div>
+             </div>
+             <div class="form-group">
+                 <div class="col-sm-3">
+                    <label>User Type</label>
+                    <select class="form-control" ng-model="editUserType" id="ddUserType"
+                                ng-options="typerank as typerank.name for typerank in vm.typeranks"
+                       ng-change="vm.getEditRanks(editUserType)">
+                       <option value=""></option>
+                    </select>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>User Rank</label>
+                    <select class="form-control" ng-model="editUserRank" id="ddRank"
+                          ng-options="rank for rank in vm.editRanks">
+                       <option value=""></option>
+                    </select>
+                 </div>
+                 <div class="col-sm-3">
+                    <label>PI Approval</label>
+                    <select class="form-control" ng-model="editUserPIApproval" id="ddPIApproval"
+                          ng-options="approval.type for approval in vm.booleanOptions">
+                       <option value=""></option>
+                    </select>
+                 </div>
+				 <div class="col-sm-3">
+                    <label>Semester</label>
+                    <select class="form-control" ng-model="editUserTerm" id="ddTerm"
+                          ng-options="terms as terms.name for terms in vm.terms | filter: editUserProject? {name: editUserProject.semester}:'' | filter: editUserCourse? {name: editUserCourse.semester}:'' ">
+                       <option value=""></option>
+                    </select>
+                 </div>
+             </div>
+             <div class="form-group">
+                 <div class="col-sm-8">
+                    <label>Project</label>
+                    <select class="form-control" ng-model="editUserProject" id="ddProject"
+                          ng-options="projects as projects.title for projects in vm.allprojects | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserCourse? {semester: editUserCourse.semester}:'' ">
+                       <option value=""></option>
+                    </select>
+                 </div>
+				 <div class="col-sm-4">
+                    <label>Course</label>
+                    <select class="form-control" ng-model="editUserCourse" id="ddCourse"
+                          ng-options="course as course.fullName for course in vm.courses | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserProject? {semester: editUserProject.semester}:'' ">
+                       <option value=""></option>
+                    </select>
+                 </div>
+             </div>
+           </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary" id="editUser" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesModal"
+                 ng-click="vm.saveChangesUser()">Save changes</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="editSavedChangesModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <label id="editUserMessage">Editing user was successful</label>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="editUserConfirm" data-dismiss="modal">OK</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="deleteModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Are you sure you wish to delete this user?</h3>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="deleteUser" data-dismiss="modal" ng-click="vm.deleteUser()"
+                 data-toggle="modal" data-target="#deletedModal">Yes</button>
+           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="deletedModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <label id="deleteUserMessage"></label>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="deleteUserConfirm" data-dismiss="modal" ng-click="vm.updateTableDelete()">OK</button>
+        </div>
+     </div>
+ </div>
+</div>
+</div>
+
+<div ng-show="showSemesterMaint">
+
+  <div>
+  <div class="panel panel-default" style="width:100%;">
+    <nav>
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" style="color:#333333;">Admin Panel - Semester's List</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
+
+  <div class="table" style="overflow: scroll; overflow-y: hidden;">
+    <table class="table table-striped">
+      <thead id="header" style="background-color:#ABB2B9;">
+        <tr id="headerLabels">
+          <th></th>
+          <th></th>
+          <th></th>
+          <th ng-click="orderByFieldSem='name'; reverseSortSem = !reverseSortSem">Semester
+             <span ng-show="orderByFieldSem == 'name' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'name' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='start'; reverseSortSem = !reverseSortSem">Start Date
+             <span ng-show="orderByFieldSem == 'start' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'start' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='end'; reverseSortSem = !reverseSortSem">End Date
+             <span ng-show="orderByFieldSem == 'end' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'end' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='status.currentSemester'; reverseSortSem = !reverseSortSem">Current Semester
+             <span ng-show="orderByFieldSem == 'status.currentSemester' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'status.currentSemester' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='status.viewable'; reverseSortSem = !reverseSortSem">Viewable
+             <span ng-show="orderByFieldSem == 'status.viewable' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'status.viewable' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='status.openForProposal'; reverseSortSem = !reverseSortSem">Proposable
+             <span ng-show="orderByFieldSem == 'status.openForProposal' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'status.openForProposal' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+          <th ng-click="orderByFieldSem='status.openForApply'; reverseSortSem = !reverseSortSem">Applicable
+             <span ng-show="orderByFieldSem == 'status.openForApply' && !reverseSortSem" class="fa fa-caret-down"></span>
+             <span ng-show="orderByFieldSem == 'status.openForApply' && reverseSortSem" class="fa fa-caret-up"></span>
+          </th>
+        </tr>
+        <tr id="headerInputs">
+          <th></th>
+          <th></th>
+          <th></th>
+          <th><input class="form-control" type="text" ng-model="queryS1"/></th>
+          <th><input class="form-control" placeholder="YYYY-MM-DD" type="text" ng-model="queryS2"/></th>
+          <th><input class="form-control" placeholder="YYYY-MM-DD" type="text" ng-model="queryS3"/></th>
+          <th><input class="form-control" type="text" ng-model="queryS4"/></th>
+          <th><input class="form-control" type="text" ng-model="queryS5"/></th>
+          <th><input class="form-control" type="text" ng-model="queryS6"/></th>
+          <th><input class="form-control" type="text" ng-model="queryS7"/></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <button id="addNewSemesterStart" class="btn btn-info btn-block" ng-hide="user.userType == 'Pi/CoPi'"
+                    data-toggle="modal" data-target="#addSemesterModal" ng-click="vm.rss()">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            </button>
+          </td>
+        </tr>
+        <tr dir-paginate="semester in vm.terms | filter: queryS1?{name:queryS1} : '' |
+                                                 filter: queryS2?{start:queryS2} : '' |
+                                                 filter: queryS3?{end:queryS3} : '' |
+                                                 orderBy:orderByFieldSem:reverseSortSem |
+                                                 itemsPerPage: 10" pagination-id="semestersPage">
+
+          <td>
+            <button id="defaultSemester" class="btn btn-info btn-block" ng-click="vm.defsb(semester)"
+                    ng-hide="user.userType == 'Pi/CoPi'"
+                    ng-style="{'background-color': semester.name == vm.defaultSemester ? 'green' : ''}">
+            <i class="fa fa-check" aria-hidden="true"></i>
+            </button>
+          </td>
+          <td>
+            <button id="editSemester" class="btn btn-primary" ng-click="vm.esb(semester)"
+                    data-toggle="modal" data-target="#editSemesterModal">
+            <i class="fa fa-pencil" aria-hidden="true"></i>
+            </button>
+          </td>
+          <td>
+            <button id="deleteSemester" class="btn btn-danger" ng-click="vm.dsb(semester)"
+                    data-toggle="modal" data-target="#deleteSemesterModal">
+            <i class="fa fa-times" aria-hidden="true"></i>
+            </button>
+          </td>
+          <td>{{semester.name}}</td>
+          <td>{{semester.start | dateFilter |  date: MM-dd-yyyy}}</td>
+          <td>{{semester.end | dateFilter | date: MM-dd-yyyy}}</td>
+          <td>
+            <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.currentSemester"></i>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.currentSemester"></i>
+          </td>
+          <td>
+            <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.viewable"></i>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.viewable"></i>
+          </td>
+          <td>
+            <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForProposal"></i>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForProposal"></i>
+            <button id="editSemester" class="btn btn-primary" ng-click="vm.ses(semester)" ng-show="semester.status.openForProposal"
+                    data-toggle="modal" data-target="#newSemesterEmailModal" style="margin-left: 15px">
+            <i class="fa fa-envelope" aria-hidden="true"></i>
+            </button>
+          </td>
+          <td>
+            <i class="fa fa-check-circle fa-lg" aria-hidden="true" ng-show="semester.status.openForApply"></i>
+            <i class="fa fa-times-circle fa-lg" aria-hidden="true" ng-hide="semester.status.openForApply"></i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+<div class="modal fade" id="addSemesterModal" role="dialog">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 align="center">Add New Semester</h3>
+      </div>
+      <div class="modal-body">
+        <form role="role" class="form-horizontal">
+          <div class="form-group">
+            <table class="table" style="height: 1px;">
+              <tr>
+                <div class="col-md-4" style="margin-bottom:15px">
+                  <label>Semester Name:</label>
+                  <input type="text" class="form-control" name="semName" ng-model="semName" required>
+                </div>
+              </tr>
+                <tr>
+                  <th align="center">
+                    <p align="center" style="font-weight:bold">Start Date: {{startDate | date:'M/d/yyyy'}}</p>
+                  </th>
+                  <th align="center">
+                    <p align="center" style="font-weight:bold">End Date: {{endDate | date:'M/d/yyyy'}}</p>
+                  </th>
+                </tr>
+                <tr>
+                  <td align="center">
+                    <date-picker ng-model="startDate">
+                    </date-picker>
+                  </td>
+                  <td align="center">
+                    <date-picker ng-model="endDate">
+                    </date-picker>
+                  </td>
+                </tr>
+              <tr>
+                <th>
+                  Current Semester
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value="true">On</input>
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Viewable by Students
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="vm.vStatus" value="true">On</input>
+                    <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="!(vm.vStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Proposable by Faculty
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="vm.pStatus" value="true">On</input>
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="!(vm.pStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Applicable by Students
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="vm.aStatus" value="true">On</input>
+                    <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="!(vm.aStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+            </table>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <!-- data-toggle="modal" data-target="#addedSemesterModal" -->
+         <button type="button" class="btn btn-primary" id="addNewSemester" data-dismiss="modal"
+               ng-click="vm.cns(semName, startDate, endDate)" ng-disabled="!(semName && startDate && endDate)">
+               Add Semester</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="newSemesterEmailModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Email Update</h3>
+        </div>
+        <div class="modal-body">
+          Would you like to email all Faculty/Staff about this Semester?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="emailNewSemester"
+                  data-dismiss="modal" ng-click="vm.epo()">Yes</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="editSemesterModal" role="dialog">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 align="center">Edit Semester</h3>
+      </div>
+      <div class="modal-body">
+        <form role="role" class="form-horizontal">
+          <div class="form-group">
+            <table class="table" style="height: 1px;">
+              <tr>
+                <div class="col-md-4" style="margin-bottom:15px">
+                  <label>Semester Name:</label>
+                  <input type="text" class="form-control" name="semName" ng-model="semName" required>
+                </div>
+              </tr>
+                <tr>
+                  <th align="center">
+                    <p align="center" style="font-weight:bold">Start Date: {{startDate | date:'M/d/yyyy'}}</p>
+                  </th>
+                  <th align="center">
+                    <p align="center" style="font-weight:bold">End Date: {{endDate | date:'M/d/yyyy'}}</p>
+                  </th>
+                </tr>
+                <tr>
+                  <td align="center">
+                    <date-picker ng-model="startDate">
+                    </date-picker>
+                  </td>
+                  <td align="center">
+                    <date-picker ng-model="endDate">
+                    </date-picker>
+                  </td>
+                </tr>
+              <tr>
+                <th>
+                  Current Semester
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value="true">On</input>
+                    <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Viewable by Students
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="vm.vStatus" value="true">On</input>
+                    <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="!(vm.vStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Proposable by Faculty
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="vm.pStatus" value="true">On</input>
+                    <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="!(vm.pStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  Applicable by Students
+                </th>
+                <th>
+                  <form action="">
+                    <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="vm.aStatus" value="true">On</input>
+                    <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="!(vm.aStatus)" value="false">Off</input>
+                  </form>
+                </th>
+              </tr>
+            </table>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.rss()">Close</button>
+         <button type="button" class="btn btn-primary" id="editNewSemester"
+               ng-click="vm.msc()" data-dismiss="modal">Edit Semester</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteSemesterModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h3>Semester Delete</h3>
+        </div>
+        <div class="modal-body">
+          Are you sure you wish to delete this semester?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="deleteSemester"
+                  data-dismiss="modal" ng-click="vm.ds()">Yes</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+<div class="modal fade" id="deletedSemesterModal" role="dialog">
+ <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <label id=""></label>
+        </div>
+        <div class="modal-body">
+           <button type="button" class="btn btn-primary" id="deleteSemesterConfirm" data-dismiss="modal" ng-click="">OK</button>
+        </div>
+     </div>
+ </div>
+</div>
+
+  <!-- <div class="col-md-3 panel panel-default">
+    <h3 align="center">Semester Options</h3>
+
+    <div class="form-group">
+      <table class="table">
+        <tr>
+            <th>
+                <b>Semester:</b> <select class="form-control" ng-model="selectedTerm"
+                                     ng-options="terms as terms.name for terms in vm.terms"
+                                     value="{{vm.currentTerm(selectedTerm)}}"></select>
+            </th>
+        </tr>
+      </table>
+      <table class="table" style="height: 1px;">
+          <tr>
+              <th>
+                Current Semester
+              </th>
+              <th>
+                <form action="">
+                  <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="vm.cStatus" value="true">On</input>
+                  <input type="radio" ng-model="cStatus" ng-change="vm.csf(cStatus)" ng-checked="!(vm.cStatus)" value="false">Off</input>
+                </form>
+              </th>
+          </tr>
+          <tr>
+              <th>
+                Proposable by Faculty
+              </th>
+              <th>
+                <form action="">
+                  <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="vm.pStatus" value="true">On</input>
+                  <input type="radio" ng-model="pStatus" ng-change="vm.psf(pStatus)" ng-checked="!(vm.pStatus)" value="false">Off</input>
+                </form>
+              </th>
+          </tr>
+          <tr>
+              <th>
+                Viewable by Students
+              </th>
+              <th>
+                <form action="">
+                  <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="vm.vStatus" value="true">On</input>
+                  <input type="radio" ng-model="vStatus" ng-change="vm.vsf(vStatus)" ng-checked="!(vm.vStatus)" value="false">Off</input>
+                </form>
+              </th>
+          </tr>
+          <tr>
+              <th>
+                Applicable by Students
+              </th>
+              <th>
+                <form action="">
+                  <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="vm.aStatus" value="true">On</input>
+                  <input type="radio" ng-model="aStatus" ng-change="vm.asf(aStatus)" ng-checked="!(vm.aStatus)" value="false">Off</input>
+                </form>
+              </th>
+          </tr>
+      </table>
+    </div>
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(selectedTerm)" ng-click="vm.msc()" class="btn btn-success btn-block">Confirm
+    </button>
+  </div> -->
+
+  <!-- <div class="col-md-6 panel panel-default">
+    <h3 align="center">Create New Semester</h3>
+    <div class="form-class">
+      <table class="table" style="height: 1px;">
+        <tr>
+          <th>
+            <label>
+             Semester Name:
+             <input type="text" name="semName" ng-model="semName" required>
+            </label>
+          </th>
+        </tr>
+        <tr>
+          <th>
+            Start Date: {{startDate}}
+          </th>
+          <th>
+            End Date: {{endDate}}
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <date-picker ng-model="startDate">
+            </date-picker>
+          </td>
+          <td>
+            <date-picker ng-model="endDate">
+            </date-picker>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(semName && startDate && endDate)" ng-click="vm.cns(semName, startDate, endDate)" class="btn btn-success btn-block">Create
+    </button>
+  </div> -->
+
+  <!-- <div class="col-md-3 panel panel-default">
+    <h3 align="center">Delete a Semester</h3>
+    <div class="form-group">
+      <table class="table">
+        <tr>
+          <th>
+            <b>Semester:</b> <select class="form-control" ng-model="selectedTerm"
+                                 ng-options="terms as terms.name for terms in vm.terms"
+                                 value="{{vm.currentTerm(selectedTerm)}}"></select>
+          </th>
+        </tr>
+      </table>
+    </div>
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(selectedTerm)" ng-click="vm.ds()" class="btn btn-success btn-block">Delete
+    </button>
+  </div> -->
+
+  <!-- <div class="col-md-3 panel panel-default">
+    <h3 align="center">Set Default Semester</h3>
+
+    <div class="form-group">
+      <table class="table">
+        <tr>
+            <th>
+                <b>Semester:</b> <select class="form-control" ng-model="selectedTerm"
+                                     ng-options="terms as terms.name for terms in vm.terms"
+                                     value="{{vm.currentTerm(selectedTerm)}}"></select>
+            </th>
+        </tr>
+      </table>
+    </div>
+    <button style="width: 80px; margin-left: auto; margin-right: auto; margin-bottom: 10px;" ng-disabled="!(selectedTerm)" ng-click="vm.sds()" class="btn btn-success btn-block">Confirm
+    </button>
+
+  </div> -->
+
+</div>
+
+
+<div ng-show="showProjectMaint">
+   <div>
+		<div class="panel panel-default" style="width:100%;">
+         <nav>
+    <div class="container-fluid">
+         <div class="navbar-header">
+             <a class="navbar-brand" style="color:#333333;">Admin Panel - Projects List</a>
+         </div>
+         <ul class="nav navbar-nav navbar-right" style="padding-right: 1%">
+      <li>
+                 <button style="float:right;" ng-click="simpleP=false"
+                        class="btn second-button btn-default navbar-btn">
+             <i class="fa fa-minus" aria-hidden="true"></i> Simple Layout
+          </button>
+             </li>
+      <li>
+                 &nbsp;<button style="float:right;" ng-click="simpleP=true"
+                        class="btn second-button btn-default navbar-btn">
+             <i class="fa fa-plus" aria-hidden="true"></i> Complex Layout
+          </button>
+             </li>
+             <li>
+                 &nbsp;<button style="float:right;" ng-click="vm.uncheckp()" ng-model="refresh"
+                        class="btn second-button btn-default navbar-btn">
+                    <i class="fa fa-refresh" aria-hidden="true"></i> Refresh Filters
+                 </button>
+             </li>
+         </ul>
+    </div>
+</nav>
+
+<section id="section2">
+    <table class="table table-striped table-bordered">
+         <thead style="background-color:#F2F3F4;">
+         <tr>
+      <td class="col-md-3">
+                 Owner:
+                 <select class="form-control" id="powner" ng-model="selectedPOwner"
+                        	ng-options="owner as project.owner_name for project in vm.allprojects | filter:{owner_name: ''}">
+             		<option value=""></option>
+          	</select>
+             </td>
+             <td class="col-md-3">
+                 Semester:
+                 <select class="form-control" id="pterm" ng-model="selectedPTerm"
+                        ng-options="terms as terms.name for terms in vm.terms">
+             <option value=""></option>
+          </select>
+             </td>
+      <td class="col-md-3">
+                 Status:
+                 <select class="form-control" id="pstatus" ng-model="selectedPStatus"
+                        ng-options="status as status.type for status in vm.statusList">
+             <option value=""></option>
+          </select>
+             </td>
+         </tr>
+         <br/>
+         </tbody>
+    </table>
+</section>
+
+			<div class="table" style="overflow: scroll; overflow-y: hidden;">
+                <table id="adminTableU" class="table table-striped">
+                   <thead id="header" style="background-color:#ABB2B9;">
+
+                   <tr id="headerLabels">
+					 <th></th>
+					 <th></th>
+					 <th></th>
+					 <th ng-click="orderByFieldProj='title'; reverseSortProj = !reverseSortProj">Title</th>
+					 <th ng-click="orderByFieldProj='owner_name'; reverseSortProj = !reverseSortProj">Owner</th>
+					 <th ng-show="simpleP" ng-click="orderByFieldProj='owner_rank'; reverseSortProj = !reverseSortProj">Owner Rank</th>
+					 <th ng-click="orderByFieldProj='owner_email'; reverseSortProj = !reverseSortProj">Owner Email</th>
+					 <th ng-click="orderByFieldProj='semester'; reverseSortProj = !reverseSortProj">Semester</th>
+					 <th ng-click="orderByFieldProj='status'; reverseSortProj = !reverseSortProj">Status</th>
+					 <th ng-click="orderByFieldProj='mentor'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Mentor</th>
+					 <th ng-click="orderByFieldProj='faculty.name'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Faculty</th>
+					 <th ng-click="orderByFieldProj='member'; reverseSortProj = !reverseSortProj">Students</th>
+					 <th ng-click="orderByFieldProj='description'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Description</th>
+					 <th ng-click="orderByFieldProj='maxStudents'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Max Students</th>
+					 <th ng-click="orderByFieldProj='vidurl'; reverseSortProj = !reverseSortProj" ng-show="simpleP">Video URL</th>
+                   </tr>
+
+                   <tr id="headerInputs">
+					 <th></th>
+					 <th></th>
+					 <th></th>
+					 <th><input class="form-control" type="text" ng-model="queryp1"/></th>
+					 <th><input type="text" class="form-control" ng-model="queryp2"/></th>
+				     <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp3"/></th>
+					 <th><input type="text" class="form-control" ng-model="queryp4"/></th>
+				     <th><input type="text" class="form-control" ng-model="queryp5"/></th>
+					 <th><input type="text" class="form-control" ng-model="queryp6"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp7"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp8"/></th>
+					 <th><input type="text" class="form-control" ng-model="queryp9"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp10"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp11"/></th>
+					 <th ng-show="simpleP"><input type="text" class="form-control" ng-model="queryp12"/></th>
+				   </tr>
+                   </thead>
+
+                    <tbody>
+
+                    <tr dir-paginate="project in (filteredPItems = ( vm.tabledata_p | filter: selectedPStatus? {status: selectedPStatus.type}:'' |
+					filter: selectedPOwner? {owner_name: selectedPOwner.owner_name}:'' | filter: selectedPTerm? {semester: selectedPTerm.name}:''|
+					filter: queryp1?{title:queryp1}:'' | filter: queryp2?{owner_name:queryp2}:'' | filter: queryp3?{owner_rank:queryp3}:'' |
+					filter: queryp4?{owner_email:queryp4}:'' | filter: queryp5?{semester:queryp5}:'' | filter: queryp6?{status:queryp6}:'' |
+					filter: queryp7?{mentor:queryp7}:'' | filter: queryp8?{faculty:queryp8}:'' | filter: queryp9?{members:queryp9}:'' |
+					filter: queryp10?{description:queryp10}:'' | filter: queryp11?{maxStudents:queryp11}:'' | filter: queryp12?{video_url:queryp12}:'')) | orderBy:orderByFieldProj:reverseSortProj |
+					itemsPerPage: 10" pagination-id="projectsPage">
+						<td>
+                            <button id="editProjectStart" class="btn btn-info" ng-click="vm.editProject(project)"
+									data-toggle="modal" data-target="#editProjectModal">
+									<i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                        </td>
+						<td>
+                            <button id="editProjectUsersStart" class="btn btn-primary" ng-click="vm.editProjectUsers(project)"
+									data-toggle="modal" data-target="#editProjectUsersModal">
+									<i class="fa fa-user" aria-hidden="true"></i>
+                            </button>
+						</td>
+						<td>
+							<button id="deleteProjectStart" class="btn btn-danger" ng-click="vm.selectDeleteProject(project)"
+                                    data-toggle="modal" data-target="#deletePModal">
+									<i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </td>
+						<td>{{project.title}}</td>
+                        <td>{{project.owner_name}}</td>
+						<td ng-show="simpleP">{{project.owner_rank}}</td>
+                        <td>{{project.owner_email}}</td>
+                        <td>{{project.semester}}</td>
+                        <td>{{project.status}}</td>
+						<td ng-show="simpleP">
+							<ul class="csv">
+								<li ng-repeat="mentor in project.mentor">{{mentor.name}}</li>
+							</ul>
+						</td>
+                        <td ng-show="simpleP">
+							<ul class="csv">
+								<li ng-repeat="faculty in project.faculty">{{faculty.name}}</li>
+							</ul>
+						</td>
+                        <td>
+							<ul class="csv">
+								<li ng-repeat="member in project.members_detailed">{{member}}</li>
+							</ul>
+						</td>
+						<td ng-show="simpleP">{{project.description.toString()}}</td>
+                        <td ng-show="simpleP">{{project.maxStudents}}</td>
+                        <td ng-show="simpleP">
+							<ul class="csv">
+								<li ng-repeat="video in project.video_url">{{video.vidurl}}</li>
+							</ul>
+						</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <dir-pagination-controls
+                 max-size="5"
+                 direction-links="true"
+                 boundary-links="true"
+                 pagination-id="projectsPage"
+                 >
+              </dir-pagination-controls>
+            </div>
+		</div>
+	</div>
+
+   <!-- Project Edit/Delete Modal Dialogs.................................................... -->
+
+   	<div class="modal fade" id="editProjectModal" role="dialog">
+   		<div class="modal-dialog modal-lg">
+   			<div class="modal-content">
+   				<div class="modal-header">
+   					<h3>Edit Project</h3>
+   				</div>
+   				<div class="modal-body">
+   					<form role="role" class="form-horizontal">
+   						<div class="form-group">
+   							<div class="col-sm-8">
+   								<label>Project Title (required)</label>
+   								<input id="editPTitle" class="form-control" type="text" ng-model="editPTitle"/>
+   							</div>
+   							<div class="col-sm-4">
+   								<label>Semester</label>
+   								<select class="form-control" ng-model="editPTerm" id="ddTermP"
+   										ng-options="terms as terms.name for terms in vm.terms">
+   									<option value=""></option>
+   								</select>
+   							</div>
+   						</div>
+   						<div class="form-group">
+   							<div class = "textContainer">
+   								<label>Project Description</label>
+   								<trix-editor angular-trix class="trix" id="editPDescription" ng-model="editPDescription" name="" rows="4" required></trix-editor>
+   							</div>
+   						</div>
+   						<div class="form-group">
+   							<div class="col-sm-8">
+   								<label>(Filter Owner)</label>
+   								<input id="editPFilterOwner" class="form-control" type="text" ng-model="editPFilterOwner"/>
+   							</div>
+   							<div class="col-sm-4">
+   								<label>Max Students</label>
+   								<input id="editPMaxStudents" class="form-control" type="text" ng-model="editPMaxStudents"/>
+   							</div>
+   						</div>
+   						<div class="form-group">
+   							<div class="col-sm-8">
+   								<label>Project Owner</label>
+   								<select class="form-control" ng-model="editPOwner" id="ddOwnerP"
+   										ng-options="user as user.firstName + ' ' + user.lastName for user in vm.allusers | filter: editPFilterOwner? editPFilterOwner:''">
+   									<option value=""></option>
+   								</select>
+   							</div>
+   							<div class="col-sm-4">
+   								<label>Status</label>
+   								<select class="form-control" ng-model="editPStatus" id="ddStatusP"
+   										ng-options="status as status.type for status in vm.statusList">
+   								</select>
+   							</div>
+   						</div>
+   						<div class="form-group">
+							<div class = "textContainer">
+								<table class="table table-striped">
+									<tr>
+										<label>Video URL</label>
+									</tr>
+									<tr ng-repeat="video in vm.editingProject.video_url">
+										<td class="col-md-1">
+											<button id="removePVidButton" class="btn btn-danger" ng-click="vm.removeProjectVideo(video)">
+												<i class="fa fa-times" aria-hidden="true"></i>
+											</button>
+										</td>
+										<td class="col-md-2"><img src="{{video.vimgurl}}" height="50px" width="50px"></td>
+										<td>{{video.vidurl}}</td>
+									</tr>
+								</table>
+								<table class="table table-striped">
+									<tr>
+										<td class="col-md-1">
+											<button id="addPVidButton" type="button" class="btn btn-primary" ng-click="vm.addProjectVideo()">
+												<i class="fa fa-plus" aria-hidden="true"></i>
+											</button>
+										</td>
+										<td>
+											<input id="addPVidUrl" class="form-control" type="text" ng-model="addPVidUrl"/>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+   					</form>
+   				</div>
+   				<div class="modal-footer">
+   					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+   					<button type="button" class="btn btn-primary" id="editProject" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesPModal"
+   							ng-click="vm.saveChangesProject()">Save changes</button>
+   				</div>
+   			</div>
+   		</div>
+   	</div>
+
+   	<div class="modal fade" id="editProjectUsersModal" role="dialog">
+   		<div class="modal-dialog">
+   			<div class="modal-content">
+   				<div class="modal-header">
+   					<label>Add/Remove Users from Project</label>
+   				</div>
+   				<div class="modal-body">
+   					<form role="role" class="form-horizontal">
+						<label>Project Members</label>
+   						<div class="form-group">
+   							<table class="table table-striped">
+   								<tr>
+   									<td>
+										<label> Filter: </label>
+   									</td>
+   									<td>
+   										<input id="studentQuery" type="text" class="form-control" ng-model="studentQuery"/>
+   									</td>
+   								</tr>
+   								<tr>
+   									<td>
+   										<button id="addPUserButton" type="button" class="btn btn-primary" ng-click="vm.addStudentProject()">
+   											<i class="fa fa-user-plus" aria-hidden="true"></i>
+   										</button>
+   									</td>
+   									<td>
+   										<select id="addPUser" class="form-control" ng-model="addPUser"
+   												ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.allusers | filter: {userType: 'Student'} | filter: studentQuery? studentQuery:'' | filter: vm.editingProject.semester? {semester: vm.editingProject.semester}:'' ">
+   											<option value=""></option>
+   										</select>
+   									</td>
+   								</tr>
+   								<tr ng-repeat="student in vm.editingProject.members_detailed_copy">
+   									<td>
+   										<button id="removePUserButton" class="btn btn-danger" ng-click="vm.removeStudentProject(student.name)">
+   											<i class="fa fa-user-times" aria-hidden="true"></i>
+   										</button>
+                                 <button ng-model="approveStud" class="btn btn-primary" ng-click="vm.approveStudentProject(student.id)" ng-disabled="student.approved"> <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> </button>
+   									</td>
+   									<td>{{student.name}}</td>
+   								</tr>
+   							</table>
+   						</div>
+                     <!-- <div>
+                        <label>Review Student Applications</label>
+                        <table>
+                           <tr ng-repeat="student in vm.membs | filter:searchText">
+                              <td>{{student.firstName}}</td>
+                              <button class="btn btn-primary" ng-click="vm.approveStudentProject(student)"> Approve </button>
+                              <button class="btn btn-danger" ng-click="vm.rejectStudentProject(student)">
+                                 Reject
+                              </button>
+                           </tr>
+                        </table>
+                     </div> -->
+   					</form>
+					<form role="role" class="form-horizontal">
+						<label>Faculty Members</label>
+   						<div class="form-group">
+   							<table class="table table-striped">
+   								<tr>
+   									<td>
+										<label> Filter: </label>
+   									</td>
+   									<td>
+   										<input id="facultyQuery" type="text" class="form-control" ng-model="facultyQuery"/>
+   									</td>
+   								</tr>
+   								<tr>
+   									<td>
+   										<button id="addPFacultyButton" type="button" class="btn btn-primary" ng-click="vm.addFacultyProject()">
+   											<i class="fa fa-user-plus" aria-hidden="true"></i>
+   										</button>
+   									</td>
+   									<td>
+   										<select id="addPFaculty" class="form-control" ng-model="addPFaculty"
+   												ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.allusers | filter: {userType: '!Student'} | filter: facultyQuery? facultyQuery:'' ">
+   											<option value=""></option>
+   										</select>
+   									</td>
+   								</tr>
+   								<tr ng-repeat="faculty in vm.editingProject.faculty">
+   									<td>
+   										<button id="removePFacultyButton" class="btn btn-danger" ng-click="vm.removeFacultyProject(faculty)">
+   											<i class="fa fa-user-times" aria-hidden="true"></i>
+   										</button>
+   									</td>
+   									<td>{{faculty.name}}</td>
+   								</tr>
+   							</table>
+   						</div>
+   					</form>
+					<form role="role" class="form-horizontal">
+						<label>Mentors</label>
+   						<div class="form-group">
+   							<table class="table table-striped">
+   								<tr>
+   									<td>
+										<label> Filter: </label>
+   									</td>
+   									<td>
+   										<input id="mentorQuery" type="text" class="form-control" ng-model="mentorQuery"/>
+   									</td>
+   								</tr>
+   								<tr>
+   									<td>
+   										<button id="addPMentorButton" type="button" class="btn btn-primary" ng-click="vm.addMentorProject()">
+   											<i class="fa fa-user-plus" aria-hidden="true"></i>
+   										</button>
+   									</td>
+   									<td>
+   										<select id="addPMentor" class="form-control" ng-model="addPMentor"
+   												ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.allusers | filter: {userType: 'Student'} | filter: mentorQuery? mentorQuery:'' ">
+   											<option value=""></option>
+   										</select>
+   									</td>
+   								</tr>
+   								<tr ng-repeat="mentor in vm.editingProject.mentor">
+   									<td>
+   										<button id="removePMentorButton" class="btn btn-danger" ng-click="vm.removeMentorProject(mentor)">
+   											<i class="fa fa-user-times" aria-hidden="true"></i>
+   										</button>
+   									</td>
+   									<td>{{mentor.name}}</td>
+   								</tr>
+   							</table>
+   						</div>
+   					</form>
+   				</div>
+   				<div class="modal-footer">
+   					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+   					<button type="button" class="btn btn-primary" id="editProjectUsers" data-dismiss="modal" data-toggle="modal" data-target="#editSavedChangesPModal"
+   							ng-click="vm.saveChangesProjectUsers()">Save changes</button>
+   				</div>
+   			</div>
+   		</div>
+   	</div>
+
+   	<div class="modal fade" id="editSavedChangesPModal" role="dialog">
+   		<div class="modal-dialog">
+   			<div class="modal-content">
+   				<div class="modal-header">
+   					<label id="editProjectMessage">Editing project was successful</label>
+   				</div>
+   				<div class="modal-body">
+   					<button type="button" class="btn btn-primary" id="editProjectConfirm" data-dismiss="modal" ng-click="vm.reloadDeactivate()">OK</button>
+   				</div>
+   			</div>
+   		</div>
+   	</div>
+
+   	<div class="modal fade" id="deletePModal" role="dialog">
+   		<div class="modal-dialog">
+   			<div class="modal-content">
+   				<div class="modal-header">
+   					<h3>Are you sure you wish to delete this project?</h3>
+   				</div>
+   				<div class="modal-body">
+   					<button type="button" class="btn btn-primary" id="deleteProject" data-dismiss="modal" ng-click="vm.deleteProject()"
+   							data-toggle="modal" data-target="#deletedPModal">Yes</button>
+   					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+   				</div>
+   			</div>
+   		</div>
+   	</div>
+
+   	<div class="modal fade" id="deletedPModal" role="dialog">
+   		<div class="modal-dialog">
+   			<div class="modal-content">
+   				<div class="modal-header">
+   					<label id="deleteProjectMessage"></label>
+   				</div>
+   				<div class="modal-body">
+   					<button type="button" class="btn btn-primary" id="deleteProjectConfirm" data-dismiss="modal" ng-click="vm.updatePTableDelete()">OK</button>
+   				</div>
+   			</div>
+   		</div>
+   	</div>
+</div>
+
 </html>

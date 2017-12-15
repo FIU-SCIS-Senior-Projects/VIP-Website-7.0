@@ -360,13 +360,28 @@ a {
 
 .project-info {
     margin: 10px 10px 20px 10px;
-    height: 260px;
+    height: 425px;
     width: 48%;
     padding: 10px;
     border: 1px solid #C2C2C2;
     border-radius: 3px;
     box-shadow: 0px 2px 4px #C2C2C2;
     overflow: hidden;
+}
+
+.project-metadata {
+    margin: 10px 10px 20px 10px;
+    height: 60px;
+    width: 48%;
+    padding: 10px;
+    border: 1px solid #C2C2C2;
+    border-radius: 3px;
+    box-shadow: 0px 2px 4px #C2C2C2;
+    overflow: hidden;
+}
+
+.metadata-icon {
+    font-size: 10px; 
 }
 
 .detailed-project-info {
@@ -457,14 +472,44 @@ a {
 }
 
 .proj-title-teams {
+    text-align: left;
+    font-weight: bold;
+    letter-spacing: 0.9px;
+    line-height: 1.13em;
+    font-size: 22px;
+}
+
+.proj-title-teams-detail {
     text-align: center;
     font-weight: bold;
-    letter-spacing: 4px;
+    letter-spacing: 0.9px;
+    line-height: 1.13em;
+    font-size: 22px;
+}
+
+.proj-semester-teams {
+    text-align: left;
+    font-weight: bold;
+    letter-spacing: 0.9px;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.proj-title-owner {
+    margin-top: 13px;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+
+.proj-card-skills {
+    margin-top: 10px;
+    margin-bottom: 12px;
+    font-size: 13px;
 }
 
 .read-btn {
     float: right;
-    font-weight: bold;
+    margin-top: 5px;
     cursor: pointer;
 }
 
@@ -478,6 +523,32 @@ a {
     text-align: center;
     width: 100%;
     max-height: 600px;
+}
+
+.video-thumb {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    background: #ccc;
+    margin: 5px;
+}
+
+.video-thumb-card {
+    display: inline-block;
+    max-width: 80px;
+    max-height: 80px;
+    background: #ccc;
+    margin: 5px;
+}
+
+
+.thumb-card-container {
+    text-align: center;
+    margin: auto;
+    height: 85px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    white-space:nowrap;
 }
 
 .team-info {
@@ -494,6 +565,22 @@ a {
     cursor: pointer;
 }
 
+.proj-image-container {
+    height: 135px;
+    width: 135px;
+    float:left;
+    display: inline;
+    line-height: 135px;
+    margin-right: 3px;
+}
+
+.proj-image-container img {
+    padding: 0px 10px 10px 10px; 
+    max-height: 135px; 
+    max-width:135px;
+    vertical-align: middle;
+}
+
 .buttons-container {
     margin-bottom: 10px;
 }
@@ -504,8 +591,26 @@ a {
     font-family: calibri, sans-serif;
 }
 
+/* The class is old - Not used anymore */
+.proj-descrip-teams-vid {
+    display: inline-block;
+    height: 120px;
+    overflow-y: scroll;
+    font-family: calibri, sans-serif;
+}
+
 .proj-descrip-teams {
     font-family: calibri, sans-serif;
+    font-size: 14.5px;
+}
+
+.outer-wrapper {
+    height: 236px;
+}
+
+.wrapper {
+    height: 197px;
+    overflow: hidden;
 }
 
 .sort-by-padding {
@@ -890,8 +995,10 @@ background-color: #1DBFE6;
 #adminTable tbody>tr>td
 {
     border-bottom: 1px solid lightgray;
-    white-space: nowrap;
+    white-space: normal;
+	font-size: small;
 }
+
 .table #header>#headerInputs>th>input[type= "text"]
 {
     height: 30px;
@@ -900,7 +1007,7 @@ background-color: #1DBFE6;
     background-color: #204d74;
     border-style: none;
     min-width: 100px;
-    max-width: 500px;
+    max-width: 400px;
 }
 
 .table #header>#headerInputs>th> input:focus
@@ -915,6 +1022,7 @@ background-color: #1DBFE6;
 {
     background-color: #061F3D;
     color: white;
+	font-size: small;
 }
 .table #header>#headerLabels>th
 {
@@ -927,3 +1035,19 @@ label.small {
     font-weight: normal;
     font-size: 0.8em;
 }
+
+.textContainer {
+	width: 95%;
+    margin: auto;
+}
+
+.csv {
+	list-style: none;
+	margin: 0; 
+	padding: 0;
+}
+
+.csv li { display: inline; }
+.csv li:after { content: ", "; }
+.csv li:last-child:after { content: ""; }
+

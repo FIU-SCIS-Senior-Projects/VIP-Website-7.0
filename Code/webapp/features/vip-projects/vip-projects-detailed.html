@@ -1,22 +1,28 @@
 
 <div class="row team-project">
 
-        <div class="video-container" ng-show="vm.data.video_url">
-			
-            <iframe width="600" height="350" ng-src="{{vm.setVideo(vm.data.video_url)}}"  frameborder="0" allowfullscreen style="margin: 0 auto;"></iframe>
+        <div class="video-container" ng-show="vm.data.video_url[0].vidurl">
+
+            <iframe width="600" height="350" ng-src="{{iFrameURL}}" id="vidframe" frameborder="0" allowfullscreen style="margin: 0 auto;"></iframe>
+
+            <div class="container" style="padding-top:15px;">
+                <div class="video-thumb" ng-repeat="videothumb in vm.data.video_url">
+                        <img ng-click="vm.setVideo(videothumb.vidurl)" src="{{videothumb.vimgurl}}" height="100px" width="100px">
+                </div>
+            </div>
         </div>
 
         <div class="col-sm-9 project-second-section-middle">
             <div class="col-sm-12 detailed-project-info">
 				<center>
 					<h2 class="proj-status" ng-hide="(vm.data.status == 'Active')">
-						
+
                         <strong>This Project is Currently Inactive</strong>
                     </h2>
 				</center>
-                    <h2 class="proj-title-teams">
-						
-						
+                    <h2 class="proj-title-teams-detail">
+
+
                         <strong>{{vm.data.title}}</strong>
                     </h2>
                     <hr>
@@ -36,6 +42,21 @@
 					<p>
                         <label>Semester:</label>
                         {{vm.data.semester}}
+                    </p>
+                    <p ng-show="vm.data.attachments[0].url" ng-init="attachLimit = 3">
+                        <label>Attachments:</label><br />
+                        <table class="table">
+                            <tr ng-repeat="doc in vm.data.attachments | limitTo: attachLimit">
+                                <td style="width:50px;">
+                                    <i class="fa fa-file-o fa-3x" aria-hidden="true"></i>
+                                </td>
+                                <td style="vertical-align:middle;"><a ng-click="vm.openPDF(doc.url)" target="_blank">{{doc.name}}</a></td>
+                            </tr>
+                        </table>
+                        <div ng-show="vm.data.attachments[3]">
+                            <button type="button" ng-show="attachLimit == 3" class="btn btn-link" ng-click="attachLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
+                            <button type="button" ng-show="attachLimit == 256" class="btn btn-link" ng-click="attachLimit = 3" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
+                        </div>
                     </p>
             </div>
         </div>
@@ -61,57 +82,99 @@
 			</a>
              <hr>
                 <h4>Project Owners</h4>
-                <div>
-                    <ul class="student-list" ng-repeat="projowners in vm.productOwner">
-                    <li class="student-in-list">
-                            <a ng-click="vm.redirect2(projowners[1])" class="person_hover">{{projowners[0]}}</a>
-                            <a href="/#/sendmessage/{{projowners[1]}}/0/1">
-                           <i ng-if="vm.data.owner != null" class="fa fa-envelope-o" ng-show="vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="font-size: 20px; float: right;"></i>
-                           <p ng-if="vm.data.owner == null" style="float: right;"></p>
-                            </a>
-                        </li>
-                    </ul>
+                <div ng-init="ownerLimit = 5">
+                    <table class="table student-list">
+                        <tr ng-repeat="projowners in vm.productOwner | limitTo: ownerLimit" style="padding:2px;">
+                            <td style="padding:2px; vertical-align: middle;"><a ng-click="vm.redirect2(projowners[1])" class="person_hover">{{projowners[0]}}</a></td>
+                            <td style="width:50px;">
+                                <a href="/#/sendmessage/{{projowners[1]}}/0/1">
+                                <i ng-if="vm.data.owner != null" class="fa fa-envelope-o fa-lg" ng-show="vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="display: inline;"></i>
+                                <p ng-if="vm.data.owner == null" style="float: right;"></p>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <div ng-show="vm.productOwner[5]">
+                        <button type="button" ng-show="ownerLimit == 5" class="btn btn-link" ng-click="ownerLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
+                        <button type="button" ng-show="ownerLimit == 256" class="btn btn-link" ng-click="ownerLimit = 5" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
+                    </div>
                 </div>
                     <h4>Faculty</h4>
-                <div>
-					<ul class="student-list" ng-repeat="faculty in vm.data.faculty track by $index">
-					<li class="student-in-list">
-                    <a ng-click="vm.redirect2(faculty.email)" class="person_hover">{{faculty.name}}</a>
-					<a href="/#/sendmessage/{{faculty.email}}/0/1">
-					<i class="fa fa-envelope-o" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="font-size: 20px; float: right;"></i>
-					</a>
-                    </li>
-					</ul>
+                <div ng-init="facultyLimit = 5">
+                        <table class="table student-list">
+					        <tr ng-repeat="faculty in vm.data.faculty | limitTo: facultyLimit track by $index" style="padding:2px;">
+					            <td style="padding:2px; vertical-align: middle;"><a ng-click="vm.redirect2(faculty.email)" class="person_hover">{{faculty.name}}</a></td>
+                                <td style="width:50px;">
+                                    <a href="/#/sendmessage/{{faculty.email}}/0/1">
+					                <i class="fa fa-envelope-o fa-lg" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="display: inline;"></i>
+					                </a>
+                                </td>
+                            </tr>
+                        </table>
+                        <div ng-show="vm.data.faculty[5]">
+                            <button type="button" ng-show="facultyLimit == 5" class="btn btn-link" ng-click="facultyLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
+                            <button type="button" ng-show="facultyLimit == 256" class="btn btn-link" ng-click="facultyLimit = 5" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
+                        </div>
                 </div>
                     <h4>Mentor</h4>
-				<div>
-					<ul class="student-list" ng-repeat="mentor in vm.data.mentor track by $index">
-					<li class="student-in-list">
-                    <a ng-click="vm.redirect2(mentor.email)" class="person_hover">{{mentor.name}}</a>
-					<a href="/#/sendmessage/{{mentor.email}}/0/1">
-					<i class="fa fa-envelope-o" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="font-size: 20px; float: right;"></i>
-					</a>
-                    </li>
-					</ul>
+				<div ng-init="mentorLimit = 5">
+                    <table class="table student-list">
+                        <tr ng-repeat="mentor in vm.data.mentor | limitTo: mentorLimit track by $index" style="padding:2px;">
+                            <td style="padding:2px; vertical-align: middle;"><a ng-click="vm.redirect2(mentor.email)" class="person_hover">{{mentor.name}}</a></td>
+                            <td style="width:50px;">
+                                <a href="/#/sendmessage/{{mentor.email}}/0/1">
+                                <i class="fa fa-envelope-o fa-lg" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="display: inline;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <div ng-show="vm.data.mentor[5]">
+                        <button type="button" ng-show="mentorLimit == 5" class="btn btn-link" ng-click="mentorLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
+                        <button type="button" ng-show="mentorLimit == 256" class="btn btn-link" ng-click="mentorLimit = 5" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
+                    </div>
                 </div>
                     <h4>Students</h4>
-                <div>
-					<ul class="student-list" ng-repeat="student in vm.data.addedStudents track by $index">
-                        <li class="student-in-list">
-                        <a ng-click="vm.redirect2(student.email)" class="person_hover">{{student.name}}</a>
-                        <a href="/#/sendmessage/{{student.email}}/0/1">
-                        <i class="fa fa-envelope-o" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="font-size: 20px; float: right;"></i>
-                        </a>
-                        </li>
-                    </ul>
-					<ul class="student-list" ng-repeat="student in vm.data.members_detailed track by $index">
-                        <li class="student-in-list">
-                        <a ng-click="vm.redirect($index)" class="person_hover">{{student}}</a>
-                        <a href="/#/sendmessage/{{vm.getEmail($index)}}/0/1">
-                        <i class="fa fa-envelope-o" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="font-size: 20px; float: right;"></i>
-                        </a>
-                        </li>
-                    </ul>
+                    <p>Currently enrolled: {{vm.data.members.length}} student(s)</p>
+                    <p>Maximum capacity: {{vm.data.maxStudents}} student(s)</p>
+                <div ng-init="personLimit = 5">
+                    <table class="table student-list">
+                        <tr ng-repeat="student in vm.data.addedStudents | limitTo: personLimit track by $index" style="padding:2px;">
+                            <td style="padding:2px; vertical-align: middle;"><a ng-click="vm.redirect2(student.email)" class="person_hover">{{student.name}}</a></td>
+                            <td style="width:50px;">
+                                <a href="/#/sendmessage/{{student.email}}/0/1">
+                                <i class="fa fa-envelope-o fa-lg" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="display: inline;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr ng-repeat="student in vm.data.members_detailed | limitTo: personLimit track by $index" style="padding:2px;">
+                            <td style="padding:2px; vertical-align: middle;"><a ng-click="vm.redirect($index)" class="person_hover">{{student}}</a></td>
+                            <td style="width:50px;">
+                                <a href="/#/sendmessage/{{vm.getEmail($index)}}/0/1">
+                                <i class="fa fa-envelope-o fa-lg" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="display: inline;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <div ng-show="vm.data.members_detailed[5]">
+                        <button type="button" ng-show="personLimit == 5" class="btn btn-link" ng-click="personLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
+                        <button type="button" ng-show="personLimit == 256" class="btn btn-link" ng-click="personLimit = 5" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
+                    </div>
+                </div>
+
+                <h4 ng-show="vm.data.deliverables_attached[0].url">Previous Deliverables</h4>
+                <div ng-init="deliverableLimit = 3">
+                    <table class="table student-list">
+                        <tr ng-repeat="deliverable in vm.data.deliverables_attached | limitTo: deliverableLimit track by $index" style="padding:2px;">
+                            <td style="width:50px;">
+                                <i class="fa fa-file-o fa-lg" aria-hidden="true" style="display: inline;"></i>
+                            </td>
+                            <td style="vertical-align:middle;"><a ng-click="vm.openPDF(deliverable.url)" target="_blank">{{deliverable.name}}</a></td>
+                        </tr>
+                    </table>
+                    <div ng-show="vm.data.deliverables_attached[3]">
+                        <button type="button" ng-show="deliverableLimit == 3" class="btn btn-link" ng-click="deliverableLimit = 256" style="padding: 0px;"><i class="fa fa-angle-down" aria-hidden="true" style="display: inline;"></i> Show All</button>
+                        <button type="button" ng-show="deliverableLimit == 256" class="btn btn-link" ng-click="deliverableLimit = 3" style="padding: 0px;"><i class="fa fa-angle-up" aria-hidden="true" style="display: inline;"></i> Show less</button>
+                    </div>
                 </div>
 
             </div>
@@ -126,23 +189,23 @@
                 <div class="btn side-bar-button">{{discipline}}</div>
             </div> -->
 
-            <div class="btn btn-primary" ng-click="vm.applyForProject()" ng-hide=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" ng-if="!vm.already_joined"> 
+            <div class="btn btn-primary" ng-click="vm.applyForProject()" ng-hide="!vm.applicable || vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" ng-if="!vm.already_joined"> 
                 <strong>Apply</strong>
             </div>
 
-            <div class="btn btn-primary" ng-click="vm.applyForProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" ng-if="!vm.already_joined"> 
+            <div class="btn btn-primary" ng-click="vm.applyForProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" ng-if="!vm.already_joined">
                 <strong>Join</strong>
             </div>
 
-            <div ng-if="vm.already_joined" class="btn btn-primary" ng-click="vm.leaveProject()"> 
+            <div ng-if="vm.already_joined" class="btn btn-primary" ng-click="vm.leaveProject()">
                 <strong>Leave</strong>
             </div>
 
-            <div class="btn btn-primary" ng-click="vm.editProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'"> 
+            <div class="btn btn-primary" ng-click="vm.editProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'">
                 <strong>Edit</strong>
             </div>
 
-            <div class="btn btn-primary" ng-click="vm.deleteProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'"> 
+            <div class="btn btn-primary" ng-click="vm.deleteProject()" ng-show=" vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'">
                 <strong>Delete</strong>
             </div>
             </div>

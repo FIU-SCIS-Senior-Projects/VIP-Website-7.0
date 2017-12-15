@@ -16,6 +16,9 @@ module.exports = function(webapp) {
         webapp + "lib/angular-ui-router/release/angular-ui-router.min.js",
         webapp + "lib/jquery/dist/jquery.min.js",
         webapp + "lib/bootstrap/dist/js/bootstrap.min.js",
+        webapp + "lib/angular-bootstrap/ui-bootstrap-tpls.min.js",
+        webapp + "lib/angularUtils-pagination/dirPagination.js",
+        webapp + "lib/angular-date-picker/angular-date-picker.js",
         //User Story #1142
         webapp + "lib/trix-textarea-toolbar/trix.js",
         webapp + "lib/trix-textarea-toolbar/angular-trix.min.js",
@@ -24,6 +27,7 @@ module.exports = function(webapp) {
         webapp + 'lib/textAngular/dist/textAngular.min.js',
         webapp + 'lib/admin-report/alasql.js',
         webapp + 'lib/admin-report/xlsx.core.min.js',
+        webapp + 'lib/angular-bootstrap-toggle-master/dist/angular-bootstrap-toggle.js',
         //modules: These files need to be loaded first in order for the controller and directives and factories to be able to use them
         webapp + "features/to-do/ToDoModule.js",
         webapp + "features/vip-projects/vip-projects.module.js",

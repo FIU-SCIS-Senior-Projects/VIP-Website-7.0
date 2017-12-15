@@ -6,8 +6,9 @@
         // create a new object
         var profileFactory = {};
 
-        profileFactory.loadProfile = function () {
-            return $http.get('/api/reviewuser/').then(function (data) {
+        profileFactory.loadProfile = function (email) {
+            return $http.get('/api/reviewuser/'+email).then(function (data) {
+                  console.log(data)
                 return data.data;
             });
         };
@@ -18,11 +19,41 @@
                 return data.data;
             });
         };
-        profileFactory.loadTerms = function () {
-            return $http.get('/api/terms/').then(function (data) {
+
+		// Get projects from every semester
+		profileFactory.loadAllProjects = function () {
+            return $http.get('/api/projects/findall').then(function (data) {
+                // console.log(data.data);
+                var mod_data = []
+                var data_test = data.data.map(data=>{
+                   var arr = []
+                   data.members_detailed.map(memb=>{
+                      arr.push({name: memb})
+                   })
+                   data.members_detailed_copy = arr
+                })
+                // data.data.members_detailed.map(memb => {
+                //    mod_data.push({name: memb})
+                // })
+                // data.data.members_detailed = mod_data
+                // console.log(data_test)
+                // console.log(data.data);
                 return data.data;
             });
         };
+
+		// Changed Term API
+        profileFactory.loadTerms = function () {
+            return $http.get('/api/terms/findall').then(function (data) {
+                return data.data;
+            });
+        };
+
+        profileFactory.getTerm = function (id) {
+          return $http.get('/api/terms/' + id).then(function (data) {
+            return data.data;
+          })
+        }
         //Gets the individual member
         profileFactory.loadUser = function (id) {
             return $http.get('/api/profilestudent/' + id).then(function (data) {

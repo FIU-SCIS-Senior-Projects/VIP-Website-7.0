@@ -2,8 +2,25 @@
     'use strict';
 
     angular
-        .module('reviewStudentApp', ['reviewProjectProposals', 'ProjectProposalService'])
-        .controller('reviewStudentAppController',
+      .module('reviewStudentApp', ['ui.bootstrap','reviewProjectProposals', 'ProjectProposalService'])
+      .filter('custom', function() {
+        return function(input, search) {
+           console.log(search)
+           console.log(input)
+          if (!input) return input;
+          if (!search) return input;
+          var expected = ('' + search).toLowerCase();
+          var result = {};
+          angular.forEach(input, function(value, key) {
+            var actual = ('' + value).toLowerCase();
+            if (actual.indexOf(expected) !== -1) {
+              result[key] = value;
+            }
+          });
+          return result;
+        }
+      })
+      .controller('reviewStudentAppController',
     function ($window,$state, $scope, reviewStudentAppService, ToDoService,User, reviewPPS, ProjectService, ProfileService, adminService, DateTimeService) {
         var vm = this;
 
@@ -11,7 +28,7 @@
         vm.profile;
 		vm.projects;
 		vm.toDoData;
-		vm.members = []; //Used to get members email and their respective projects 
+		vm.members = []; //Used to get members email and their respective projects
 		vm.membs = []; //Used to get Full information for members (including their application to a project)
 		vm.ApproveData = ApproveData;
 		vm.RejectData = RejectData;
@@ -19,8 +36,13 @@
 		vm.DeleteLog = deletelog;
 		vm.FindToDoMatch = findToDoMatch;
 		vm.logs;
-		
+      vm.sortType     = 'name'; // set the default sort type
+      vm.sortReverse  = false;
 		vm.adminEmail;
+      $scope.orderByField = ''
+      $scope.reverseSort = false;
+      $scope.orderByFieldApp = ''
+      $scope.reverseSortApp = false;
         adminService.getAdminSettings().then(function (data)
         {
             var adminData;
@@ -33,12 +55,23 @@
         init();
         function init() {
             loadProjects();
-            loadLogs();
+            setTimeout(loadLogs,1000) // for those who see this, i'm feeling lazy, change this to a promise and what not
+            // loadLogs();
             loadToDos();
         }
 
         function loadLogs() {
             reviewPPS.loadLog("student").then(function (data) {
+               var projArr = []
+               console.log(vm.projects)
+               vm.projects.map(proj=>{
+                  projArr.push(proj.title)
+               })
+               console.log(projArr)
+               data = data.filter(student=>{
+                  return projArr.includes(student.selectProject)
+               })
+               console.log(data)
                 vm.logs = data;
             });
         }
@@ -46,6 +79,10 @@
         //Loads all project information for active projects including applications from interested students
         function loadProjects() {
             reviewStudentAppService.loadProjects().then(function (data) {
+               data = data.filter(proj=>{
+                  return proj.owner_email == vm.adminEmail
+               })
+               console.log(data)
                 vm.projects = data;
                 for (var i = 0; i < vm.projects.length; i++) {
                     for (var x = 0; x < vm.projects[i].members.length; x++) {
@@ -58,16 +95,16 @@
 
         //Loads all Student information and matches them to their student applications
         function loadData() {
-            reviewStudentAppService.loadProfile().then(function (data) {
+            reviewStudentAppService.loadProfile(vm.adminEmail).then(function (data) {
                 vm.profile = data;
 
                 var tempFilter = [];
                 var tmpCount = 0;
-
+               //  console.log(data)
                 vm.profile.forEach(function (obj) {
                     vm.projects.forEach(function (obj2) {
                         obj2.members.forEach(function (obj3) {
-                            //console.log("test: " + obj3);
+                           //  console.log("test: " + obj3);
                             if (obj.email == obj3 && !obj.joined_project) {
                                 console.log("match: " + obj.lastName + ", project: " + obj2.title);
                                 obj.project = obj2.title;
@@ -80,7 +117,12 @@
                     });
                 });
 
+               //  tempFilter = Object.assign({},tempFilter,{
+               //     facultyEmail: vm.adminEmail
+               //  })
                 vm.membs = tempFilter;
+               //  console.log(vm.membs)
+
             });
         }
 
@@ -133,8 +175,10 @@
             //});
 
             user.joined_project = true;
-
-            User.update({user: user});
+   			ProjectService.getProject(user.projectid).then(function (project) {
+   				user.project = project.title;
+   				User.update({user: user});
+   			});
 
             reviewStudentAppService.AddToProject(user._id, user.projectid).then(function (data) {
                 $scope.result = "Approved";

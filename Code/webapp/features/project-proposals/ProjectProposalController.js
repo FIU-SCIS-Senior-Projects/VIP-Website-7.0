@@ -1,8 +1,10 @@
-(function () {
-    var image;
+var uploadProposalClass = {
+    image: null,
+    docuUpload: null,
+    deliverableUpload: null,
 
 
-    function uploadImage2() {
+    uploadImage2: function() {
 
         var obj = document.getElementById('teamImage');
         var pI = document.getElementById('pI');
@@ -25,13 +27,76 @@
             r.onloadend = function (e) {
 
                 var dataURL = e.target.result;
-                image = dataURL;
+                uploadProposalClass.image = dataURL;
 
             }
             r.readAsDataURL(f);
         }
-    };
+    },
 
+    uploadDoc: function() {
+
+            var objDoc = document.getElementById('project.projDoc');
+            var pD = document.getElementById('pD');
+            pD.max = 100;
+            pD.value = 0;
+            if (objDoc.files.length == 0) {
+
+            }
+            else {
+                pD.style.visibility = "visible";
+
+                var fattach = objDoc.files[0];
+                var rattach = new FileReader();
+                rattach.onprogress = function (event) {
+                    if (event.lengthComputable) {
+                        pD.max = event.total;
+                        pD.value = event.loaded;
+                    }
+                };
+                rattach.onloadend = function (e) {
+
+                    var dataDocURL = e.target.result;
+                    uploadProposalClass.docuUpload = dataDocURL;
+                    //console.log("Upload URL " + uploadProposalClass.docuUpload);
+
+                }
+                rattach.readAsDataURL(fattach);
+                //console.log("Upload " + r.readAsDataURL(f));
+            }
+        },
+
+        uploadDeliverable: function() {
+
+                var objDeliver = document.getElementById('project.projDeliverable');
+                var pDv = document.getElementById('pDv');
+                pDv.max = 100;
+                pDv.value = 0;
+                if (objDeliver.files.length == 0) {
+
+                }
+                else {
+                    pDv.style.visibility = "visible";
+
+                    var fdattach = objDeliver.files[0];
+                    var rdattach = new FileReader();
+                    rdattach.onprogress = function (event) {
+                        if (event.lengthComputable) {
+                            pDv.max = event.total;
+                            pDv.value = event.loaded;
+                        }
+                    };
+                    rdattach.onloadend = function (e) {
+
+                        var dataDeliverableURL = e.target.result;
+                        uploadProposalClass.deliverableUpload = dataDeliverableURL;
+                    }
+                    rdattach.readAsDataURL(fdattach);
+                }
+            }
+};
+
+(function () {
 
     angular.module('ProjectProposalController', ['ProjectProposalService', 'userService', 'toDoModule', 'vip-projects'])
         .controller('ProjectProposalController', function ($window, $location, $scope, DateTimeService, LocationService,
@@ -51,7 +116,12 @@
                 console.log(adminData);
                 console.log(adminData.current_email);
                 vm.adminEmail = adminData.current_email;
+                getPreviousProjects()
             });
+
+            $scope.proposeFilter = function(input) {
+              return input.status.openForProposal == true;
+            };
 
             // check permissions and get data
             ProfileService.loadProfile().then(function (data) {
@@ -69,7 +139,8 @@
             });
 
             //Joe Use Story
-            vm.semesters = ['Spring 2017', 'Summer 2017', 'Fall 2017'];
+            // Semester Dropdown
+            // vm.semesters = ['Spring 2017', 'Summer 2017', 'Fall 2017'];
             6
             $scope.colleges = [
                 {
@@ -209,6 +280,9 @@
             //Joe Use Story
             vm.semester = null;
             //$scope.project.submit = submit;
+			// Us 1328
+			vm.projectTitleOrig;
+			vm.projectTitleNew;
 
             var faculty;
             $scope.updateFacultyEmails = updateFacultyEmails;
@@ -217,23 +291,59 @@
             $scope.updateMentorNames = updateMentorNames;
             $scope.updateStudentNames = updateStudentNames;
             $scope.updateStudentEmails = updateStudentEmails;
+            $scope.populatePrevious = populatePrevious;
+            $scope.addVideoToProject = addVideoToProject;
+            $scope.removeVideoFromProject = removeVideoFromProject;
+            $scope.addDocToProject = addDocToProject;
+            $scope.removeDocFromProject = removeDocFromProject;
+            $scope.addDeliverableToProject = addDeliverableToProject;
+            $scope.removeDeliverableFromProject = removeDeliverableFromProject;
 
             init();
             function init() {
                 if ($stateParams.id != null) {
                     vm.id = $stateParams.id;
                     vm.editingMode = true;
+                    //console.log("Project Editing is " + vm.editingMode);
                     getProjectById();
-
+                    //getProjects()
                 }
+
                 loadTerms();
             }
 
             var old_project = null;
 
+            function populatePrevious(){
+               console.log($scope)
+               console.log($scope.project)
+               console.log($scope.previousProj)
+               console.log($scope.project.previousProj)
+               ProjectService.getProject($scope.project.previousProj).then((data)=>{
+                  console.log(data)
+                  $scope.project.title = data.title
+                  $scope.project.description = data.description
+                  $scope.project.firstSemester = data.firstSemester
+                  $scope.project.maxStudents = data.maxStudents
+                  $scope.project.video_url = data.video_url
+                  $scope.project.youtube_url = data.youtube_url
+                  $scope.project.attachments = data.attachments
+                  $scope.project.deliverables_attached = data.deliverables_attached
+                  $scope.project.reqskillItem = data.reqskillItem
+
+               })
+            }
+            function getPreviousProjects(){
+               console.log(vm.adminEmail)
+               ProjectService.getPreviousProjects(vm.adminEmail).then((projects)=>{
+                  console.log(projects);
+                  $scope.project.previous = projects
+               });
+            }
             function getProjectById() {
                 ProjectService.getProject(vm.id).then(function (data) {
                     $scope.project = data;
+					vm.projectTitleOrig = $scope.project.title;
                     old_project = JSON.parse(JSON.stringify(data)); // Make a new reference to avoid a circular reference.
                     $scope.SelectedFacultyNames = "";
                     $scope.SelectedMentorNames = "";
@@ -288,6 +398,8 @@
             //Joe's User Story
             function loadTerms() {
                 reviewStudentAppService.loadTerms().then(function (data) {
+                    console.log("in loadTerms()");
+                    $scope.terms = data;
                     vm.terms = data;
                     console.log(vm.terms);
                 });
@@ -340,6 +452,9 @@
                     updateFaculty();
                     updateMentor();
                     updateStudent();
+                    updateVideo();
+                    updateDocs();
+                    updateDeliverables();
 
 
                     if (!$scope.project.owner_name && !$scope.project.owner_email) {
@@ -352,13 +467,17 @@
                     }
 
 
-                    $scope.project.video_url = ProcessVideoURL($scope.project.video_url);
+                    // $scope.project.video_url = ProcessVideoURL($scope.project.video_url);
 
-                    if (image)
-                        $scope.project.image = image;
+                    // var videoThumbnailURL = createThumbURL($scope.project.video_url);
+
+                    if (uploadProposalClass.image)
+                        $scope.project.image = uploadProposalClass.image;
 
                     else
                         $scope.project.image = "https://www.woojr.com/wp-content/uploads/2009/04/" + $scope.project.title.toLowerCase()[0] + ".gif";
+
+					vm.projectTitleNew = $scope.project.title;
 
                     if (!vm.editingMode) {
 
@@ -411,11 +530,12 @@
                             $scope.project.old_project = old_project;
                         }
                         $scope.project.status = 'modified';
-                        console.log("req_video_url modified " + $scope.project.video_url);
+                        //console.log("req_video_url modified " + $scope.project.video_url);
+                        //console.log("req_attachments modified " + $scope.project.attachments);
 
                         // if user has uploaded a new image, 'image' var will be non-null, so update image via API
-                        if (image)
-                            $scope.project.image = image;
+                        if (uploadProposalClass.image)
+                            $scope.project.image = uploadProposalClass.image;
 
                         // user hasnt uploaded a new image, set 'image' val to "", so API can know not to change it
                         else
@@ -462,6 +582,18 @@
                                     };
 
                                 User.nodeEmail(email_msg);
+
+								// US 1328 - Update users who are currently associated with proposed project
+								var allusers;
+								User.loadAllUsers().then(function (data) {
+									allusers = data;
+									allusers.forEach(function (user, index) {
+										if (user.project == vm.projectTitleOrig) {
+											user.project = vm.projectTitleNew;
+											User.update({user: user});
+										}
+									});
+								});
 
                             }, function (error) {
                                 $scope.result = "An Error Occured Whilst Submitting Project Proposal!";
@@ -695,6 +827,89 @@
                 }
             }
 
+            var projectVideos;
+
+            function addVideoToProject() {
+                //console.log("Add Video button pressed. Inside Function...");
+                if ($scope.project.videoAdd) {
+                    //console.log("Video Field not empty!");
+                    var addVideo = $scope.project.videoAdd;
+                    //console.log("Original URL in field is: " + addVideo);
+                    var processedVidUrl = ProcessVideoURL(addVideo);
+                    //console.log("New URL is: " + processedVidUrl);
+                    var processedVidThumb = createThumbURL(processedVidUrl);
+                    //console.log("Thumbnail URL is: " + processedVidThumb);
+                    var found = false;
+                    if(projectVideos == null && vm.editingMode == false) {
+                        //console.log("Video array is undefined. It must be a new project.");
+                        projectVideos = []
+                        $scope.project.video_url = [];
+                    }
+                    else if (vm.editingMode == true) {
+                        //console.log("Existing Project is being modified");
+                        projectVideos = $scope.project.video_url;
+                    }
+                    for (i = 0; i < $scope.project.video_url.length; i++) {
+                        //console.log("Inside For loop");
+                        if ($scope.project.video_url[i].vidurl == processedVidUrl) {
+                            //console.log("Video already in project");
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        //console.log("Video will be added to project and saved when submit is pressed.");
+                        projectVideos.push({vidurl: processedVidUrl, vimgurl: processedVidThumb});
+                        if (vm.editingMode == false) {
+                            $scope.project.video_url.push({vidurl: processedVidUrl, vimgurl: processedVidThumb});
+                        }
+                    }
+                }
+                $scope.project.videoAdd = null;
+            }
+
+            function removeVideoFromProject(removeVid) {
+                for (i = 0; i < $scope.project.video_url.length; i++) {
+                    //console.log("Inside Remove For loop");
+                    if (vm.editingMode == false) {
+                        if ($scope.project.video_url[i] == removeVid) {
+                            if (projectVideos){
+                                //console.log("PROJECT VIDEOS IS NOT EMPTY! Removing");
+                                projectVideos.splice(i, 1);
+                            }
+                            //console.log("Project Videos is empty because nothing new has been added. Removing");
+                            $scope.project.video_url.splice(i, 1);
+                        }
+                    }
+                    else {
+                        if ($scope.project.video_url[i] == removeVid) {
+                            if (projectVideos){
+                                //console.log("PROJECT VIDEOS IS NOT EMPTY! Removing");
+                                projectVideos.splice(i, 1);
+                            }
+                            else {
+                                //console.log("Project Videos is empty because nothing new has been added. Removing");
+                                $scope.project.video_url.splice(i, 1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            function updateVideo() {
+                //console.log("Saving Videos. Inside Function...");
+                if (projectVideos) {
+                    //console.log("Videos to save not empty!");
+                    $scope.project.video_url = [];
+                    for (var i = 0; i < projectVideos.length; i++) {
+                        var insertedURL = projectVideos[i].vidurl;
+                        var insertedThumbnail = projectVideos[i].vimgurl;
+                        //console.log("Video saving! URL: " + insertedURL + " Image URL: " + insertedThumbnail);
+                        $scope.project.video_url.push({vidurl: insertedURL, vimgurl: insertedThumbnail});
+                    }
+                }
+            }
+
             //function updateProjectMembers()
             //{
             //	if($scope.project.owner_name && $scope.project.owner_email)
@@ -716,8 +931,16 @@
                         return VideoURL;
                     }
 
+                    else if (VideoURL.indexOf("&list=") > -1) {
+                        //console.log("PLAYLIST!!!!!");
+                        videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
+                        updatedVideoURL = "https://www.youtube.com/embed/?listType=playlist&list=" + videoID;
+                        //console.log("Filtered url: " + updatedVideoURL);
+                        return updatedVideoURL;
+                    }
+
                     // youtube.com universal filter
-                    if (VideoURL.indexOf("youtube.com") > -1) {
+                    else if (VideoURL.indexOf("youtube.com") > -1) {
                         videoID = VideoURL.substr(VideoURL.indexOf("?v=") + 3);
                         updatedVideoURL = "https://www.youtube.com/embed/" + videoID;
                         //console.log("Filtered url: " + updatedVideoURL);
@@ -740,5 +963,213 @@
                     return "";
                 }
             }
+
+            function createThumbURL(VideoURL) {
+                if (VideoURL.indexOf("&list=") > -1) {
+                    //console.log("Playlist Thumbnail")
+                    videoID = VideoURL.substr(VideoURL.indexOf("list=") + 5);
+                    createdThumbURL = "img/playlist.png";
+                    //console.log("Filtered url: " + updatedVideoURL);
+                    return createdThumbURL;
+                }
+                else {
+                    videoID = VideoURL.substr(VideoURL.indexOf("embed/") + 6);
+                    createdThumbURL = "https://img.youtube.com/vi/" + videoID + "/0.jpg";
+                    return createdThumbURL;
+                }
+            }
+
+            var projectDocs;
+
+            function addDocToProject() {
+                if (uploadProposalClass.docuUpload && !$scope.project.docLink) {
+                    //console.log("Inside If Branch - doc upload field used");
+                    var addDoc = uploadProposalClass.docuUpload;
+                    var addDocTitle = $scope.project.docTitle;
+                    var found = false;
+                    if (projectDocs == null && vm.editingMode == false) {
+                        projectDocs = [];
+                        $scope.project.attachments = [];
+                    }
+                    else {
+                        projectDocs = $scope.project.attachments;
+                    }
+                    for (i = 0; i < $scope.project.attachments.length; i++) {
+                        //console.log("Inside For loop");
+                        if ($scope.project.attachments[i].url == addDoc) {
+                            //console.log("Doc already in project");
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        //console.log("Doc will be added to project and saved when submit is pressed.");
+                        projectDocs.push({name: addDocTitle, url: addDoc});
+                        if (vm.editingMode == false) {
+                            $scope.project.attachments.push({name: addDocTitle, url: addDoc});
+                        }
+                    }
+                }
+                else if (!uploadProposalClass.docuUpload && $scope.project.docLink) {
+                    //console.log("Inside Else Branch - link field used");
+                    var addDoc = $scope.project.docLink;
+                    var addDocTitle = $scope.project.docTitle;
+                    var found = false;
+                    if (projectDocs == null && vm.editingMode == false) {
+                        projectDocs = [];
+                        $scope.project.attachments = [];
+                    }
+                    else if (projectDocs == null) {
+                        projectDocs = $scope.project.attachments;
+                    }
+                    for (i = 0; i < $scope.project.attachments.length; i++) {
+                        //console.log("Inside For loop");
+                        if ($scope.project.attachments[i].url == addDoc) {
+                            //console.log("Doc already in project");
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        //console.log("Doc will be added to project and saved when submit is pressed.");
+                        projectDocs.push({name: addDocTitle, url: addDoc});
+                        if (vm.editingMode == false) {
+                            $scope.project.attachments.push({name: addDocTitle, url: addDoc});
+                        }
+                    }
+                }
+                uploadProposalClass.docuUpload = null;
+                $scope.project.docLink = null;
+                $scope.project.docTitle = null;
+            }
+
+            function removeDocFromProject(removeDoc) {
+                for (i = 0; i < $scope.project.attachments.length; i++) {
+                    //console.log("Inside Remove For loop");
+                    if (vm.editingMode == false) {
+                        if ($scope.project.attachments[i] == removeDoc) {
+                            //console.log("Inside Remove if statement");
+                            if (projectDocs){
+                                //console.log("Removing Doc");
+                                projectDocs.splice(i, 1);
+                            }
+                            //console.log("Removing Doc...will remove on save");
+                            $scope.project.attachments.splice(i, 1);
+                        }
+                    }
+                    else {
+                        if ($scope.project.attachments[i] == removeDoc) {
+                            //console.log("Inside Remove if statement");
+                            if (projectDocs){
+                                //console.log("Removing Doc");
+                                projectDocs.splice(i, 1);
+                            }
+                            else {
+                                //console.log("Removing Doc...will remove on save");
+                                $scope.project.attachments.splice(i, 1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            function updateDocs() {
+               // console.log("Saving Docs. Inside Function...");
+                if (projectDocs) {
+                    //console.log("Docs to save not empty!");
+                    $scope.project.attachments = [];
+                    //console.log("Items in Permanant Array BEFORE Update AFTER clear: %O ", $scope.project.attachments);
+                    //console.log("Items in Array for Update: %O ", projectDocs);
+                    for (var i = 0; i < projectDocs.length; i++) {
+                        //console.log("Inside Update For Loop");
+                        var insertedDocName = projectDocs[i].name;
+                        var insertedDocURL = projectDocs[i].url;
+                        //console.log("Docs saving! Name: " + insertedDocName + " URL: " + insertedDocURL);
+                        $scope.project.attachments.push({name: insertedDocName, url: insertedDocURL});
+                    }
+                }
+            }
+
+            var projectDeliverables;
+
+            function addDeliverableToProject() {
+                if (uploadProposalClass.deliverableUpload) {
+                    //console.log("Inside If Branch - doc upload field used");
+                    var addDeliverable = uploadProposalClass.deliverableUpload;
+                    var addDeliverableTitle = $scope.project.deliverableTitle;
+                    var found = false;
+                    if (projectDeliverables == null && vm.editingMode == false) {
+                        projectDeliverables = [];
+                        $scope.project.deliverables_attached = [];
+                    }
+                    else {
+                        projectDeliverables = $scope.project.deliverables_attached;
+                    }
+                    for (i = 0; i < $scope.project.deliverables_attached.length; i++) {
+                        //console.log("Inside For loop");
+                        if ($scope.project.deliverables_attached[i].url == addDeliverable) {
+                            //console.log("Doc already in project");
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        //console.log("Doc will be added to project and saved when submit is pressed.");
+                        projectDeliverables.push({name: addDeliverableTitle, url: addDeliverable});
+                        if (vm.editingMode == false) {
+                            $scope.project.deliverables_attached.push({name: addDeliverableTitle, url: addDeliverable});
+                        }
+                    }
+                }
+                uploadProposalClass.deliverUpload = null;
+                $scope.project.deliverableTitle = null;
+            }
+
+            function removeDeliverableFromProject(removeDeliverable) {
+                for (i = 0; i < $scope.project.deliverables_attached.length; i++) {
+                    //console.log("Inside Remove For loop");
+                    if (vm.editingMode == false) {
+                        if ($scope.project.deliverables_attached[i] == removeDeliverable) {
+                            //console.log("Inside Remove if statement");
+                            if (projectDeliverables){
+                                //console.log("Removing Doc");
+                                projectDeliverables.splice(i, 1);
+                            }
+                            //console.log("Removing Doc...will remove on save");
+                            $scope.project.deliverables_attached.splice(i, 1);
+                        }
+                    }
+                    else {
+                        if ($scope.project.deliverables_attached[i] == removeDeliverable) {
+                            //console.log("Inside Remove if statement");
+                            if (projectDeliverables){
+                                //console.log("Removing Doc");
+                                projectDeliverables.splice(i, 1);
+                            }
+                            else {
+                                //console.log("Removing Doc...will remove on save");
+                                $scope.project.deliverables_attached.splice(i, 1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            function updateDeliverables() {
+                // console.log("Saving Docs. Inside Function...");
+                if (projectDeliverables) {
+                    //console.log("Docs to save not empty!");
+                    $scope.project.deliverables_attached = [];
+                    //console.log("Items in Permanant Array BEFORE Update AFTER clear: %O ", $scope.project.deliverables_attached);
+                    //console.log("Items in Array for Update: %O ", projectDeliverables);
+                    for (var i = 0; i < projectDeliverables.length; i++) {
+                        //console.log("Inside Update For Loop");
+                        var insertedDeliverableName = projectDeliverables[i].name;
+                        var insertedDeliverableURL = projectDeliverables[i].url;
+                        $scope.project.deliverables_attached.push({name: insertedDeliverableName, url: insertedDeliverableURL});
+                    }
+                }
+            }
+
         });
 }());

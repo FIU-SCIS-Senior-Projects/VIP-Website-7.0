@@ -19,6 +19,18 @@
                     return data.data;
                 });
             };
+
+			projectFactory.getAllProjects = function () {
+                return $http.get('/api/projects/findall').then(function (data) {
+                    return data.data;
+                });
+            };
+
+            projectFactory.getPreviousProjects = function (user) {
+                return $http.get('/api/previous/' + user).then(function (data) {
+                    return data.data;
+                });
+            };
             //Joe's User Story
             projectFactory.editTerm = function (termData, id) {
                 return $http.put('/api/terms/' + id, termData);
@@ -31,11 +43,18 @@
 
             projectFactory.delete = function (id) {
                 return $http.delete('/api/projects/' + id).then(function (data) {
+					return data.data;
                 });
             };
 
-            projectFactory.createTerm = function () {
-                return $http.put('/api/terms/').then(function (data) {
+            projectFactory.createTerm = function (termData) {
+                return $http.put('/api/terms/', termData).then(function (data) {
+                    return data.data;
+                });
+            };
+
+            projectFactory.deleteTerm = function (id) {
+                return $http.delete('/api/terms/' + id).then(function (data) {
                     return data.data;
                 });
             };

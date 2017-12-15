@@ -3,6 +3,7 @@ var passport = require('passport');
 var request = require('request');
 var authProvider = require('../services/AuthorizationProvider');
 var Settings = require('../models/settings');
+var Project = require('../models/projects')
 
 module.exports = function (app, express) {
     var apiRouter = express.Router();
@@ -173,6 +174,7 @@ module.exports = function (app, express) {
                     // populate nonsensitive values
                     profile.firstName = req.body.firstName;
                     profile.lastName = req.body.lastName;
+					profile.email = req.body.email;
                     profile.college = req.body.college;
                     profile.department = req.body.department;
                     profile.gender = req.body.gender;
@@ -191,6 +193,9 @@ module.exports = function (app, express) {
                     profile.volunteer = req.body.volunteer;
                     profile.independentstudy = req.body.independentstudy;
                     // this field will be set to true if the acceptProfile() function called us
+                    if( req.body.selectedSemester ) {
+                      profile.selectedSemester = req.body.selectedSemester;
+                    }
                     if (req.body.piApproval) {
                         profile.piApproval = req.body.piApproval;
                     } else if (req.body.piDenial && req.body.isDecisionMade) {
@@ -453,15 +458,54 @@ module.exports = function (app, express) {
             });
 
 
-    apiRouter.route('/reviewuser/')
+    apiRouter.route('/reviewuser/:email')
         .get(
             authProvider.authorizeByUserType([authProvider.userType.PiCoPi, authProvider.userType.StaffFaculty]),
             function (req, res) {
-                Profile.find({}, function (err, profile) {//todo: performance issue, sending every record in the database in every response is not a good idea
+                Profile.find({joined_project:false}, function (err, profile) {//todo: performance issue, sending every record in the database in every response is not a good idea
                     if (err) {
                         return res.send('error');
                     }
-                    return res.json(profile);
+                  //   console.log(profile)
+                    var userProfilesPromises = []
+                    profile.map(info => {
+                       console.log('###################')
+                       console.log(info.project)
+                       if(info.project){
+                          userProfilesPromises.push(
+                             new Promise((resolve,reject)=>{
+                                console.log(info.project)
+                                Project.findOne({members: info.email,owner_email:req.params.email},function(err,project){
+                                 //   console.log("*************")
+                                 //   console.log(project)
+                                   if(err){
+                                      console.log(err)
+                                      reject('')
+                                   }
+                                   if(project){
+                                    //  console.log(project.owner_email)
+                                     var prof = Object.assign({},info._doc,{
+                                        owner_email: project.owner_email
+                                     })
+                                     console.log(prof)
+                                     resolve(prof)
+                                  }else{
+                                     console.log('in reject')
+                                     resolve('')
+                                  }
+                               })
+                             })
+                          )
+                       }
+                    })
+                  //   console.log(userProfilesPromises)
+                     Promise.all(userProfilesPromises).then(results=>{
+                     //   console.log(results)
+                       return res.send(results)
+                    }).catch(err=>{
+                       console.log(err)
+                    })
+                  //   return res.json(userProfiles);
                 });
             });
 

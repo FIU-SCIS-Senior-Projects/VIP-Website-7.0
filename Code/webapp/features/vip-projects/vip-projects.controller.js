@@ -5,9 +5,9 @@
         .module('vip-projects')
         .controller('VIPProjectsCtrl', VIPProjectsCtrl);
 
-    VIPProjectsCtrl.$inject = ['$state', '$scope', 'ProjectService'];
+    VIPProjectsCtrl.$inject = ['$sce', '$state', '$scope', 'ProjectService'];
     /* @ngInject */
-    function VIPProjectsCtrl($state, $scope, ProjectService) {
+    function VIPProjectsCtrl($sce, $state, $scope, ProjectService) {
         //Variable Declarations
         var vm = this;
         var projectsArray = [];
@@ -23,8 +23,19 @@
         vm.showAllDisciplinesToggle = showAllDisciplinesToggle; 
         vm.filterByDiscipline = filterByDiscipline;
         vm.viewDetails = viewDetails;
+        vm.modalLink = modalLink;
         var selectedFilter = null;
         vm.filteredprojects;
+        $scope.iFrameURLModal = null;
+        $scope.projectidModal = null;
+        vm.setVideoModal = function (url, projectid) {
+            $scope.iFrameURLModal = $sce.trustAsResourceUrl(url);
+            $scope.projectidModal = projectid;
+        }
+
+        function modalLink (data) {
+            $state.go('projectsDetailed',{id: data});
+        }
         
          vm.filters = [
             

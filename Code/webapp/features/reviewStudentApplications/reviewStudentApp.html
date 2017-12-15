@@ -1,22 +1,40 @@
 
     <h3 align="center"> Review Student Applications for Projects </h3>
-            <table class="table">
-			<tr>
-			<td><label>Date</label></td><td><label>First Name</label></td><td><label>Last Name</label></td><td><label>Gender</label></td><td><label>Email</label></td><td><label>Department</label></td>
-			<td><label>College</label></td><td><label>Major</label></td><td><label>Selected Project</label></td><td><label>Skill Item</label></td><td><label>Approve</label></td><td><label>Reject</label></td>
+     <input type="text" ng-model="searchText" placeholder="Search Keywords" class="form-control">
+     <div class="table" style="overflow: scroll; overflow-y: hidden;">
+            <table class="table table-striped">
+               <thead>
+
+			<tr id='headerLabels'>
+			<td ng-click="orderByFieldApp='appliedDate'; reverseSortApp = !reverseSortApp"><label>Date</label></td>
+         <td ng-click="orderByFieldApp='firstName'; reverseSortApp = !reverseSortApp"><label>First Name</label></td>
+         <td ng-click="orderByFieldApp='lastName'; reverseSortApp = !reverseSortApp"><label>Last Name</label></td>
+         <td ng-click="orderByFieldApp='gender'; reverseSortApp = !reverseSortApp"><label>Gender</label></td>
+         <td ng-click="orderByFieldApp='email'; reverseSortApp = !reverseSortApp"><label>Email</label></td>
+         <td ng-click="orderByFieldApp='department'; reverseSortApp = !reverseSortApp"><label>Department</label></td>
+			<td ng-click="orderByFieldApp='college'; reverseSortApp = !reverseSortApp"><label>College</label></td>
+         <td ng-click="orderByFieldApp='major'; reverseSortApp = !reverseSortApp"><label>Major</label></td>
+         <td ng-click="orderByFieldApp='project'; reverseSortApp = !reverseSortApp"><label>Selected Project</label></td>
+         <td ng-click="orderByFieldApp='skillItem'; reverseSortApp = !reverseSortApp"><label>Skill Item</label></td>
+         <td ng-click="orderByFieldApp='appliedDate'; reverseSortApp = !reverseSortApp"><label>Approve</label></td>
+         <td ng-click="orderByFieldApp='appliedDate'; reverseSortApp = !reverseSortApp"><label>Reject</label></td>
 			</tr>
-			<tr ng-repeat="user in vm.membs track by $index">
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.appliedDate}}><input type="text" class="form-control profile" value={{user.appliedDate}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.firstName}}><input type="text" class="form-control profile" value={{user.firstName}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.lastName}}><input type="text" class="form-control profile" value={{user.lastName}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.gender}}><input type="text" class="form-control profile" value={{user.gender}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.email}}><input type="text" class="form-control profile" value={{user.email}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.department}}><input type="text" class="form-control profile" value={{user.department}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.college}}><input type="text" class="form-control profile" value={{user.college}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.major}}><input type="text" class="form-control profile" value={{user.major}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.project}}><input type="text" class="form-control profile" value={{user.project}} readonly></input></a></td>
+
+      </thead>
+      <tbody>
+
+			<tr ng-repeat="user in vm.membs | filter:searchText">
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.appliedDate}}>{{user.appliedDate}}</a></td>
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.firstName}}>{{user.firstName}}</a></td>
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.lastName}}>{{user.lastName}}</a></td>
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.gender}}>{{user.gender}}</a></td>
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.email}}>{{user.email}}</a></td>
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.department}}>{{user.department}}</a></td>
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.college}}>{{user.college}}</a></td>
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.major}}>{{user.major}}</a></td>
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.project}}>{{user.project}}</a></td>
 			<!-- User Story #1144 -->
-			<td><a data-toggle="tooltip" data-placement="top" title={{user.skillItem}}><input type="text" class="form-control profile" value={{user.skillItem}} readonly></input></a></td>
+			<td><a data-toggle="tooltip" data-placement="top" title={{user.skillItem}}>{{user.skillItem}}</a></td>
 			<td>
             <div class="text-center">
                 <button style= "width: 50px;" class="btn btn-success btn-block" ng-click="vm.ApproveData(user)">
@@ -32,48 +50,109 @@
 			</td>
 			</tr>
 			</div>
-            
-			</div>
+</tbody>
 <br>
 </table>
+</div>
 <h3 align="center"> Review Student Applications History</h3>
-<table class="table">
-			<tr>
-			<td><label>Date</label></td><td><label>First Name</label></td><td><label>Last Name</label></td><td><label>Gender</label></td><td><label>Email</label></td><td><label>Department</label></td>
-			<td><label>College</label></td><td><label>Major</label></td><td><label>Selected Project</label></td><td><label>Skill Item</label></td><td><label>Action</label></td><td><label>Undo</label></td>
-			</tr>
-			<tr ng-repeat="log in vm.logs | filter:{ type: 'student' }">
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.appliedDate}}><input type="text" class="form-control log" value={{log.appliedDate}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.firstName}}><input type="text" class="form-control log" value={{log.firstName}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.lastName}}><input type="text" class="form-control log" value={{log.lastName}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.gender}}><input type="text" class="form-control log" value={{log.gender}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.studentemail}}><input type="text" class="form-control log" value={{log.studentemail}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.department}}><input type="text" class="form-control log" value={{log.department}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.college}}><input type="text" class="form-control log" value={{log.college}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.major}}><input type="text" class="form-control log" value={{log.major}} readonly></input></a></td>
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.selectProject}}><input type="text" class="form-control log" value={{log.selectProject}} readonly></input></a></td>
-			<!-- User Story #1144 -->
-			<td><a data-toggle="tooltip" data-placement="top" title={{log.skillItem}}><input type="text" class="form-control log" value={{log.skillItem}} readonly></input></a></td>
-			<td><input type="text" class="form-control log" value={{log.action}} readonly></input></td>
-			<td>
-            <div class="text-center">
-                <button style= "width: 75px;" class="btn btn-danger btn-block" ng-click="vm.UndoStudent(log)">
-                    <i></i> Undo
-                </button>
-                </div>
-			</td>
-			<td>
-            <div class="text-center">
-                <button style= "width: 75px;" class="btn btn-danger btn-block" ng-click="vm.DeleteLog(log)">
-                    <i></i> Delete
-                </button>
-                </div>
-			</td>
-			</tr>
-			</div>
-            
-			</div>
+<div class="table" style="overflow: scroll; overflow-y: hidden;">
+<table class="table table-striped" style="overflow: scroll; overflow-y: hidden;">
+   <thead id="header" style="background-color:#ABB2B9;">
+      <tr id="headerLabels">
+      <th ng-click="orderByField='appliedDate'; reverseSort = !reverseSort"><label>Date</label></th>
+      <th ng-click="orderByField='firstName'; reverseSort = !reverseSort"><label>First Name</label>
+         <span ng-show="orderByField == 'firstName' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'firstName' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th ng-click="orderByField='lastName'; reverseSort = !reverseSort"><label>Last Name</label>
+         <span ng-show="orderByField == 'lastName' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'lastName' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th ng-click="orderByField='gender'; reverseSort = !reverseSort"><label>Gender</label>
+         <span ng-show="orderByField == 'gender' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'gender' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th ng-click="orderByField='studentemail'; reverseSort = !reverseSort"><label>Email</label>
+         <span ng-show="orderByField == 'studentemail' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'studentemail' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th ng-click="orderByField='department'; reverseSort = !reverseSort"><label>Department</label>
+         <span ng-show="orderByField == 'department' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'department' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th ng-click="orderByField='college'; reverseSort = !reverseSort"><label>College</label>
+         <span ng-show="orderByField == 'college' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'college' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th ng-click="orderByField='major'; reverseSort = !reverseSort"><label>Major</label>
+         <span ng-show="orderByField == 'major' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'major' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th ng-click="orderByField='selectProject'; reverseSort = !reverseSort"><label>Selected Project</label>
+         <span ng-show="orderByField == 'selectProject' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'selectProject' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th ng-click="orderByField='skillItem'; reverseSort = !reverseSort"><label>Skill Item</label>
+         <span ng-show="orderByField == 'skillItem' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'skillItem' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th ng-click="orderByField='action'; reverseSort = !reverseSort"><label>Action</label>
+         <span ng-show="orderByField == 'action' && !reverseSort" class="fa fa-caret-down"></span>
+         <span ng-show="orderByField == 'action' && reverseSort" class="fa fa-caret-up"></span>
+      </th>
+      <th><label>Undo</label></th>
+      <th></th>
+      </tr>
+      <tr id="headerInputs">
+         <th></th>
+         <th><input class="form-control" type="text" ng-model="query1"/></th>
+         <th><input type="text" class="form-control" ng-model="query2"/></th>
+         <th><input type="text" class="form-control" ng-model="query3"/></th>
+         <th><input type="text" class="form-control" ng-model="query4"/></th>
+         <th><input type="text" class="form-control" ng-model="query5"/></th>
+         <th><input type="text" class="form-control" ng-model="query6"/></th>
+         <th><input type="text" class="form-control" ng-model="query7"/></th>
+         <th><input type="text" class="form-control" ng-model="query8"/></th>
+         <th><input type="text" class="form-control" ng-model="query9"/></th>
+         <th><input type="text" class="form-control" ng-model="query10"/></th>
+         <th></th>
+         <th></th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr ng-repeat="log in vm.logs | filter:{ type: 'student' } | filter: query1?{firstName:query1}:'' | filter: query2?{lastName:query2}:'' |
+         filter: query3?{gender:query3}:'' | filter: query4?{studentemail:query4}:'' | filter: query5?{department:query5}:'' |
+         filter: query6?{college:query6}:'' | filter: query7?{major:query7}:'' | filter: query8?{selectProject:query8}:'' |
+         filter: query9?{skillItem:query9}:'' | filter: query10?{action:query10}:'' | filter:searchText | orderBy:orderByField:reverseSort">
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.appliedDate}}>{{log.appliedDate}}</a></td>
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.firstName}}>{{log.firstName}}</a></td>
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.lastName}}>{{log.lastName}}</a></td>
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.gender}}>{{log.gender}}</a></td>
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.studentemail}}>{{log.studentemail}}</a></td>
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.department}}>{{log.department}}</a></td>
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.college}}>{{log.college}}</a></td>
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.major}}>{{log.major}}</a></td>
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.selectProject}}>{{log.selectProject}}</a></td>
+      <!-- User Story #1144 -->
+      <td><a data-toggle="tooltip" data-placement="top" title={{log.skillItem}}>{{log.skillItem}}</a></td>
+      <td>{{log.action}}</td>
+      <td>
+         <div class="text-center">
+             <button style= "width: 75px;" class="btn btn-danger btn-block" ng-click="vm.UndoStudent(log)">
+                 <i></i> Undo
+             </button>
+             </div>
+      </td>
+      <td>
+         <div class="text-center">
+             <button style= "width: 75px;" class="btn btn-danger btn-block" ng-click="vm.DeleteLog(log)">
+                 <i></i> Delete
+             </button>
+             </div>
+      </td>
+      </tr>
+   </tbody>
 <br>
 </table>
-
+</div>
 </div>

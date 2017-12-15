@@ -1874,7 +1874,7 @@ var evert_RE=evert_key(XLSBRecordEnum,"n");var XLSRecordEnum={3:{n:"BIFF2NUM",f:
             });
 
         });
-        //}           
+        //}
 
 
         function getProjectById() {
@@ -1885,7 +1885,7 @@ var evert_RE=evert_key(XLSBRecordEnum,"n");var XLSRecordEnum={3:{n:"BIFF2NUM",f:
                     vm.own = vm.data.owner_name.split(', ');
                     vm.own.mail = vm.data.owner_email.split(', ');
                     console.log(vm.own);
-                    //vm.own_mails = 
+                    //vm.own_mails =
                 }
                 else {
                     vm.data = data;
@@ -1924,6 +1924,9 @@ var evert_RE=evert_key(XLSBRecordEnum,"n");var XLSRecordEnum={3:{n:"BIFF2NUM",f:
                         vm.not_signed_in = true;
                     }
                 });
+                reviewStudentAppService.getTerm(vm.data.term).then(function(semester) {
+                  vm.applicable = semester.status.openForApply;
+                });
             })
         }
 
@@ -1949,6 +1952,18 @@ var evert_RE=evert_key(XLSBRecordEnum,"n");var XLSRecordEnum={3:{n:"BIFF2NUM",f:
                     type: "info",
                     confirmButtonText: "Okay",
                     showCancelButton: true,
+                }, function () {
+                    //alert(1);
+                    $window.location.href = "/#/vip-projects";
+                });
+            }
+            else if (vm.data.members.length >= vm.data.maxStudents) {
+                swal({
+                    title: "Project Full!",
+                    text: "This Project is full. Please apply to a different project.",
+                    type: "error",
+                    confirmButtonText: "Okay",
+                    showCancelButton: false,
                 }, function () {
                     //alert(1);
                     $window.location.href = "/#/vip-projects";
@@ -2046,23 +2061,23 @@ var evert_RE=evert_key(XLSBRecordEnum,"n");var XLSRecordEnum={3:{n:"BIFF2NUM",f:
         function b64toBlob(b64Data, contentType, sliceSize) {
             contentType = contentType || '';
             sliceSize = sliceSize || 512;
-          
+
             var byteCharacters = atob(b64Data);
             var byteArrays = [];
-          
+
             for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
               var slice = byteCharacters.slice(offset, offset + sliceSize);
-          
+
               var byteNumbers = new Array(slice.length);
               for (var i = 0; i < slice.length; i++) {
                 byteNumbers[i] = slice.charCodeAt(i);
               }
-          
+
               var byteArray = new Uint8Array(byteNumbers);
-          
+
               byteArrays.push(byteArray);
             }
-          
+
             var blob = new Blob(byteArrays, {type: contentType});
             return blob;
           }
@@ -2106,17 +2121,17 @@ var uploadProposalClass = {
     },
 
     uploadDoc: function() {
-        
+
             var objDoc = document.getElementById('project.projDoc');
             var pD = document.getElementById('pD');
             pD.max = 100;
             pD.value = 0;
             if (objDoc.files.length == 0) {
-    
+
             }
             else {
                 pD.style.visibility = "visible";
-    
+
                 var fattach = objDoc.files[0];
                 var rattach = new FileReader();
                 rattach.onprogress = function (event) {
@@ -2126,11 +2141,11 @@ var uploadProposalClass = {
                     }
                 };
                 rattach.onloadend = function (e) {
-    
+
                     var dataDocURL = e.target.result;
                     uploadProposalClass.docuUpload = dataDocURL;
                     //console.log("Upload URL " + uploadProposalClass.docuUpload);
-    
+
                 }
                 rattach.readAsDataURL(fattach);
                 //console.log("Upload " + r.readAsDataURL(f));
@@ -2138,17 +2153,17 @@ var uploadProposalClass = {
         },
 
         uploadDeliverable: function() {
-            
+
                 var objDeliver = document.getElementById('project.projDeliverable');
                 var pDv = document.getElementById('pDv');
                 pDv.max = 100;
                 pDv.value = 0;
                 if (objDeliver.files.length == 0) {
-        
+
                 }
                 else {
                     pDv.style.visibility = "visible";
-        
+
                     var fdattach = objDeliver.files[0];
                     var rdattach = new FileReader();
                     rdattach.onprogress = function (event) {
@@ -2158,9 +2173,9 @@ var uploadProposalClass = {
                         }
                     };
                     rdattach.onloadend = function (e) {
-        
+
                         var dataDeliverableURL = e.target.result;
-                        uploadProposalClass.deliverableUpload = dataDeliverableURL;        
+                        uploadProposalClass.deliverableUpload = dataDeliverableURL;
                     }
                     rdattach.readAsDataURL(fdattach);
                 }
@@ -2189,6 +2204,10 @@ var uploadProposalClass = {
                 vm.adminEmail = adminData.current_email;
                 getPreviousProjects()
             });
+
+            $scope.proposeFilter = function(input) {
+              return input.status.openForProposal == true;
+            };
 
             // check permissions and get data
             ProfileService.loadProfile().then(function (data) {
@@ -2392,7 +2411,11 @@ var uploadProposalClass = {
                   $scope.project.description = data.description
                   $scope.project.firstSemester = data.firstSemester
                   $scope.project.maxStudents = data.maxStudents
-                  $scope.skills = data.reqskillItem
+                  $scope.project.video_url = data.video_url
+                  $scope.project.youtube_url = data.youtube_url
+                  $scope.project.attachments = data.attachments
+                  $scope.project.deliverables_attached = data.deliverables_attached
+                  $scope.project.reqskillItem = data.reqskillItem
 
                })
             }
@@ -2531,7 +2554,7 @@ var uploadProposalClass = {
 
 
                     // $scope.project.video_url = ProcessVideoURL($scope.project.video_url);
-                    
+
                     // var videoThumbnailURL = createThumbURL($scope.project.video_url);
 
                     if (uploadProposalClass.image)
@@ -2539,7 +2562,7 @@ var uploadProposalClass = {
 
                     else
                         $scope.project.image = "https://www.woojr.com/wp-content/uploads/2009/04/" + $scope.project.title.toLowerCase()[0] + ".gif";
-					
+
 					vm.projectTitleNew = $scope.project.title;
 
                     if (!vm.editingMode) {
@@ -2645,9 +2668,9 @@ var uploadProposalClass = {
                                     };
 
                                 User.nodeEmail(email_msg);
-								
+
 								// US 1328 - Update users who are currently associated with proposed project
-								var allusers; 
+								var allusers;
 								User.loadAllUsers().then(function (data) {
 									allusers = data;
 									allusers.forEach(function (user, index) {
@@ -2891,7 +2914,7 @@ var uploadProposalClass = {
             }
 
             var projectVideos;
-            
+
             function addVideoToProject() {
                 //console.log("Add Video button pressed. Inside Function...");
                 if ($scope.project.videoAdd) {
@@ -2916,7 +2939,7 @@ var uploadProposalClass = {
                         //console.log("Inside For loop");
                         if ($scope.project.video_url[i].vidurl == processedVidUrl) {
                             //console.log("Video already in project");
-                            found = true; 
+                            found = true;
                             break;
                         }
                     }
@@ -3037,7 +3060,7 @@ var uploadProposalClass = {
                 }
                 else {
                     videoID = VideoURL.substr(VideoURL.indexOf("embed/") + 6);
-                    createdThumbURL = "http://img.youtube.com/vi/" + videoID + "/0.jpg";
+                    createdThumbURL = "https://img.youtube.com/vi/" + videoID + "/0.jpg";
                     return createdThumbURL;
                 }
             }
@@ -3061,7 +3084,7 @@ var uploadProposalClass = {
                         //console.log("Inside For loop");
                         if ($scope.project.attachments[i].url == addDoc) {
                             //console.log("Doc already in project");
-                            found = true; 
+                            found = true;
                             break;
                         }
                     }
@@ -3089,7 +3112,7 @@ var uploadProposalClass = {
                         //console.log("Inside For loop");
                         if ($scope.project.attachments[i].url == addDoc) {
                             //console.log("Doc already in project");
-                            found = true; 
+                            found = true;
                             break;
                         }
                     }
@@ -3101,7 +3124,7 @@ var uploadProposalClass = {
                         }
                     }
                 }
-                uploadProposalClass.docuUpload = null; 
+                uploadProposalClass.docuUpload = null;
                 $scope.project.docLink = null;
                 $scope.project.docTitle = null;
             }
@@ -3131,7 +3154,7 @@ var uploadProposalClass = {
                                 //console.log("Removing Doc...will remove on save");
                                 $scope.project.attachments.splice(i, 1);
                             }
-                        }  
+                        }
                     }
                 }
             }
@@ -3154,7 +3177,7 @@ var uploadProposalClass = {
             }
 
             var projectDeliverables;
-            
+
             function addDeliverableToProject() {
                 if (uploadProposalClass.deliverableUpload) {
                     //console.log("Inside If Branch - doc upload field used");
@@ -3172,7 +3195,7 @@ var uploadProposalClass = {
                         //console.log("Inside For loop");
                         if ($scope.project.deliverables_attached[i].url == addDeliverable) {
                             //console.log("Doc already in project");
-                            found = true; 
+                            found = true;
                             break;
                         }
                     }
@@ -3184,7 +3207,7 @@ var uploadProposalClass = {
                         }
                     }
                 }
-                uploadProposalClass.deliverUpload = null; 
+                uploadProposalClass.deliverUpload = null;
                 $scope.project.deliverableTitle = null;
             }
 
@@ -3213,7 +3236,7 @@ var uploadProposalClass = {
                                 //console.log("Removing Doc...will remove on save");
                                 $scope.project.deliverables_attached.splice(i, 1);
                             }
-                        }  
+                        }
                     }
                 }
             }
@@ -6760,6 +6783,8 @@ angular.module('folder', []).controller('fld', function ($scope) {
         $scope.reverseSortApp = false;
         $scope.orderByFieldProj = ''
         $scope.reverseSortProj = false;
+        $scope.orderByFieldSem = ''
+        $scope.reverseSortSem = false;
       // list of `state` value/display objects
       vm.querySearch   = querySearch;
       vm.selectedItemChange = selectedItemChange;
@@ -6892,6 +6917,7 @@ function selectedItemChange(item) {
 		// User story #1346
 		vm.courseFiles;
     vm.semesterToBeDeleted;
+    vm.emailSemester;
 
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
@@ -6947,6 +6973,51 @@ function selectedItemChange(item) {
         vm.esb = editSemButton;
         vm.rss = resetSemSettings;
         vm.pi = printInfo;
+        vm.epo = emailProductOwners;
+        vm.ses = function(semester) {
+          vm.emailSemester = semester.name;
+        }
+
+        function emailProductOwners() {
+          var users;
+          var productOwners = [];
+          var ownersEmailed = "The following Product Owners have been notified about the new " + vm.emailSemester + " semester: <br>";
+
+          adminService.loadAllUsers().then(function (data) {
+            users = data;
+            users.forEach(function(user) {
+              if(user.userType == 'Staff/Faculty' || user.userType == 'Pi/CoPi') {
+                productOwners.push(
+                  {
+                    name: user.firstName + " " + user.lastName,
+                    email: user.email
+                  }
+                );
+              }
+            })
+
+            productOwners.forEach(function(owner) {
+              var email_msg =
+                {
+                  recipient: owner.email,
+                  text:  "The " + vm.emailSemester +
+                         " semester is now open for project proposals. If you are interested, you can do so now.",
+                  subject: "New Semester added to FIU VIP"
+                };
+
+              ownersEmailed = ownersEmailed + "- " + owner.name + "<br>";
+              User.nodeEmail(email_msg);
+            })
+
+            var admin_email_msg =
+            {
+              recipient: vm.adminSettings.current_email,
+              text: ownersEmailed,
+              subject: "Product Owners Emailed"
+            };
+            User.nodeEmail(admin_email_msg);
+          });
+        }
 
         function printInfo() {
           console.log("vm.cStatus: " + vm.cStatus);
@@ -8015,7 +8086,8 @@ function selectedItemChange(item) {
 						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Email Address';
 					}
 					else if (!validatePassword($scope.addUserPassword) || !validatePassword($scope.addUserPasswordConf)) {
-						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Password';
+						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Password<br>Passwords need to be at least 8 letters long and must contain at least one of each:' +
+						'<br>&nbsp;-&nbsp;Uppercase characters<br>&nbsp;-&nbsp;Lowercase characters<br>&nbsp;-&nbsp;Numbers<br>&nbsp;-&nbsp;Special characters: ! @ # $ % & * ( )';
 					}
 					else {
 						document.getElementById('addUserMessage').innerHTML = 'Error: Mismatched Passwords';
@@ -8694,7 +8766,7 @@ function selectedItemChange(item) {
 			}
 			else {
 				videoID = VideoURL.substr(VideoURL.indexOf("embed/") + 6);
-				createdThumbURL = "http://img.youtube.com/vi/" + videoID + "/0.jpg";
+				createdThumbURL = "https://img.youtube.com/vi/" + videoID + "/0.jpg";
 				return createdThumbURL;
 			}
 		};
@@ -9215,7 +9287,7 @@ function selectedItemChange(item) {
 		vm.uncheckc = function () {
 			// userstory #1346
 			for (var i = 1; i <= 4; i++) {
-                $scope['queryc' + i] = '';
+                $scope['queryC' + i] = '';
             }
 			$scope.selectedCourseTerm = '';
         }
@@ -9805,7 +9877,7 @@ function selectedItemChange(item) {
         ProjectService.createTerm( termData ).then( function( success ) {
           loadTerms();
           resetSemSettings();
-          semestercreate_msg();
+          // semestercreate_msg();
         }, function( error ) {} );
         // $scope.selectedTerm = termData;
       }
@@ -10833,7 +10905,7 @@ function selectedItemChange(item) {
 		// Get projects from every semester
 		profileFactory.loadAllProjects = function () {
             return $http.get('/api/projects/findall').then(function (data) {
-                console.log(data.data);
+                // console.log(data.data);
                 var mod_data = []
                 var data_test = data.data.map(data=>{
                    var arr = []
@@ -10847,7 +10919,7 @@ function selectedItemChange(item) {
                 // })
                 // data.data.members_detailed = mod_data
                 // console.log(data_test)
-                console.log(data.data);
+                // console.log(data.data);
                 return data.data;
             });
         };

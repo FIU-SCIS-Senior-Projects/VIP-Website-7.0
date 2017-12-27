@@ -758,19 +758,18 @@
 					itemsPerPage: 10" pagination-id="usersPage">
 
                     <td>
-                        <button id="impersonateUser" class="btn btn-info btn-block" ng-click="vm.impersonate(user)"
-                                ng-hide="user.userType == 'Pi/CoPi'">
+                        <button id="impersonateUser" class="btn btn-info btn-block" ng-click="vm.impersonate(user)">
                        <i class="fa fa-eye" aria-hidden="true"></i>
                         </button>
                     </td>
                     <td>
-                        <button id="editUserStart" class="btn btn-primary" ng-hide="user.userType == 'Pi/CoPi'" ng-click="vm.editUser(user)"
+                        <button id="editUserStart" class="btn btn-primary" ng-click="vm.editUser(user)"
                        data-toggle="modal" data-target="#editUserModal">
                        <i class="fa fa-pencil" aria-hidden="true"></i>
                         </button>
                     </td>
                     <td>
-                        <button id="deleteUserStart" class="btn btn-danger" ng-hide="user.userType == 'Pi/CoPi'" ng-click="vm.selectDeleteUser(user)"
+                        <button id="deleteUserStart" class="btn btn-danger" ng-click="vm.selectDeleteUser(user)"
                                 data-toggle="modal" data-target="#deleteModal">
                        <i class="fa fa-user-times" aria-hidden="true"></i>
                      </button>

@@ -8540,6 +8540,14 @@ function selectedItemChange(item) {
 			return -1;
 		};
 
+		function findTermID(term) {
+			if (term)
+				for (var i=0; i<vm.terms.length; i++)
+                    if (vm.terms[i].name == term)
+                        return vm.terms[i]._id;
+			return -1;
+		};
+
 		// Save changes to edited project
 		vm.saveChangesProject = function() {
 			// First check if required information is missing
@@ -8575,11 +8583,15 @@ function selectedItemChange(item) {
 						vm.editingProject.owner_email = null;
 						vm.editingProject.owner_rank = null;
 					}
-					if ($scope.editPTerm)
+					if ($scope.editPTerm) {
 						vm.editingProject.semester = $scope.editPTerm.name;
-					else
+						var newTermID =  findTermID(vm.editingProject.semester);
+						vm.editingProject.term = newTermID;
+					}
+					else {
 						vm.editingProject.semester = null;
-
+						vm.editingProject.term = null;
+					}
 					if ($scope.editPStatus)
                         vm.editingProject.status = $scope.editPStatus.type;
 					else

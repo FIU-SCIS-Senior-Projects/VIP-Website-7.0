@@ -219,6 +219,7 @@ module.exports = function (app, express) {
                     //updating the required skill item and semester - snaku001
                     proj.reqskillItem = req.body.reqskillItem;
                     proj.semester = req.body.semester;
+                    proj.term = req.body.term;
 
                     if (req.body.title !== "") proj.title = req.body.title;
                     if (req.body.description !== "") proj.description = req.body.description;

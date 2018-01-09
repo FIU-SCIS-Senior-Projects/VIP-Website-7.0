@@ -64,7 +64,7 @@ module.exports = function (app, express) {
 
 	apiRouter.route('/terms/findall')
 		.get( // Get all the terms in the DB
-			authProvider.authorizeByUserType([authProvider.userType.PiCoPi, authProvider.userType.StaffFaculty]),
+			authProvider.authorizeByUserType([authProvider.userType.PiCoPi, authProvider.userType.StaffFaculty, authProvider.userType.Student]),
             function (req, res) {
                 Term.find({active:true}, function (err, terms) {
                     if (err) {

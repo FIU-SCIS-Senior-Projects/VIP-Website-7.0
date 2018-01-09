@@ -19,7 +19,7 @@
 <td colspan="4">
 <!-- User Story #1175 -->
 <label>*Semester:</label>
-<select  ng-model="projApp.semester" ng-options="semester for semester in projApp.semesters" class="form-control" required>
+<select  ng-model="projApp.semester" ng-options="term.name as term.name for term in terms | filter: applyFilter" class="form-control" required>
 </select>
 </td>
 </tr>
@@ -102,11 +102,12 @@
 <label>*Please select one of the options:</label>
 <select class="form-control" ng-model="projApp.vipcredit" required>
 <option></option>
-<option value="IDS 2947">1 Credit [IDS 2947] </option>
-<option value="IDS 3948">2 Credit [IDS 3948] </option>
-<option value="IDS 4993">3 Credit [IDS 4993] </option>
+<option value="IDS 3917">IDS 3917 U01 </option>
+<option value="IDS 4918">IDS 4918 U01 </option>
+<option value="IDS 4993">CIS 4911 U01 </option>
 <!--Sprint#5 part3-->	
-<option value="IDS 5993">Graduate [IDS 5993] </option>
+<option value="IDS 3917 U02">IDS 3917 U02-Z (Prof. Robinson) </option>
+<option value="IDS 3917 B51">IDS 3917 B51-Z (Prof. Berman) </option>
 </select>
 </td>
 </tr>

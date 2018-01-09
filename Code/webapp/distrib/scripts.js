@@ -4082,7 +4082,7 @@ function UndoFaculty(log)
     angular
         .module('projectApplicationController', ['ProjectProposalService', 'user-profile', 'toDoModule', 'userService',
             'reviewProfile', 'vip-projects'])
-        .controller('projAppCtrl', function (ProjectService, ProfileService, ToDoService, User, reviewProfileService,
+        .controller('projAppCtrl', function (ProjectService, ProfileService, ToDoService, User, reviewProfileService, reviewStudentAppService,
                                              adminService, LocationService, DateTimeService, SkillsService, $stateParams,
                                              $location, $window, $scope, $state, $document) {
 
@@ -4098,6 +4098,10 @@ function UndoFaculty(log)
                 adminData = data;
                 vm.adminEmail = adminData.current_email;
             });
+
+            $scope.applyFilter = function(input) {
+                return input.status.openForApply == true;
+              };
 
 
             ProfileService.loadProfile().then(function (data) {
@@ -4285,6 +4289,7 @@ function UndoFaculty(log)
             init();
             function init() {
                 loadData();
+                loadTerms();
             }
 
             function loadData() {
@@ -4311,6 +4316,15 @@ function UndoFaculty(log)
                             vm.sProject = project;
                         }
                     });
+                });
+            }
+
+            function loadTerms() {
+                reviewStudentAppService.loadTerms().then(function (data) {
+                    console.log("in loadTerms()");
+                    $scope.terms = data;
+                    vm.terms = data;
+                    console.log(vm.terms);
                 });
             }
 
@@ -4768,7 +4782,7 @@ function UndoFaculty(log)
                         allowOutsideClick: true,
                         timer: 7000,
                     }, function () {
-                        window.location.reload();
+                        $window.location.href = "/#/vip-projects-detailed/" + vm.sProject._id
                     }
                 );
             }
